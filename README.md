@@ -30,38 +30,115 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
   "version": "1.0.0",
   "metadata": {
     "matchId": "egn_m_20260528_01",
-    "title": "Detroit League - Finals Game 2",
+    "title": "WEC Finals",
     "description": "Championship bracket match recorded live from local venue stream.",
-    "players": ["Alex", "Sarah", "Chris", "Taylor"],
-    "initialScore": [0, 0]
+    "date": "2026-05-17T19:00:00Z",
+    "players": ["Player0", "Player1", "Player2", "Player3"],
+    "initialScore": [0, 0],
+    "ruleset": {
+      "std": true,
+      "canadian": false,
+      "loner_lead": "LEFT_OF_DEALER"
+    } 
   },
   "deals": [
     {
-      "dealNumber": 1,
+      "dealNumber": 0,
       "initialState": {
         "dealer": 3,
-        "upCard": "J♦"
+        "upCard": "Jd"
       },
       "phases": [
         {
-          "phaseNumber": 1,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": ["Pass", "Pass", "Pass", "Order"],
           "isAlone": false,
-          "discard": "9♠"
+          "discard": "9s",
+          "kitty": ["9h", "Qh", "As"]
         },
         {
-          "phaseNumber": 2,
+          "phaseNumber": 1,
           "type": "TRICK_PLAY",
+          "initialLead": 0,
           "tricks": [
-            ["A♣", "10♣", "9♣", "K♣"],
-            ["Q♦", "9♦", "A♦", "J♦"],
-            ["J♥", "10♦", "K♦", "A♠"],
-            ["A♥", "K♥", "10♥", "9♥"],
-            ["Q♥", "Q♠", "J♠", "10♠"]
+            ["Ac", "Tc", "9c", "Kc"],
+            ["Ah", "Kh", "Th", "Qd"],
+            ["Jd", "9d", "Ad", "Kd"],
+            ["Jh", "Td", "Ks", "Ts"],
+            ["Qc", "Qs", "Js", "Jc"]
           ]
         }
       ]
-    }
+    },
+    {
+      "dealNumber": 1,
+      "initialState": {
+        "dealer": 0,
+        "upCard": "Ah"
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": ["Pass", "Pass", "Order"],
+          "isAlone": true,
+          "discard": "Kd",
+          "kitty": ["9d", "Ks", "Ts"]
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 2,
+          "tricks": [
+            ["9d", "Ad", "Ah"],
+            ["Qc", "Ac", "9h"],
+            ["Jh", "Jc", "Th"],
+            ["Jd", "Qs", "Qh"],
+            ["As", "Js", "Ts"]
+          ]
+        }
+      ]
+    },
+    {
+      "dealNumber": 2,
+      "initialState": {
+        "dealer": 1,
+        "upCard": "9s"
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": ["Pass", "Pass", "Pass", "Pass", "Pass", "d"],
+          "isAlone": false,
+          "kitty": ["As", "Jc", "Js"]
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 2,
+          "tricks": [
+            ["Ac", "Tc", "9c", "Kc"],
+            ["Qc", "Qd", "Ad", "Ts"],
+            ["Ah", "Kh", "9h", "Kd"],
+            ["Jd", "9d", "Qh", "Ks"],
+            ["Td", "Jh", "Th", "Qs"]
+          ]
+        }
+      ]
+     }
+  ]
+}
+```
+
+---
+
+## 📝 Notation Details
+
+When implementing or parsing EGN, keep the following details in mind:
+
+1. **Unknown/Hidden Information (`discard` and `kitty`)**: Depending on how the match data was recorded (e.g., manually transcribed from a live stream vs. exported from a fully observable digital game engine), the dealer's `discard` and the unplayed `kitty` cards might not be known. These properties are optional in the specification and can be omitted if the data is unavailable.
+2. **Trick Order and Lead Determination**: The `tricks` array records cards strictly in the chronological order they were dropped on the table. It does not explicitly state which player led each trick. Instead, the lead for the very first trick can be defaulted to the player to the left of the dealer or can be indicated by the `initialLead` property. For all subsequent tricks, the lead is implicitly determined by calculating the winner of the prior trick using standard Euchre rules. This aligns with EGN's philosophy of deterministic minimalism.
   ]
 }

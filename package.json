@@ -1,0 +1,23 @@
+{
+  "name": "euchre-game-notation",
+  "version": "1.0.0",
+  "description": "Euchre Game Notation (EGN) file format specification, JSON schemas, and TypeScript utilities.",
+  "main": "dist/types.js",
+  "types": "dist/types.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "euchre",
+    "egn",
+    "notation",
+    "cards",
+    "specification"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
