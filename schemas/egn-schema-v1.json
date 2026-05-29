@@ -44,7 +44,8 @@
                 "canadian": { "type": "boolean", "default": false },
                 "loner_lead": { "type": "string", "enum": ["LEFT_OF_DEALER", "LEFT_OF_LONER"], "default": "LEFT_OF_DEALER" },
                 "farmer": { "type": "boolean", "default": false },
-                "partners_best": { "type": "boolean", "default": false }
+                "partners_best": { "type": "boolean", "default": false },
+                "jokers": { "type": "integer", "default": 0 }
             }
         }
       },
@@ -94,7 +95,7 @@
   "definitions": {
     "card": {
       "type": "string",
-      "pattern": "^([N9TJQKA])[shcd]$"
+      "pattern": "^([N9TJLRQKABX])[SsHhCcDdXx]$"
     },
     "biddingPhase": {
       "type": "object",

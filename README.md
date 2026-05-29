@@ -134,11 +134,20 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
 
 ---
 
+## 🃏 Card Representation
+
+In EGN, cards are primarily represented by a two-character string indicating their rank and suit (e.g., `"9c"`, `"Ts"`, `"Jd"`, `"Qh"`, `"Kc"`, `"As"`). However, the specification also allows for the following alternative and special representations:
+
+* **`N`**: Can be used as an alternative notation for the 9 rank (e.g., `"Nc"` for the 9 of Clubs).
+* **`R` and `L`**: Can be used to explicitly denote the Right and Left Bowers. It is important to note that the Left Bower (`"L"`) always represents the Jack of the same color as the called trump suit.
+* **`X`**: Used to denote an unknown rank or suit (e.g., `"Xc"` for an unknown Club, `"JX"` for an unknown Jack, or `"XX"` for a completely unknown card). This is especially useful for incomplete match logs or hidden cards.
+* **`B` (Joker/Benny)**: In rulesets that include a Joker (the "Best Bower" or "Benny"), `"B"` represents the Joker.
+
+---
+
 ## 📝 Notation Details
 
 When implementing or parsing EGN, keep the following details in mind:
 
 1. **Unknown/Hidden Information (`discard` and `kitty`)**: Depending on how the match data was recorded (e.g., manually transcribed from a live stream vs. exported from a fully observable digital game engine), the dealer's `discard` and the unplayed `kitty` cards might not be known. These properties are optional in the specification and can be omitted if the data is unavailable.
 2. **Trick Order and Lead Determination**: The `tricks` array records cards strictly in the chronological order they were dropped on the table. It does not explicitly state which player led each trick. Instead, the lead for the very first trick can be defaulted to the player to the left of the dealer or can be indicated by the `initialLead` property. For all subsequent tricks, the lead is implicitly determined by calculating the winner of the prior trick using standard Euchre rules. This aligns with EGN's philosophy of deterministic minimalism.
-  ]
-}
