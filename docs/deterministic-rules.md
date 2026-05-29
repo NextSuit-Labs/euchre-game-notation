@@ -7,7 +7,7 @@ This document outlines the standard deterministic rules a parser must apply when
 ## 1. Trump Determination
 Trump is determined by the `calls` array in the `EUCHRE_BIDDING` phase.
 * **Round 1:** If a player calls `"Order"`, the suit of the `upCard` becomes trump.
-* **Round 2:** If all players pass in Round 1, the `upCard` is turned down. If a player calls a suit (`"s"`, `"h"`, `"d"`, `"c"`), that suit becomes trump. 
+* **Round 2:** If all players pass in Round 1, the `upCard` is turned down. If a player calls a suit (`"s"`, `"h"`, `"d"`, `"c"`), that suit becomes trump. If no_trump is allowed, the call is indicated as (`"n"`). If the call is unknown, it is indicated as (`"x"`).
 * If all players pass in both rounds, the hand is a throw-in (unless the `std` rule is true, forcing the dealer to call a suit).
 
 ## 2. Trick Leading
@@ -19,7 +19,7 @@ The lead for each trick dictates the base suit that other players must follow if
 To determine the winner of a trick, a parser must evaluate the cards played based on the lead suit and the trump suit.
 
 ### Card Rankings (High to Low)
-* **Trump Suit:** Right Bower (Jack of Trump), Left Bower (Jack of the same color as Trump), A, K, Q, 10, 9.
+* **Trump Suit:** Joker/Benny (If playing with one), Right Bower (Jack of Trump), Left Bower (Jack of the same color as Trump), A, K, Q, 10, 9.
     * *Note:* The Left Bower is considered a card of the trump suit, NOT its original suit, for the duration of the hand.
 * **Lead Suit (if not trump):** A, K, Q, J (if not Left Bower), 10, 9.
 * **Off-Suit:** Any card that is neither trump nor the lead suit has no value and cannot win the trick.

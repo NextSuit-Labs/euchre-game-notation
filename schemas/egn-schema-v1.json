@@ -41,11 +41,14 @@
             "type": "object",
             "properties": {
                 "std": { "type": "boolean", "default": true },
+                "min_rank": { "type": "integer", "default": 9 },
                 "canadian": { "type": "boolean", "default": false },
                 "loner_lead": { "type": "string", "enum": ["LEFT_OF_DEALER", "LEFT_OF_LONER"], "default": "LEFT_OF_DEALER" },
-                "farmer": { "type": "boolean", "default": false },
+                "farmers": { "type": "boolean", "default": false },
                 "partners_best": { "type": "boolean", "default": false },
-                "jokers": { "type": "integer", "default": 0 }
+                "go_under": { "type": "boolean", "default": false },
+                "joker": { "type": "boolean", "default": false },
+                "allow_no_trump": { "type": "boolean", "default": false }
             }
         }
       },
@@ -66,18 +69,17 @@
                 "maximum": 3
               },
               "upCard": { "$ref": "#/definitions/card" },
-              "kitty": {
+              "kitty": { "$ref": "#/definitions/card_list" },
+              "player_cards": {
                 "type": "array",
-                "minItems": 0,
-                "maxItems": 3,
-                "items": { "$ref": "#/definitions/card" }
+                "items": { "$ref": "#/definitions/card_list" }
               }
             },
             "required": ["dealer", "upCard"]
           },
           "phases": {
             "type": "array",
-            "minItems": 2,
+            "minItems": 1,
             "maxItems": 2,
             "items": {
               "oneOf": [
@@ -91,11 +93,15 @@
       }
     }
   },
-  "required": ["fileType", "version", "deals"],
+  "required": ["fileType", "version", "metadata", "deals"],
   "definitions": {
     "card": {
       "type": "string",
-      "pattern": "^([N9TJQKAX][SsHhCcDdXx]|[LRB])$"
+      "pattern": "^([78N9TJQKAX][SsHhCcDdxtngh]|[LRB])$"
+    },
+    "card_list": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/card" }
     },
     "biddingPhase": {
       "type": "object",
@@ -107,10 +113,19 @@
           "type": "array",
           "minItems": 1,
           "maxItems": 8,
-          "items": { "type": "string", "enum": ["Pass", "Order", "s", "h", "d", "c"] }
+          "items": { "type": "string", "enum": ["Pass", "Order", "s", "h", "d", "c", "n", "x"] }
         },
         "isAlone": { "type": "boolean" },
-        "discard": { "$ref": "#/definitions/card" }
+        "discard": { "$ref": "#/definitions/card" },
+        "card_exchange": {
+          "type": "object",
+          "properties": {
+            "sender": { "type": "integer", "minimum": 0, "maximum": 3 },
+            "receiver": { "type": "integer", "minimum": 0, "maximum": 3 },
+            "cards": { "$ref": "#/definitions/card_list" }
+          },
+          "required": ["sender", "receiver", "cards"]
+        }
       }
     },
     "trickPlayPhase": {
@@ -128,12 +143,7 @@
           "type": "array",
           "minItems": 1,
           "maxItems": 5,
-          "items": {
-            "type": "array",
-            "minItems": 3,
-            "maxItems": 4,
-            "items": { "$ref": "#/definitions/card" }
-          }
+          "items": { "$ref": "#/definitions/card_list" }
         }
       }
     }

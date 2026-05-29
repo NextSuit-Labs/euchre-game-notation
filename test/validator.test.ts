@@ -22,7 +22,8 @@ const validMockData = {
       "dealNumber": 0,
       "initialState": {
         "dealer": 3,
-        "upCard": "Jd"
+        "upCard": "Jd",
+        "kitty": ["9h", "Qh", "As"]
       },
       "phases": [
         {
@@ -30,8 +31,7 @@ const validMockData = {
           "type": "EUCHRE_BIDDING",
           "calls": ["Pass", "Pass", "Pass", "Order"],
           "isAlone": false,
-          "discard": "9s",
-          "kitty": ["9h", "Qh", "As"]
+          "discard": "9s"
         },
         {
           "phaseNumber": 1,
