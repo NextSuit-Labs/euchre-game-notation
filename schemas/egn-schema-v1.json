@@ -81,8 +81,8 @@
             "maxItems": 2,
             "items": {
               "oneOf": [
-                { "$ref": "#/$defs/biddingPhase" },
-                { "$ref": "#/$defs/trickPlayPhase" }
+                { "$ref": "#/definitions/biddingPhase" },
+                { "$ref": "#/definitions/trickPlayPhase" }
               ]
             }
           }
@@ -95,7 +95,7 @@
   "definitions": {
     "card": {
       "type": "string",
-      "pattern": "^([N9TJLRQKABX])[SsHhCcDdXx]$"
+      "pattern": "^([N9TJQKAX][SsHhCcDdXx]|[LRB])$"
     },
     "biddingPhase": {
       "type": "object",
@@ -110,7 +110,7 @@
           "items": { "type": "string", "enum": ["Pass", "Order", "s", "h", "d", "c"] }
         },
         "isAlone": { "type": "boolean" },
-        "discard": { "$ref": "#/$defs/card" }
+        "discard": { "$ref": "#/definitions/card" }
       }
     },
     "trickPlayPhase": {
@@ -119,6 +119,11 @@
       "properties": {
         "phaseNumber": { "type": "integer" },
         "type": { "const": "TRICK_PLAY" },
+        "initialLead": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
         "tricks": {
           "type": "array",
           "minItems": 1,
@@ -127,7 +132,7 @@
             "type": "array",
             "minItems": 3,
             "maxItems": 4,
-            "items": { "$ref": "#/$defs/card" }
+            "items": { "$ref": "#/definitions/card" }
           }
         }
       }

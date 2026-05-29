@@ -3,7 +3,7 @@
  * Maps directly to the EGN schema v1.0.0.
  */
 
-export type Card = string; // Pattern: ^([N9TJQKA])[shcd]$
+export type Card = string; // Pattern: ^([N9TJQKAX][SsHhCcDdXx]|[LRB])$
 
 export interface Ruleset {
   std?: boolean;
@@ -11,6 +11,7 @@ export interface Ruleset {
   loner_lead?: "LEFT_OF_DEALER" | "LEFT_OF_LONER";
   farmer?: boolean;
   partners_best?: boolean;
+  jokers?: number;
 }
 
 export interface Metadata {
@@ -40,6 +41,7 @@ export interface BiddingPhase {
 export interface TrickPlayPhase {
   phaseNumber: number;
   type: "TRICK_PLAY";
+  initialLead?: number;
   tricks: Card[][];
 }
 

@@ -46,7 +46,8 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
       "dealNumber": 0,
       "initialState": {
         "dealer": 3,
-        "upCard": "Jd"
+        "upCard": "Jd",
+        "kitty": ["9h", "Qh", "As"]
       },
       "phases": [
         {
@@ -54,8 +55,7 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
           "type": "EUCHRE_BIDDING",
           "calls": ["Pass", "Pass", "Pass", "Order"],
           "isAlone": false,
-          "discard": "9s",
-          "kitty": ["9h", "Qh", "As"]
+          "discard": "9s"
         },
         {
           "phaseNumber": 1,
@@ -75,7 +75,8 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
       "dealNumber": 1,
       "initialState": {
         "dealer": 0,
-        "upCard": "Ah"
+        "upCard": "Ah",
+        "kitty": ["9d", "Ks", "Ts"]
       },
       "phases": [
         {
@@ -83,8 +84,7 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
           "type": "EUCHRE_BIDDING",
           "calls": ["Pass", "Pass", "Order"],
           "isAlone": true,
-          "discard": "Kd",
-          "kitty": ["9d", "Ks", "Ts"]
+          "discard": "Kd"
         },
         {
           "phaseNumber": 1,
@@ -104,15 +104,15 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
       "dealNumber": 2,
       "initialState": {
         "dealer": 1,
-        "upCard": "9s"
+        "upCard": "9s",
+        "kitty": ["As", "Jc", "Js"]
       },
       "phases": [
         {
           "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": ["Pass", "Pass", "Pass", "Pass", "Pass", "d"],
-          "isAlone": false,
-          "kitty": ["As", "Jc", "Js"]
+          "isAlone": false
         },
         {
           "phaseNumber": 1,
