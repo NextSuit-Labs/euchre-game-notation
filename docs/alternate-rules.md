@@ -14,6 +14,10 @@ Standardizes the baseline rules of the game. When `true`, it commonly enforces *
 **Default:** `9`
 Defines the lowest card rank in the deck. While standard Euchre uses a 24-card deck (9s and up), some variations use a 32-card deck extending down to 7s (`min_rank: 7`).
 
+## `winning_total` (integer)
+**Default:** `10`
+Indicates the target score to win the game. If a team ends a hand with more than this many points, they win the game.
+
 ## `canadian` (boolean)
 **Default:** `false`
 Enables the **"Canadian Loner"** rule. Under this rule, if the dealer's partner orders up the `upCard` during the first round of bidding, the partner is forced to play the hand alone (`isAlone: true`).
@@ -43,3 +47,11 @@ Introduces the Joker (or "Benny") to the deck as the highest-ranking trump card,
 ## `allow_no_trump` (boolean)
 **Default:** `false`
 Allows players to bid **"No Trump"** during the second round of bidding. In EGN, this is recorded as a `"n"` call in the `calls` array. When No Trump is active, tricks are won strictly by the highest card of the lead suit.
+
+## `fast_break` (boolean)
+**Default:** `false`
+If the defending team (the team that did not call trump) gets the first two tricks and then loses the last three, the score for that hand is 0 for both teams. The deal proceeds to the next player as normal
+
+## `four_trick_tokens` (boolean)
+**Default:** `false`
+If the calling team on a non-loner gets exactly 4 tricks, they get a token (in addition to the normal 1 point for 3-4 tricks). If, at any point in the game, they get to 4 tokens, they turn all their tokens in for 1 extra point. This extra point can end the game if it takes them to the winning score.

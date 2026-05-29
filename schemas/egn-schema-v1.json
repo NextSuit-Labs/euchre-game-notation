@@ -42,13 +42,16 @@
             "properties": {
                 "std": { "type": "boolean", "default": true },
                 "min_rank": { "type": "integer", "default": 9 },
+                "winning_score": { "type": "integer", "default": 10 },
                 "canadian": { "type": "boolean", "default": false },
                 "loner_lead": { "type": "string", "enum": ["LEFT_OF_DEALER", "LEFT_OF_LONER"], "default": "LEFT_OF_DEALER" },
                 "farmers": { "type": "boolean", "default": false },
                 "partners_best": { "type": "boolean", "default": false },
                 "go_under": { "type": "boolean", "default": false },
                 "joker": { "type": "boolean", "default": false },
-                "allow_no_trump": { "type": "boolean", "default": false }
+                "allow_no_trump": { "type": "boolean", "default": false },
+                "fast_break": { "type": "boolean", "default": false },
+                "four_trick_tokens": { "type": "boolean", "default": false }
             }
         }
       },
@@ -122,11 +125,11 @@
           "items": {
             "type": "object",
             "properties": {
-              "sender": { "type": "integer", "minimum": 0, "maximum": 3 },
-              "receiver": { "type": "integer", "minimum": 0, "maximum": 3 },
+              "sender": { "type": "integer", "minimum": 0, "maximum": 5 },
+              "receiver": { "type": "integer", "minimum": 0, "maximum": 5 },
               "cards": { "$ref": "#/definitions/card_list" }
             },
-            "required": ["sender", "receiver", "cards"]
+            "required": ["receiver", "cards"]
           }
         }
       }
