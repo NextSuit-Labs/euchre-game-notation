@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package egn;
+
+message Ruleset {
+  optional bool std = 1;
+  optional int32 min_rank = 2;
+  optional int32 winning_score = 3;
+  optional bool canadian = 4;
+
+  enum LonerLead {
+    LEFT_OF_DEALER = 0;
+    LEFT_OF_LONER = 1;
+  }
+  optional LonerLead loner_lead = 5;
+
+  optional bool farmers = 6;
+  optional bool partners_best = 7;
+  optional bool go_under = 8;
+  optional bool joker = 9;
+  optional bool allow_no_trump = 10;
+  optional bool fast_break = 11;
+  optional bool four_trick_tokens = 12;
+}
+
+message Metadata {
+  optional string match_id = 1;
+  optional string title = 2;
+  optional string description = 3;
+  repeated string players = 4;
+  repeated int32 initial_score = 5;
+  optional string date = 6; // ISO 8601 formatted date-time string
+  Ruleset ruleset = 7;
+}

@@ -1,0 +1,81 @@
+{
+  "fileType": "Euchre Game Notation",
+  "version": "1.0.0",
+  "metadata": {
+    "title": "Hand from Euchre.ai",
+    "description": "",
+    "date": "2026-06-02T16:42",
+    "players": [
+      "Player1",
+      "Player2",
+      "Player3",
+      "Player4"
+    ],
+    "initialScore": [
+      3,
+      8
+    ],
+    "ruleset": {
+      "std": true,
+      "canadian": false,
+      "loner_lead": "LEFT_OF_DEALER"
+    }
+  },
+  "deals": [
+    {
+      "dealNumber": 0,
+      "initialState": {
+        "dealer": 3,
+        "upCard": "Ac",
+        "kitty": []
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Order"
+          ],
+          "isAlone": false
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 0,
+          "tricks": [
+            [
+              "9h",
+              "Jh",
+              "Ah",
+              "Qh"
+            ],
+            [
+              "As",
+              "Qs",
+              "Kh",
+              "Ts"
+            ],
+            [
+              "Ks",
+              "Qc",
+              "9c",
+              "Th"
+            ],
+            [
+              "Kc",
+              "Tc",
+              "Jc",
+              "9s"
+            ],
+            [
+              "Ad",
+              "Qd",
+              "Ac",
+              "Js"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

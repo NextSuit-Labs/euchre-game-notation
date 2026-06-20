@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package egn;
+
+import "egn-common.proto";
+
+message CardList {
+  repeated string cards = 1;
+}
+
+message AnnotationList {
+  repeated string texts = 1;
+}
+
+message InitialState {
+  optional int32 dealer = 1;
+  optional string up_card = 2;
+  repeated string kitty = 3;
+  repeated CardList player_cards = 4;
+}
+
+message BiddingPhase {
+  optional int32 phase_number = 1;
+  repeated string calls = 2;
+  optional bool is_alone = 3;
+  optional string discard = 4;
+
+  message CardExchange {
+    optional int32 sender = 1;
+    optional int32 receiver = 2;
+    repeated string cards = 3;
+  }
+  repeated CardExchange card_exchanges = 5;
+
+  map<int32, AnnotationList> calls_annotations = 6;
+}
+
+message TrickPlayPhase {
+  optional int32 phase_number = 1;
+  optional int32 initial_lead = 2;
+
+  message Trick {
+    repeated string cards = 1;
+  }
+  repeated Trick tricks = 3;
+
+  map<int32, AnnotationList> tricks_annotations = 4;
+}
+
+message Phase {
+  oneof phase {
+    BiddingPhase bidding = 1;
+    TrickPlayPhase play = 2;
+  }
+}
+
+message AlternativeLine {
+  optional int32 branch_index = 1;
+  optional BiddingPhase bidding_phase = 2;
+  optional TrickPlayPhase trick_play_phase = 3;
+}
+
+message Deal {
+  optional int32 deal_number = 1;
+  InitialState initial_state = 2;
+  repeated Phase phases = 3;
+  repeated AlternativeLine alternative_lines = 4;
+}
+
+message EgnFile {
+  optional string file_type = 1; // Constant: "Euchre Game Notation"
+  optional string version = 2;
+  Metadata metadata = 3;
+  repeated Deal deals = 4; // Expanded array of deals
+}

@@ -1,0 +1,136 @@
+{
+  "fileType": "Euchre Game Notation",
+  "version": "1.0.0",
+  "metadata": {
+    "title": "Six Points in Two Hands",
+    "description": "",
+    "date": "2026-06-02T19:02",
+    "players": [
+      "Florida",
+      "24wil",
+      "Brownsbacke®07",
+      "Orde® Me Up"
+    ],
+    "initialScore": [
+      4,
+      9
+    ],
+    "ruleset": {
+      "std": true,
+      "canadian": false,
+      "loner_lead": "LEFT_OF_DEALER"
+    }
+  },
+  "deals": [
+    {
+      "dealNumber": 0,
+      "initialState": {
+        "dealer": 0,
+        "upCard": "Ks",
+        "kitty": []
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Pass",
+            "Pass",
+            "Pass",
+            "Pass",
+            "h"
+          ],
+          "isAlone": true
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 1,
+          "tricks": [
+            [
+              "9s",
+              "As",
+              "Js"
+            ],
+            [
+              "Jh",
+              "Ah",
+              "9h"
+            ],
+            [
+              "Jd",
+              "Kh",
+              "Qh"
+            ],
+            [
+              "Th",
+              "9d",
+              "Ts"
+            ],
+            [
+              "Qs",
+              "Tc",
+              "Jc"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "dealNumber": 1,
+      "initialState": {
+        "dealer": 1,
+        "upCard": "Qd",
+        "kitty": []
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Order"
+          ],
+          "isAlone": false
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 2,
+          "tricks": [
+            [
+              "Jd",
+              "Ts",
+              "Jh",
+              "9d"
+            ],
+            [
+              "Ad",
+              "Jc",
+              "Tc",
+              "Qd"
+            ],
+            [
+              "Kd",
+              "Kh",
+              "Qc",
+              "Kc"
+            ],
+            [
+              "As",
+              "Ah",
+              "Js",
+              "9h"
+            ],
+            [
+              "9s",
+              "Ac",
+              "Ks",
+              "Qh"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

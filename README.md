@@ -16,7 +16,7 @@ An `.egn` file purposefully strips out easily calculated metrics—such as trick
 1. **The initial environment** (Who the dealer is and what card is turned up).
 2. **The bidding calls** (Sequential decisions mapped clockwise from the dealer's left).
 3. **The chronological play stream** (An array-of-arrays mapping card drops exactly as they hit the table).
-4. **Phase Interrupts** (Optional infrastructure to log mid-hand infractions like renegs or misdeals).
+4. **Annotations** (Optional infrastructure to log mid-hand annotations for commentary or events like renegs or misdeals).
 
 ---
 

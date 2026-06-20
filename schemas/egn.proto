@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package egn;
+
+import "egn-common.proto";
+
+message EgnFile {
+  string file_type = 1; // Constant: "Euchre Game Notation"
+  string version = 2;
+  Metadata metadata = 3;
+  repeated string deals = 4; // Array of Base64/Base64URL encoded condensed representation of the deals
+}

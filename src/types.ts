@@ -45,13 +45,7 @@ export interface CardExchange {
   cards: Card[];
 }
 
-export interface Annotations {
-  "1"?: string;
-  "2"?: string;
-  "3"?: string;
-  "4"?: string;
-  "5"?: string;
-}
+export type Annotations = Record<number, string[]>;
 
 export interface BiddingPhase {
   phaseNumber: number;
@@ -73,15 +67,22 @@ export interface TrickPlayPhase {
 
 export type Phase = BiddingPhase | TrickPlayPhase;
 
+export interface AlternativeLine {
+  branchIndex: number;
+  biddingPhase?: BiddingPhase;
+  trickPlayPhase?: TrickPlayPhase;
+}
+
 export interface Deal {
   dealNumber: number;
   initialState: InitialState;
   phases: Phase[];
+  alternativeLines?: AlternativeLine[];
 }
 
 export interface EGNFile {
   fileType: "Euchre Game Notation";
   version: string;
   metadata: Metadata;
-  deals: Deal[];
+  deals: (Deal | string)[];
 }

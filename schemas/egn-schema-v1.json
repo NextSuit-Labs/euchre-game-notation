@@ -60,39 +60,51 @@
     "deals": {
       "type": "array",
       "items": {
-        "type": "object",
-        "properties": {
-          "dealNumber": { "type": "integer", "minimum": 0 },
-          "initialState": {
+        "oneOf": [
+          {
             "type": "object",
             "properties": {
-              "dealer": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 3
+              "dealNumber": { "type": "integer", "minimum": 0 },
+              "initialState": {
+                "type": "object",
+                "properties": {
+                  "dealer": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 3
+                  },
+                  "upCard": { "$ref": "#/definitions/card" },
+                  "kitty": { "$ref": "#/definitions/card_list" },
+                  "player_cards": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/card_list" }
+                  }
+                },
+                "required": ["dealer", "upCard"]
               },
-              "upCard": { "$ref": "#/definitions/card" },
-              "kitty": { "$ref": "#/definitions/card_list" },
-              "player_cards": {
+              "phases": {
                 "type": "array",
-                "items": { "$ref": "#/definitions/card_list" }
+                "minItems": 1,
+                "maxItems": 2,
+                "items": {
+                  "oneOf": [
+                    { "$ref": "#/definitions/biddingPhase" },
+                    { "$ref": "#/definitions/trickPlayPhase" }
+                  ]
+                }
+              },
+              "alternativeLines": {
+                "type": "array",
+                "items": { "$ref": "#/definitions/alternativeLine" }
               }
             },
-            "required": ["dealer", "upCard"]
+            "required": ["dealNumber", "initialState", "phases"]
           },
-          "phases": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 2,
-            "items": {
-              "oneOf": [
-                { "$ref": "#/definitions/biddingPhase" },
-                { "$ref": "#/definitions/trickPlayPhase" }
-              ]
-            }
+          {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9+/_-]*={0,2}$"
           }
-        },
-        "required": ["dealNumber", "initialState", "phases"]
+        ]
       }
     }
   },
@@ -155,14 +167,23 @@
         "tricks_annotations": { "$ref": "#/definitions/annotations" }
       }
     },
+    "alternativeLine": {
+      "type": "object",
+      "required": ["branchIndex"],
+      "properties": {
+        "branchIndex": { "type": "integer", "minimum": 0 },
+        "biddingPhase": { "$ref": "#/definitions/biddingPhase" },
+        "trickPlayPhase": { "$ref": "#/definitions/trickPlayPhase" }
+      }
+    },
     "annotations": {
       "type": "object",
-      "properties": {
-        "1": { "type": "string" },
-        "2": { "type": "string" },
-        "3": { "type": "string" },
-        "4": { "type": "string" },
-        "5": { "type": "string" }
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "propertyNames": {
+        "pattern": "^[0-9]+$"
       }
     }
   }
