@@ -4,13 +4,25 @@
   "description": "Euchre Game Notation (EGN) file format specification, JSON schemas, and TypeScript utilities.",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
+  "bin": {
+    "egn-convert": "./dist/src/cli.js"
+  },
   "files": [
     "dist",
     "schemas"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bkt421/euchre-game-notation.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bkt421/euchre-game-notation/issues"
+  },
+  "homepage": "https://github.com/bkt421/euchre-game-notation#readme",
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [
     "euchre",

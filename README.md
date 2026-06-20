@@ -156,3 +156,43 @@ When implementing or parsing EGN, keep the following details in mind:
 ## ⏱️ Partial Games
 
 This format can be used to denote partial games by indicating the initial score in the metadata section and only including the actions up to the point you want to highlight in the game.
+
+---
+
+## 🛠️ CLI Utility (`egn-convert`)
+
+The package includes a command-line tool `egn-convert` to convert between human-readable JSON (`.egn`) files and optimized binary Protobuf (`.bin`) representations.
+
+### Installation
+
+Install the package globally using npm:
+
+```bash
+npm install -g euchre-game-notation
+```
+
+Or run it directly using `npx`:
+
+```bash
+npx egn-convert --help
+```
+
+### Usage
+
+Convert a JSON EGN file to an optimized condensed binary file:
+
+```bash
+egn-convert match.egn match.condensed.bin
+```
+
+Convert a JSON EGN file to an expanded binary file:
+
+```bash
+egn-convert match.egn match.expanded.bin --expanded
+```
+
+Convert a binary file back to a JSON EGN file:
+
+```bash
+egn-convert match.condensed.bin match.egn
+```
