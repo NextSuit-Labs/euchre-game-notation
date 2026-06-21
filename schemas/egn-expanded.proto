@@ -56,8 +56,7 @@ message Phase {
 
 message AlternativeLine {
   optional int32 branch_index = 1;
-  optional BiddingPhase bidding_phase = 2;
-  optional TrickPlayPhase trick_play_phase = 3;
+  repeated Phase phases = 2;
 }
 
 message Deal {

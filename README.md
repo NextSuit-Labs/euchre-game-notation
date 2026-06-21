@@ -55,7 +55,10 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
           "type": "EUCHRE_BIDDING",
           "calls": ["Pass", "Pass", "Pass", "Order"],
           "isAlone": false,
-          "discard": "9s"
+          "discard": "9s",
+          "calls_annotations": {
+            "3": ["Strong order by Dealer"]
+          }
         },
         {
           "phaseNumber": 1,
@@ -67,6 +70,23 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
             ["Jd", "9d", "Ad", "Kd"],
             ["Jh", "Td", "Ks", "Ts"],
             ["Qc", "Qs", "Js", "Jc"]
+          ],
+          "tricks_annotations": {
+            "1": ["Mistake here by Seat 2."]
+          }
+        }
+      ],
+      "alternativeLines": [
+        {
+          "branchIndex": 0,
+          "phases": [
+            {
+              "phaseNumber": 0,
+              "type": "EUCHRE_BIDDING",
+              "calls": ["Pass", "Pass", "Pass", "Pass", "Pass", "s"],
+              "isAlone": true,
+              "discard": "9s"
+            }
           ]
         }
       ]
@@ -152,6 +172,8 @@ When implementing or parsing EGN, keep the following details in mind:
 
 1. **Unknown/Hidden Information (`discard` and `kitty`)**: Depending on how the match data was recorded (e.g., manually transcribed from a live stream vs. exported from a fully observable digital game engine), the dealer's `discard` and the unplayed `kitty` cards might not be known. These properties are optional in the specification and can be omitted if the data is unavailable.
 2. **Trick Order and Lead Determination**: The `tricks` array records cards strictly in the chronological order they were dropped on the table. It does not explicitly state which player led each trick. Instead, the lead for the very first trick can be defaulted to the player to the left of the dealer or can be indicated by the `initialLead` property. For all subsequent tricks, the lead is implicitly determined by calculating the winner of the prior trick using standard Euchre rules. This aligns with EGN's philosophy of deterministic minimalism.
+3. **Annotations**: Optional commentary infrastructure for bidding or trick play. Annotations are defined under `calls_annotations` (for bidding phases) and `tricks_annotations` (for trick play phases) as a map from a decision/trick index to an array of strings (e.g., `{"3": ["Order Up on Jacks", "Maker went alone"]}`).
+4. **Alternative Lines (Branching)**: Analysis networks or theoretical branching plays can be specified via the optional `alternativeLines` array on any deal. Each alternative line contains a `branchIndex` (a 0-based decision index representing the point of deviation from the main game flow) and a `phases` list containing alternative Bidding or TrickPlay phases representing the sequence of alternate actions.
 
 ## ⏱️ Partial Games
 

@@ -51,8 +51,6 @@ const protoToJsonKeyMap: Record<string, string> = {
   is_alone: "isAlone",
   initial_lead: "initialLead",
   branch_index: "branchIndex",
-  bidding_phase: "biddingPhase",
-  trick_play_phase: "trickPlayPhase",
   alternative_lines: "alternativeLines",
 };
 
@@ -67,8 +65,6 @@ const jsonToProtoKeyMap: Record<string, string> = {
   isAlone: "is_alone",
   initialLead: "initial_lead",
   branchIndex: "branch_index",
-  biddingPhase: "bidding_phase",
-  trickPlayPhase: "trick_play_phase",
   alternativeLines: "alternative_lines",
 };
 
@@ -111,21 +107,6 @@ function mapProtoToEgn(protoObj: any): any {
           }
           return mapProtoToEgn(p);
         });
-        continue;
-      }
-
-      // Handle alternativeLines phase type injection
-      if (key === "bidding_phase" && typeof val === "object" && val !== null) {
-        const mappedVal = mapProtoToEgn(val);
-        mappedVal.type = "EUCHRE_BIDDING";
-        res[mappedKey] = mappedVal;
-        continue;
-      }
-
-      if (key === "trick_play_phase" && typeof val === "object" && val !== null) {
-        const mappedVal = mapProtoToEgn(val);
-        mappedVal.type = "TRICK_PLAY";
-        res[mappedKey] = mappedVal;
         continue;
       }
 
@@ -198,14 +179,6 @@ function mapEgnToProto(jsonObj: any, condensed: boolean): any {
           }
           return mappedPhase;
         });
-        continue;
-      }
-
-      // Handle alternativeLines phase type deletion
-      if ((key === "biddingPhase" || key === "trickPlayPhase") && typeof val === "object" && val !== null) {
-        const mappedVal = mapEgnToProto(val, condensed);
-        delete mappedVal.type;
-        res[mappedKey] = mappedVal;
         continue;
       }
 

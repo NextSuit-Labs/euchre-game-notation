@@ -21,9 +21,7 @@
         "players": {
           "type": "array",
           "items": { "type": "string" },
-          "minItems": 1,
-          "maxItems": 4,
-          "description": "Array of 1 to 4 player names, starting with Player 0 and proceeding clockwise."
+          "description": "Array of player names, starting with Player 0 and proceeding clockwise."
         },
         "initialScore": {
           "type": "array",
@@ -169,11 +167,19 @@
     },
     "alternativeLine": {
       "type": "object",
-      "required": ["branchIndex"],
+      "required": ["branchIndex", "phases"],
       "properties": {
         "branchIndex": { "type": "integer", "minimum": 0 },
-        "biddingPhase": { "$ref": "#/definitions/biddingPhase" },
-        "trickPlayPhase": { "$ref": "#/definitions/trickPlayPhase" }
+        "phases": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              { "$ref": "#/definitions/biddingPhase" },
+              { "$ref": "#/definitions/trickPlayPhase" }
+            ]
+          }
+        }
       }
     },
     "annotations": {

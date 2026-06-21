@@ -26,7 +26,7 @@ export interface Metadata {
   matchId?: string;
   title?: string;
   description?: string;
-  players: [string] | [string, string] | [string, string, string] | [string, string, string, string];
+  players: string[];
   initialScore: [number, number];
   date?: string;
   ruleset?: Ruleset;
@@ -69,8 +69,7 @@ export type Phase = BiddingPhase | TrickPlayPhase;
 
 export interface AlternativeLine {
   branchIndex: number;
-  biddingPhase?: BiddingPhase;
-  trickPlayPhase?: TrickPlayPhase;
+  phases: Phase[];
 }
 
 export interface Deal {

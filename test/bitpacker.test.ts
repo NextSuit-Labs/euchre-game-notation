@@ -5,7 +5,7 @@ import {
   binaryStringToBase64Url, 
   base64UrlToBinaryString 
 } from "../src/bitpacker";
-import { Deal } from "../src/types";
+import { Deal, TrickPlayPhase } from "../src/types";
 
 describe("EGN Bitpacker Helpers", () => {
   it("should convert binary strings to base64url and back exactly", () => {
@@ -140,4 +140,80 @@ describe("packDeal and unpackDeal edge/error cases", () => {
     expect((unpacked.phases[0] as any).calls).toEqual(["Pass", "Pass", "Pass", "Pass", "Pass", "c"]);
     expect((unpacked.phases[0] as any).isAlone).toBe(false);
   });
+
+  it("should fail to unpack when there are not enough bits to read", () => {
+    // "A" decodes to less than 8 bits, so it will fail when reading upcard index
+    expect(() => unpackDeal("A")).toThrow("Not enough bits to read");
+  });
+
+  it("should handle alone player trick sizes (3 cards per trick) in play phase", () => {
+    const deal: Deal = {
+      dealNumber: 3,
+      initialState: {
+        dealer: 3,
+        upCard: "Jd",
+      },
+      phases: [
+        {
+          phaseNumber: 0,
+          type: "EUCHRE_BIDDING",
+          calls: ["Pass", "Order"],
+          isAlone: true
+        },
+        {
+          phaseNumber: 1,
+          type: "TRICK_PLAY",
+          tricks: [
+            ["Ac", "Tc", "9c"],
+            ["Ah", "Kh", "Th"]
+          ]
+        }
+      ]
+    };
+
+    const packed = packDeal(deal);
+    const unpacked = unpackDeal(packed, 3);
+
+    expect(unpacked.phases.length).toBe(2);
+    expect(unpacked.phases[0].type).toBe("EUCHRE_BIDDING");
+    expect((unpacked.phases[0] as any).isAlone).toBe(true);
+
+    expect(unpacked.phases[1].type).toBe("TRICK_PLAY");
+    const playPhase = unpacked.phases[1] as TrickPlayPhase;
+    expect(playPhase.tricks.length).toBe(2);
+    expect(playPhase.tricks[0].length).toBe(3);
+    expect(playPhase.tricks[0]).toEqual(["Ac", "Tc", "9c"]);
+  });
+
+  it("should throw error if duplicate cards are played in tricks", () => {
+    const invalidDeal: Deal = {
+      dealNumber: 0,
+      initialState: {
+        dealer: 0,
+        upCard: "Jd",
+      },
+      phases: [
+        {
+          phaseNumber: 0,
+          type: "EUCHRE_BIDDING",
+          calls: ["Pass"],
+          isAlone: false
+        },
+        {
+          phaseNumber: 1,
+          type: "TRICK_PLAY",
+          tricks: [
+            ["Ac", "Ac", "Tc", "Kc"]
+          ]
+        }
+      ]
+    };
+    expect(() => packDeal(invalidDeal)).toThrow("not found in remaining cards");
+  });
+
+  it("should handle binary conversion of empty inputs correctly", () => {
+    expect(binaryStringToBase64Url("")).toBe("");
+    expect(base64UrlToBinaryString("")).toBe("");
+  });
 });
+

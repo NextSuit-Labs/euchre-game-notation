@@ -58,24 +58,28 @@ const validMockData = {
       "alternativeLines": [
         {
           "branchIndex": 0,
-          "biddingPhase": {
-            "phaseNumber": 0,
-            "type": "EUCHRE_BIDDING",
-            "calls": ["Pass", "Pass", "Pass", "Pass", "Pass", "s"],
-            "isAlone": true,
-            "discard": "9s"
-          }
+          "phases": [
+            {
+              "phaseNumber": 0,
+              "type": "EUCHRE_BIDDING",
+              "calls": ["Pass", "Pass", "Pass", "Pass", "Pass", "s"],
+              "isAlone": true,
+              "discard": "9s"
+            }
+          ]
         },
         {
           "branchIndex": 1,
-          "trickPlayPhase": {
-            "phaseNumber": 1,
-            "type": "TRICK_PLAY",
-            "initialLead": 1,
-            "tricks": [
-              ["Tc", "9c", "Kc", "Ac"]
-            ]
-          }
+          "phases": [
+            {
+              "phaseNumber": 1,
+              "type": "TRICK_PLAY",
+              "initialLead": 1,
+              "tricks": [
+                ["Tc", "9c", "Kc", "Ac"]
+              ]
+            }
+          ]
         }
       ]
     }
@@ -152,6 +156,148 @@ describe("EGN Validator", () => {
     const result = validateEGN(base64DealsData);
     expect(result.isValid).toBe(true);
     expect(result.errors).toBeFalsy();
+  });
+
+  function cloneMock(): any {
+    return JSON.parse(JSON.stringify(validMockData));
+  }
+
+  it("should validate players array of any size", () => {
+    // 0 players
+    const data0 = cloneMock();
+    data0.metadata.players = [];
+    expect(validateEGN(data0).isValid).toBe(true);
+
+    // 2 players
+    const data2 = cloneMock();
+    data2.metadata.players = ["P0", "P1"];
+    expect(validateEGN(data2).isValid).toBe(true);
+
+    // 5 players
+    const data5 = cloneMock();
+    data5.metadata.players = ["P0", "P1", "P2", "P3", "P4"];
+    expect(validateEGN(data5).isValid).toBe(true);
+
+    // non-string elements should fail
+    const dataBad = cloneMock();
+    dataBad.metadata.players = ["P0", 123];
+    expect(validateEGN(dataBad).isValid).toBe(false);
+  });
+
+  it("should validate root-level properties", () => {
+    // Missing fileType
+    const m1 = cloneMock();
+    delete m1.fileType;
+    expect(validateEGN(m1).isValid).toBe(false);
+
+    // Wrong fileType
+    const m2 = cloneMock();
+    m2.fileType = "Hearts Game Notation";
+    expect(validateEGN(m2).isValid).toBe(false);
+
+    // Missing version
+    const m3 = cloneMock();
+    delete m3.version;
+    expect(validateEGN(m3).isValid).toBe(false);
+
+    // Invalid version format
+    const m4 = cloneMock();
+    m4.version = "1.0";
+    expect(validateEGN(m4).isValid).toBe(false);
+
+    m4.version = "1.0.a";
+    expect(validateEGN(m4).isValid).toBe(false);
+  });
+
+  it("should validate metadata properties", () => {
+    // Missing players
+    const m1 = cloneMock();
+    delete m1.metadata.players;
+    expect(validateEGN(m1).isValid).toBe(false);
+
+    // Missing initialScore
+    const m2 = cloneMock();
+    delete m2.metadata.initialScore;
+    expect(validateEGN(m2).isValid).toBe(false);
+
+    // initialScore size != 2
+    const m3 = cloneMock();
+    m3.metadata.initialScore = [1];
+    expect(validateEGN(m3).isValid).toBe(false);
+
+    m3.metadata.initialScore = [1, 2, 3];
+    expect(validateEGN(m3).isValid).toBe(false);
+
+    // initialScore contains non-integers
+    const m4 = cloneMock();
+    m4.metadata.initialScore = [1.5, 2];
+    expect(validateEGN(m4).isValid).toBe(false);
+
+    // invalid ruleset properties
+    const m5 = cloneMock();
+    m5.metadata.ruleset.std = "true"; // string instead of boolean
+    expect(validateEGN(m5).isValid).toBe(false);
+
+    const m6 = cloneMock();
+    m6.metadata.ruleset.loner_lead = "LEFT_OF_PARTNER"; // not in enum
+    expect(validateEGN(m6).isValid).toBe(false);
+  });
+
+  it("should validate deal properties and phases", () => {
+    // negative dealNumber
+    const m1 = cloneMock();
+    m1.deals[0].dealNumber = -1;
+    expect(validateEGN(m1).isValid).toBe(false);
+
+    // dealer out of range
+    const m2 = cloneMock();
+    m2.deals[0].initialState.dealer = 4;
+    expect(validateEGN(m2).isValid).toBe(false);
+
+    // malformed upCard
+    const m3 = cloneMock();
+    m3.deals[0].initialState.upCard = "invalid";
+    expect(validateEGN(m3).isValid).toBe(false);
+
+    m3.deals[0].initialState.upCard = "9z";
+    expect(validateEGN(m3).isValid).toBe(false);
+
+    // bidding phase: invalid call
+    const m4 = cloneMock();
+    m4.deals[0].phases[0].calls = ["Pass", "Order", "InvalidCall"];
+    expect(validateEGN(m4).isValid).toBe(false);
+
+    // bidding phase: calls length > 8
+    const m5 = cloneMock();
+    m5.deals[0].phases[0].calls = ["Pass", "Pass", "Pass", "Pass", "Pass", "Pass", "Pass", "Pass", "Pass"];
+    expect(validateEGN(m5).isValid).toBe(false);
+
+    // trick play: tricks with invalid cards
+    const m6 = cloneMock();
+    m6.deals[0].phases[1].tricks[0] = ["Ac", "Tc", "9z", "Kc"];
+    expect(validateEGN(m6).isValid).toBe(false);
+
+    // trick play: initialLead out of range
+    const m7 = cloneMock();
+    m7.deals[0].phases[1].initialLead = 5;
+    expect(validateEGN(m7).isValid).toBe(false);
+  });
+
+  it("should validate alternative lines and annotations", () => {
+    // negative branchIndex in alternative lines
+    const m1 = cloneMock();
+    m1.deals[0].alternativeLines[0].branchIndex = -1;
+    expect(validateEGN(m1).isValid).toBe(false);
+
+    // annotations with non-numeric key
+    const m2 = cloneMock();
+    m2.deals[0].phases[0].calls_annotations["abc"] = ["annotation text"];
+    expect(validateEGN(m2).isValid).toBe(false);
+
+    // annotations value not string array
+    const m3 = cloneMock();
+    m3.deals[0].phases[0].calls_annotations["2"] = "not-an-array";
+    expect(validateEGN(m3).isValid).toBe(false);
   });
 
   it("isEGNFile should work correctly as a type guard", () => {

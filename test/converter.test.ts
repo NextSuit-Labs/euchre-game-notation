@@ -93,4 +93,80 @@ describe("EGN Protobuf Converter Core", () => {
       }
     }
   });
+
+  it("should fail when converting a corrupted binary file to JSON", () => {
+    const tempDir = path.resolve(__dirname, "../temp_test_dir_corrupted");
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
+    }
+    const tempBinFilePath = path.join(tempDir, "corrupted.bin");
+    
+    // Write trash bytes
+    fs.writeFileSync(tempBinFilePath, Buffer.from([0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc]));
+    
+    try {
+      expect(() => {
+        convertBinToEgnJson(tempBinFilePath);
+      }).toThrow();
+    } finally {
+      if (fs.existsSync(tempBinFilePath)) {
+        fs.unlinkSync(tempBinFilePath);
+      }
+      if (fs.existsSync(tempDir)) {
+        fs.rmdirSync(tempDir);
+      }
+    }
+  });
+
+  it("should successfully roundtrip non-default ruleset configurations", () => {
+    const tempDir = path.resolve(__dirname, "../temp_test_dir_rules");
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
+    }
+    const tempBinFilePath = path.join(tempDir, "rules.bin");
+
+    const rulesData = {
+      fileType: "Euchre Game Notation",
+      version: "1.0.0",
+      metadata: {
+        players: ["P0", "P1", "P2", "P3"],
+        initialScore: [4, 5],
+        ruleset: {
+          std: false,
+          min_rank: 7,
+          winning_score: 15,
+          canadian: true,
+          loner_lead: "LEFT_OF_LONER",
+          farmers: true,
+          partners_best: true,
+          go_under: true,
+          joker: true,
+          allow_no_trump: true,
+          fast_break: true,
+          four_trick_tokens: true
+        }
+      },
+      deals: []
+    };
+
+    try {
+      const jsonStr = JSON.stringify(rulesData);
+      
+      // Test expanded mode roundtrip for all rules
+      convertEgnJsonToBin(jsonStr, tempBinFilePath, false);
+      const decodedJsonStr = convertBinToEgnJson(tempBinFilePath, false);
+      const decodedObj = JSON.parse(decodedJsonStr);
+
+      expect(decodedObj.metadata.ruleset).toEqual(rulesData.metadata.ruleset);
+      expect(decodedObj.metadata.initialScore).toEqual(rulesData.metadata.initialScore);
+    } finally {
+      if (fs.existsSync(tempBinFilePath)) {
+        fs.unlinkSync(tempBinFilePath);
+      }
+      if (fs.existsSync(tempDir)) {
+        fs.rmdirSync(tempDir);
+      }
+    }
+  });
 });
+
