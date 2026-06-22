@@ -5,6 +5,42 @@ import * as fs from "fs";
 
 const cliPath = path.resolve(__dirname, "../dist/src/cli.js");
 
+function deleteFileSync(filePath: string) {
+  if (!fs.existsSync(filePath)) return;
+  for (let i = 0; i < 5; i++) {
+    try {
+      fs.unlinkSync(filePath);
+      return;
+    } catch (err: any) {
+      if (err.code === "EBUSY" || err.code === "EPERM") {
+        // Wait 50ms synchronously
+        const end = Date.now() + 50;
+        while (Date.now() < end) {}
+      } else {
+        throw err;
+      }
+    }
+  }
+}
+
+function removeDirSync(dirPath: string) {
+  if (!fs.existsSync(dirPath)) return;
+  for (let i = 0; i < 5; i++) {
+    try {
+      fs.rmdirSync(dirPath);
+      return;
+    } catch (err: any) {
+      if (err.code === "EBUSY" || err.code === "ENOTEMPTY" || err.code === "EPERM") {
+        // Wait 50ms synchronously
+        const end = Date.now() + 50;
+        while (Date.now() < end) {}
+      } else {
+        throw err;
+      }
+    }
+  }
+}
+
 const validMockData = {
   "fileType": "Euchre Game Notation",
   "version": "1.0.0",
@@ -100,11 +136,10 @@ describe("EGN Converter CLI", () => {
       expect(finalJson.version).toBe(validMockData.version);
       expect(finalJson.deals.length).toBe(1);
     } finally {
-      // Clean up
-      if (fs.existsSync(inputJsonPath)) fs.unlinkSync(inputJsonPath);
-      if (fs.existsSync(outputBinPath)) fs.unlinkSync(outputBinPath);
-      if (fs.existsSync(outputJsonPath)) fs.unlinkSync(outputJsonPath);
-      if (fs.existsSync(tempDir)) fs.rmdirSync(tempDir);
+      deleteFileSync(inputJsonPath);
+      deleteFileSync(outputBinPath);
+      deleteFileSync(outputJsonPath);
+      removeDirSync(tempDir);
     }
   });
 
@@ -136,11 +171,68 @@ describe("EGN Converter CLI", () => {
       expect(finalJson.fileType).toBe(validMockData.fileType);
       expect(finalJson.metadata.players).toEqual(validMockData.metadata.players);
     } finally {
-      // Clean up
-      if (fs.existsSync(inputJsonPath)) fs.unlinkSync(inputJsonPath);
-      if (fs.existsSync(outputBinPath)) fs.unlinkSync(outputBinPath);
-      if (fs.existsSync(outputJsonPath)) fs.unlinkSync(outputJsonPath);
-      if (fs.existsSync(tempDir)) fs.rmdirSync(tempDir);
+      deleteFileSync(inputJsonPath);
+      deleteFileSync(outputBinPath);
+      deleteFileSync(outputJsonPath);
+      removeDirSync(tempDir);
     }
+  });
+
+  it("should fail and exit with code 1 when input JSON is malformed", () => {
+    const tempDir = path.resolve(__dirname, "../temp_cli_test_malformed");
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
+    }
+    const inputJsonPath = path.join(tempDir, "input_malformed.egn");
+    const outputBinPath = path.join(tempDir, "output_malformed.bin");
+
+    // Write malformed JSON string (missing closing bracket/brace)
+    fs.writeFileSync(inputJsonPath, '{"fileType": "Euchre Game Notation"', "utf8");
+
+    let threw = false;
+    let errOutput = "";
+    try {
+      execSync(`node "${cliPath}" "${inputJsonPath}" "${outputBinPath}"`, { stdio: "pipe" });
+    } catch (err: any) {
+      threw = true;
+      expect(err.status).toBe(1);
+      errOutput = err.stderr.toString();
+    } finally {
+      deleteFileSync(inputJsonPath);
+      deleteFileSync(outputBinPath);
+      removeDirSync(tempDir);
+    }
+
+    expect(threw).toBe(true);
+    expect(errOutput).toContain("Error during conversion:");
+  });
+
+  it("should fail and exit with code 1 when input binary is corrupted", () => {
+    const tempDir = path.resolve(__dirname, "../temp_cli_test_corrupted");
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
+    }
+    const inputBinPath = path.join(tempDir, "input_corrupted.bin");
+    const outputJsonPath = path.join(tempDir, "output_corrupted.egn");
+
+    // Write garbage bytes
+    fs.writeFileSync(inputBinPath, Buffer.from([0x00, 0x11, 0x22, 0x33, 0xff]));
+
+    let threw = false;
+    let errOutput = "";
+    try {
+      execSync(`node "${cliPath}" "${inputBinPath}" "${outputJsonPath}"`, { stdio: "pipe" });
+    } catch (err: any) {
+      threw = true;
+      expect(err.status).toBe(1);
+      errOutput = err.stderr.toString();
+    } finally {
+      deleteFileSync(inputBinPath);
+      deleteFileSync(outputJsonPath);
+      removeDirSync(tempDir);
+    }
+
+    expect(threw).toBe(true);
+    expect(errOutput).toContain("Error during conversion:");
   });
 });

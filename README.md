@@ -1,5 +1,3 @@
-Here is a complete, production-ready README.md for your public repository, fully updated to the EGN (Euchre Game Notation) standard under the Apache 2.0 License.
-
 # Euchre Game Notation (EGN) Specification
 
 **Euchre Game Notation (.egn)** is an open-source, platform-agnostic file format specification designed to capture the complete chronological flow of a competitive Euchre match. 
@@ -174,6 +172,25 @@ When implementing or parsing EGN, keep the following details in mind:
 2. **Trick Order and Lead Determination**: The `tricks` array records cards strictly in the chronological order they were dropped on the table. It does not explicitly state which player led each trick. Instead, the lead for the very first trick can be defaulted to the player to the left of the dealer or can be indicated by the `initialLead` property. For all subsequent tricks, the lead is implicitly determined by calculating the winner of the prior trick using standard Euchre rules. This aligns with EGN's philosophy of deterministic minimalism.
 3. **Annotations**: Optional commentary infrastructure for bidding or trick play. Annotations are defined under `calls_annotations` (for bidding phases) and `tricks_annotations` (for trick play phases) as a map from a decision/trick index to an array of strings (e.g., `{"3": ["Order Up on Jacks", "Maker went alone"]}`).
 4. **Alternative Lines (Branching)**: Analysis networks or theoretical branching plays can be specified via the optional `alternativeLines` array on any deal. Each alternative line contains a `branchIndex` (a 0-based decision index representing the point of deviation from the main game flow) and a `phases` list containing alternative Bidding or TrickPlay phases representing the sequence of alternate actions.
+5. **Flexible Metadata Fields**:
+   * **Player Count**: The `players` array supports any number of player names (instead of being strictly restricted to a size of 4) to accommodate different gameplay variants or incomplete logs.
+   * **Flexible Date Formats**: The `date` property supports ISO-8601 date-time strings either with a timezone offset (e.g., `2026-05-17T19:00:00Z` or `+05:30`) or in local timezone-less formats (e.g., `2026-05-30T03:51` or `2026-06-02 19:02`).
+
+---
+
+## 💾 Binary Serialization (Condensed vs. Expanded)
+
+EGN supports two binary serialization modes for storage optimization. For detailed layout details, see the [Condensed Binary Format Specification](file:///c:/Users/Rob/OneDrive/Desktop/Desktop%202/Rob/Coding%20Projects/EuchreGameNotation/euchre-game-notation/docs/binary-format.md).
+
+### ⚡ Condensed Mode (Default)
+In condensed mode, the `deals` list is replaced by an array of Base64URL-encoded bitpacked strings. 
+* **Version 1 (`0001`)**: The bitstream starts with a 4-bit version header (`0001`). It packs the dealer index (2 bits), up-card, bidding calls, played cards, and directly encodes both **commentary annotations** and **alternative branching lines** into the bitstream, concluding with an explicit ending marker (`1010`) to separate the payload from padding zeros.
+* **Backward Compatibility**: Fully compatible with legacy Version 0 bitpacked streams (which lack the version header, annotations, and alternative lines). The parser automatically falls back to Version 0 decoding if the `0001` header is not present.
+
+### 🔍 Expanded Mode
+In expanded mode, the entire EGN JSON structure (including metadata, annotations, and alternative lines) is serialized directly into binary using Protobuf.
+
+---
 
 ## ⏱️ Partial Games
 

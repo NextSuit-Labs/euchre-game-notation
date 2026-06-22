@@ -32,7 +32,10 @@
         },
         "date": {
           "type": "string",
-          "format": "date-time",
+          "anyOf": [
+            { "format": "date-time" },
+            { "pattern": "^\\d{4}-\\d{2}-\\d{2}[T ]\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?$" }
+          ],
           "description": "Date and time when the game was played."
         },
         "ruleset": {

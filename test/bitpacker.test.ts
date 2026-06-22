@@ -1,18 +1,18 @@
 import { describe, it, expect } from "@jest/globals";
-import { 
-  packDeal, 
-  unpackDeal, 
-  binaryStringToBase64Url, 
-  base64UrlToBinaryString 
+import {
+  packDeal,
+  unpackDeal,
+  binaryStringToBase64Url,
+  base64UrlToBinaryString
 } from "../src/bitpacker";
-import { Deal, TrickPlayPhase } from "../src/types";
+import { BiddingPhase, Deal, TrickPlayPhase } from "../src/types";
 
 describe("EGN Bitpacker Helpers", () => {
   it("should convert binary strings to base64url and back exactly", () => {
     const binary = "10101010111100001100110000110011";
     const b64 = binaryStringToBase64Url(binary);
     const roundtrip = base64UrlToBinaryString(b64);
-    
+
     // Since binaryStringToBase64Url pads with 0s to byte boundaries,
     // we check that the original binary is a prefix of the roundtripped binary
     expect(roundtrip.startsWith(binary)).toBe(true);
@@ -52,7 +52,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
         }
       ]
     };
-    
+
     expect(() => packDeal(invalidDeal)).toThrow("not found in remaining cards");
   });
 
@@ -66,7 +66,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
       },
       phases: []
     };
-    
+
     expect(() => packDeal(invalidDeal)).toThrow("not found in remaining cards");
   });
 
@@ -81,7 +81,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
     };
     const packed = packDeal(deal);
     const unpacked = unpackDeal(packed, 5);
-    
+
     expect(unpacked.dealNumber).toBe(5);
     expect(unpacked.initialState.dealer).toBe(1);
     expect(unpacked.initialState.upCard).toBe("Ah");
@@ -106,7 +106,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
     };
     const packed = packDeal(deal);
     const unpacked = unpackDeal(packed, 2);
-    
+
     expect(unpacked.dealNumber).toBe(2);
     expect(unpacked.initialState.dealer).toBe(2);
     expect(unpacked.initialState.upCard).toBe("Ts");
@@ -135,7 +135,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
     };
     const packed = packDeal(deal);
     const unpacked = unpackDeal(packed, 1);
-    
+
     expect(unpacked.phases.length).toBe(1);
     expect((unpacked.phases[0] as any).calls).toEqual(["Pass", "Pass", "Pass", "Pass", "Pass", "c"]);
     expect((unpacked.phases[0] as any).isAlone).toBe(false);
@@ -214,6 +214,214 @@ describe("packDeal and unpackDeal edge/error cases", () => {
   it("should handle binary conversion of empty inputs correctly", () => {
     expect(binaryStringToBase64Url("")).toBe("");
     expect(base64UrlToBinaryString("")).toBe("");
+  });
+
+  it("should successfully roundtrip alternative lines and annotations in V1", () => {
+    const complexDeal: Deal = {
+      dealNumber: 4,
+      initialState: {
+        dealer: 1,
+        upCard: "Th",
+      },
+      phases: [
+        {
+          phaseNumber: 0,
+          type: "EUCHRE_BIDDING",
+          calls: ["Pass", "Pass", "Order"],
+          isAlone: false,
+          calls_annotations: {
+            2: ["Bidding annotation 1", "Bidding annotation 2"]
+          }
+        },
+        {
+          phaseNumber: 1,
+          type: "TRICK_PLAY",
+          tricks: [
+            ["Ac", "Tc", "9c", "Kc"]
+          ],
+          tricks_annotations: {
+            0: ["Play annotation"]
+          }
+        }
+      ],
+      alternativeLines: [
+        {
+          branchIndex: 1,
+          phases: [
+            {
+              phaseNumber: 1,
+              type: "TRICK_PLAY",
+              tricks: [
+                ["Ah", "Kh", "Qh", "Jh"]
+              ]
+            }
+          ]
+        }
+      ]
+    };
+
+    const packed = packDeal(complexDeal);
+    const unpacked = unpackDeal(packed, 4);
+
+    expect(unpacked.dealNumber).toBe(4);
+    expect(unpacked.initialState.dealer).toBe(1);
+    expect(unpacked.initialState.upCard).toBe("Th");
+
+    // Verify main line annotations
+    const biddingPhase = unpacked.phases[0] as BiddingPhase;
+    expect(biddingPhase.calls_annotations).toBeDefined();
+    expect(biddingPhase.calls_annotations![2]).toEqual(["Bidding annotation 1", "Bidding annotation 2"]);
+
+    const playPhase = unpacked.phases[1] as TrickPlayPhase;
+    expect(playPhase.tricks_annotations).toBeDefined();
+    expect(playPhase.tricks_annotations![0]).toEqual(["Play annotation"]);
+
+    // Verify alternative line
+    expect(unpacked.alternativeLines).toBeDefined();
+    expect(unpacked.alternativeLines!.length).toBe(1);
+    expect(unpacked.alternativeLines![0].branchIndex).toBe(1);
+    expect(unpacked.alternativeLines![0].phases[0].type).toBe("TRICK_PLAY");
+    expect((unpacked.alternativeLines![0].phases[0] as TrickPlayPhase).tricks[0]).toEqual(["Ah", "Kh", "Qh", "Jh"]);
+  });
+
+  it("should successfully roundtrip multiple alternative lines and complex annotations at different branch indices", () => {
+    const complexDeal: Deal = {
+      dealNumber: 10,
+      initialState: {
+        dealer: 0,
+        upCard: "Jd",
+      },
+      phases: [
+        {
+          phaseNumber: 0,
+          type: "EUCHRE_BIDDING",
+          calls: ["Pass", "Pass", "Pass", "Pass", "Pass", "s"],
+          isAlone: false,
+          calls_annotations: {
+            0: ["First pass annotation"],
+            5: ["Maker calls suit annotation"]
+          }
+        },
+        {
+          phaseNumber: 1,
+          type: "TRICK_PLAY",
+          tricks: [
+            ["Ac", "Tc", "9c", "Kc"],
+            ["Ah", "Kh", "Th", "Qd"]
+          ],
+          tricks_annotations: {
+            0: ["Trick 1 annotation"],
+            1: ["Trick 2 annotation"]
+          }
+        }
+      ],
+      alternativeLines: [
+        {
+          branchIndex: 0,
+          phases: [
+            {
+              phaseNumber: 0,
+              type: "EUCHRE_BIDDING",
+              calls: ["Order"],
+              isAlone: true
+            }
+          ]
+        },
+        {
+          branchIndex: 10,
+          phases: [
+            {
+              phaseNumber: 1,
+              type: "TRICK_PLAY",
+              tricks: [
+                ["Ah", "9h", "Th", "Kh"]
+              ]
+            }
+          ]
+        }
+      ]
+    };
+
+    const packed = packDeal(complexDeal);
+    const unpacked = unpackDeal(packed, 10);
+
+    expect(unpacked.phases.length).toBe(2);
+    
+    // Verify main line annotations
+    const bPhase = unpacked.phases[0] as BiddingPhase;
+    expect(bPhase.calls_annotations!["0"]).toEqual(["First pass annotation"]);
+    expect(bPhase.calls_annotations!["5"]).toEqual(["Maker calls suit annotation"]);
+
+    const pPhase = unpacked.phases[1] as TrickPlayPhase;
+    expect(pPhase.tricks_annotations!["0"]).toEqual(["Trick 1 annotation"]);
+    expect(pPhase.tricks_annotations!["1"]).toEqual(["Trick 2 annotation"]);
+
+    // Verify alternative lines
+    expect(unpacked.alternativeLines!.length).toBe(2);
+    
+    // Alternative line 0
+    expect(unpacked.alternativeLines![0].branchIndex).toBe(0);
+    expect(unpacked.alternativeLines![0].phases[0].type).toBe("EUCHRE_BIDDING");
+    expect((unpacked.alternativeLines![0].phases[0] as BiddingPhase).calls).toEqual(["Order"]);
+
+    // Alternative line 1
+    expect(unpacked.alternativeLines![1].branchIndex).toBe(10);
+    expect(unpacked.alternativeLines![1].phases[0].type).toBe("TRICK_PLAY");
+    expect((unpacked.alternativeLines![1].phases[0] as TrickPlayPhase).tricks[0]).toEqual(["Ah", "9h", "Th", "Kh"]);
+  });
+
+  it("should successfully roundtrip alternative lines that branch mid-trick (non-standard first trick size)", () => {
+    const midTrickDeal: Deal = {
+      dealNumber: 4,
+      initialState: {
+        dealer: 2,
+        upCard: "Th",
+      },
+      phases: [
+        {
+          phaseNumber: 0,
+          type: "EUCHRE_BIDDING",
+          calls: ["Pass", "Pass", "Pass", "Pass", "Pass", "c"],
+          isAlone: false,
+        },
+        {
+          phaseNumber: 1,
+          type: "TRICK_PLAY",
+          tricks: [
+            ["Ad", "Tc", "Kc", "Td"],
+            ["Ah", "Qc", "Jc", "9h"],
+            ["Kd", "9d", "Qd", "9s"],
+            ["As", "Qs", "Js", "Ts"]
+          ],
+        }
+      ],
+      alternativeLines: [
+        {
+          branchIndex: 7, // 6 bidding calls + 1 card played (Ad) = 7
+          phases: [
+            {
+              phaseNumber: 0,
+              type: "TRICK_PLAY",
+              tricks: [
+                ["Ac", "Qs", "9h"], // 3 cards instead of 4
+                ["As", "Ks", "Ts", "9s"]
+              ]
+            }
+          ]
+        }
+      ]
+    };
+
+    const packed = packDeal(midTrickDeal);
+    const unpacked = unpackDeal(packed, 4);
+
+    expect(unpacked.alternativeLines).toBeDefined();
+    expect(unpacked.alternativeLines!.length).toBe(1);
+    expect(unpacked.alternativeLines![0].branchIndex).toBe(7);
+    
+    const altPhase = unpacked.alternativeLines![0].phases[0] as TrickPlayPhase;
+    expect(altPhase.tricks[0]).toEqual(["Ac", "Qs", "9h"]);
+    expect(altPhase.tricks[1]).toEqual(["As", "Ks", "Ts", "9s"]);
   });
 });
 

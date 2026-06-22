@@ -243,6 +243,43 @@ describe("EGN Validator", () => {
     expect(validateEGN(m6).isValid).toBe(false);
   });
 
+  it("should validate date property with or without timezone offset", () => {
+    // Valid date with timezone offset (Z)
+    const m1 = cloneMock();
+    m1.metadata.date = "2026-05-17T19:00:00Z";
+    expect(validateEGN(m1).isValid).toBe(true);
+
+    // Valid date with timezone offset (+05:30)
+    const m2 = cloneMock();
+    m2.metadata.date = "2026-05-17T19:00:00+05:30";
+    expect(validateEGN(m2).isValid).toBe(true);
+
+    // Valid date without timezone offset (T-separated)
+    const m3 = cloneMock();
+    m3.metadata.date = "2026-05-29T16:30";
+    expect(validateEGN(m3).isValid).toBe(true);
+
+    // Valid date without timezone offset (Space-separated)
+    const m4 = cloneMock();
+    m4.metadata.date = "2026-05-29 16:30:00";
+    expect(validateEGN(m4).isValid).toBe(true);
+
+    // Valid date without timezone offset and with subseconds
+    const m5 = cloneMock();
+    m5.metadata.date = "2026-05-29T16:30:00.123";
+    expect(validateEGN(m5).isValid).toBe(true);
+
+    // Invalid date format
+    const m6 = cloneMock();
+    m6.metadata.date = "not-a-date";
+    expect(validateEGN(m6).isValid).toBe(false);
+
+    // Invalid local date-time format (missing time)
+    const m7 = cloneMock();
+    m7.metadata.date = "2026-05-29";
+    expect(validateEGN(m7).isValid).toBe(false);
+  });
+
   it("should validate deal properties and phases", () => {
     // negative dealNumber
     const m1 = cloneMock();

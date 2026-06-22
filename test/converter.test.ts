@@ -168,5 +168,83 @@ describe("EGN Protobuf Converter Core", () => {
       }
     }
   });
+
+  it("should preserve annotations and alternative lines in condensed mode", () => {
+    const tempDir = path.resolve(__dirname, "../temp_test_dir_condensed_preservation");
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
+    }
+    const tempBinFilePath = path.join(tempDir, "condensed.bin");
+
+    const testData = {
+      fileType: "Euchre Game Notation",
+      version: "1.0.0",
+      metadata: {
+        players: ["P0", "P1", "P2", "P3"],
+        initialScore: [0, 0]
+      },
+      deals: [
+        {
+          dealNumber: 0,
+          initialState: {
+            dealer: 3,
+            upCard: "Jd",
+          },
+          phases: [
+            {
+              phaseNumber: 0,
+              type: "EUCHRE_BIDDING",
+              calls: ["Pass", "Pass", "Pass", "Order"],
+              isAlone: false,
+              calls_annotations: {
+                3: ["Annotation on order"]
+              }
+            }
+          ],
+          alternativeLines: [
+            {
+              branchIndex: 0,
+              phases: [
+                {
+                  phaseNumber: 0,
+                  type: "EUCHRE_BIDDING",
+                  calls: ["Pass", "Pass", "Pass", "Pass", "Pass", "s"],
+                  isAlone: true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+
+    try {
+      const jsonStr = JSON.stringify(testData);
+      
+      // Convert to condensed binary
+      convertEgnJsonToBin(jsonStr, tempBinFilePath, true);
+      
+      // Convert back to JSON
+      const backJsonStr = convertBinToEgnJson(tempBinFilePath, true);
+      const backObj = JSON.parse(backJsonStr);
+
+      // Verify they are preserved
+      const phase = backObj.deals[0].phases[0];
+      expect(phase.calls_annotations).toBeDefined();
+      expect(phase.calls_annotations["3"]).toEqual(["Annotation on order"]);
+
+      expect(backObj.deals[0].alternativeLines).toBeDefined();
+      expect(backObj.deals[0].alternativeLines.length).toBe(1);
+      expect(backObj.deals[0].alternativeLines[0].branchIndex).toBe(0);
+      expect(backObj.deals[0].alternativeLines[0].phases[0].calls).toEqual(["Pass", "Pass", "Pass", "Pass", "Pass", "s"]);
+    } finally {
+      if (fs.existsSync(tempBinFilePath)) {
+        fs.unlinkSync(tempBinFilePath);
+      }
+      if (fs.existsSync(tempDir)) {
+        fs.rmdirSync(tempDir);
+      }
+    }
+  });
 });
 

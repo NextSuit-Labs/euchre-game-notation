@@ -26,12 +26,11 @@
       "dealNumber": 0,
       "initialState": {
         "dealer": 2,
-        "upCard": "Kc",
-        "kitty": []
+        "upCard": "Kc"
       },
       "phases": [
         {
-          "phaseNumber": 0,
+          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -42,9 +41,8 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
+          "phaseNumber": 2,
           "type": "TRICK_PLAY",
-          "initialLead": 3,
           "tricks": [
             [
               "Ad",
@@ -76,6 +74,52 @@
               "Jd",
               "Jh"
             ]
+          ],
+          "isAlone": false,
+          "initialLead": 3
+        }
+      ],
+      "alternativeLines": [
+        {
+          "branchIndex": 8,
+          "phases": [
+            {
+              "phaseNumber": 1,
+              "type": "TRICK_PLAY",
+              "tricks": [
+                [
+                  "Qh",
+                  "Ah",
+                  "Tc",
+                  "9h"
+                ],
+                [
+                  "Kd",
+                  "Jh",
+                  "Ks",
+                  "9s"
+                ],
+                [
+                  "Jd",
+                  "Js",
+                  "Jc",
+                  "Qs"
+                ],
+                [
+                  "Kc",
+                  "As",
+                  "Ac",
+                  "Kh"
+                ]
+              ],
+              "isAlone": false,
+              "initialLead": 2,
+              "tricks_annotations": {
+                "0": [
+                  "This line leads to a march, but I don't think it's possible to play it this way without knowing what your partner and opponents have."
+                ]
+              }
+            }
           ]
         }
       ]
@@ -84,12 +128,11 @@
       "dealNumber": 1,
       "initialState": {
         "dealer": 3,
-        "upCard": "9s",
-        "kitty": []
+        "upCard": "9s"
       },
       "phases": [
         {
-          "phaseNumber": 0,
+          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -98,12 +141,16 @@
             "Pass",
             "c"
           ],
-          "isAlone": false
+          "isAlone": false,
+          "calls_annotations": {
+            "4": [
+              "Pretty ambitious next call. Dealer was baiting it but got lucky that S3 was so strong in next. If I pass, S2 calls hearts and makes an easy point."
+            ]
+          }
         },
         {
-          "phaseNumber": 1,
+          "phaseNumber": 2,
           "type": "TRICK_PLAY",
-          "initialLead": 0,
           "tricks": [
             [
               "Tc",
@@ -135,7 +182,14 @@
               "Th",
               "Qc"
             ]
-          ]
+          ],
+          "isAlone": false,
+          "initialLead": 0,
+          "tricks_annotations": {
+            "10": [
+              "Even if dealer trumps here we get the last two tricks."
+            ]
+          }
         }
       ]
     },
@@ -143,12 +197,11 @@
       "dealNumber": 2,
       "initialState": {
         "dealer": 0,
-        "upCard": "Jc",
-        "kitty": []
+        "upCard": "Jc"
       },
       "phases": [
         {
-          "phaseNumber": 0,
+          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -159,9 +212,8 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
+          "phaseNumber": 2,
           "type": "TRICK_PLAY",
-          "initialLead": 1,
           "tricks": [
             [
               "Ad",
@@ -194,8 +246,12 @@
               "Ts"
             ]
           ],
+          "isAlone": false,
+          "initialLead": 1,
           "tricks_annotations": {
-            "2": ["Nothing I could do here to prevent the euchre. Even if I trumped high. I'm not sure which is correct"]
+            "7": [
+              "Nothing I could do here to prevent the euchre. Even if I trumped high. I'm not sure which is correct."
+            ]
           }
         }
       ]
@@ -204,12 +260,11 @@
       "dealNumber": 3,
       "initialState": {
         "dealer": 1,
-        "upCard": "Th",
-        "kitty": []
+        "upCard": "Th"
       },
       "phases": [
         {
-          "phaseNumber": 0,
+          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -220,9 +275,8 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
+          "phaseNumber": 2,
           "type": "TRICK_PLAY",
-          "initialLead": 2,
           "tricks": [
             [
               "9s",
@@ -254,7 +308,20 @@
               "Td",
               "Ad"
             ]
-          ]
+          ],
+          "isAlone": false,
+          "initialLead": 2,
+          "tricks_annotations": {
+            "4": [
+              "Double led spades here hoping dealer had KQs to allow partner to trump in on it. Saving the Ad for later."
+            ],
+            "5": [
+              "Dealer is hoping S2 can overtrump S1 here. They can't afford to be overtrumped themselves."
+            ],
+            "6": [
+              "Trumping here in case S2 has the Ks."
+            ]
+          }
         }
       ]
     },
@@ -262,12 +329,11 @@
       "dealNumber": 4,
       "initialState": {
         "dealer": 2,
-        "upCard": "Th",
-        "kitty": []
+        "upCard": "Th"
       },
       "phases": [
         {
-          "phaseNumber": 0,
+          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -277,12 +343,19 @@
             "Pass",
             "c"
           ],
-          "isAlone": false
+          "isAlone": false,
+          "calls_annotations": {
+            "4": [
+              "S1's hand is decent in every suit so they didn't force a diamonds call. Would have been euchred on it."
+            ],
+            "5": [
+              "Went with length over strength."
+            ]
+          }
         },
         {
-          "phaseNumber": 1,
+          "phaseNumber": 2,
           "type": "TRICK_PLAY",
-          "initialLead": 3,
           "tricks": [
             [
               "Ad",
@@ -314,6 +387,112 @@
               "Ks",
               "9s"
             ]
+          ],
+          "isAlone": false,
+          "initialLead": 3,
+          "tricks_annotations": {
+            "1": [
+              "Probably better to trump high here and lead low. My partner is supposed to have the right more often here given they passed on red in R1. Prevents getting overtrumped like this."
+            ]
+          }
+        }
+      ],
+      "alternativeLines": [
+        {
+          "branchIndex": 7,
+          "phases": [
+            {
+              "phaseNumber": 1,
+              "type": "TRICK_PLAY",
+              "tricks": [
+                [
+                  "Ac",
+                  "Qs",
+                  "Td"
+                ],
+                [
+                  "Tc",
+                  "9c",
+                  "Qc",
+                  "Jc"
+                ],
+                [
+                  "9s",
+                  "As",
+                  "Kc",
+                  "Ts"
+                ],
+                [
+                  "Ah",
+                  "Jd",
+                  "9d",
+                  "9h"
+                ],
+                [
+                  "Kh",
+                  "Ks",
+                  "Kd",
+                  "Js"
+                ]
+              ],
+              "isAlone": false,
+              "initialLead": 0,
+              "tricks_annotations": {
+                "0": [
+                  "Turns out trumping high and leading low is a disaster here. S3 gets to duck their spade."
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "branchIndex": 7,
+          "phases": [
+            {
+              "phaseNumber": 1,
+              "type": "TRICK_PLAY",
+              "tricks": [
+                [
+                  "Ac",
+                  "Qs",
+                  "Td"
+                ],
+                [
+                  "9h",
+                  "Kh",
+                  "Qc",
+                  "Jc"
+                ],
+                [
+                  "9s",
+                  "As",
+                  "9c",
+                  "Ts"
+                ],
+                [
+                  "Ah",
+                  "Jd",
+                  "9d",
+                  "Tc"
+                ],
+                [
+                  "Js",
+                  "Kc",
+                  "Ks",
+                  "Kd"
+                ]
+              ],
+              "isAlone": false,
+              "initialLead": 0,
+              "tricks_annotations": {
+                "0": [
+                  "Turns out trumping high and leading low is a disaster here. S3 gets to duck their spade."
+                ],
+                "3": [
+                  "Instead of playing trump, I would need to play hearts (the turned down suit) here to get three tricks by allowing partner to utilize a single trump."
+                ]
+              }
+            }
           ]
         }
       ]
@@ -322,12 +501,11 @@
       "dealNumber": 5,
       "initialState": {
         "dealer": 3,
-        "upCard": "Jd",
-        "kitty": []
+        "upCard": "Jd"
       },
       "phases": [
         {
-          "phaseNumber": 0,
+          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -335,12 +513,16 @@
             "Pass",
             "Order"
           ],
-          "isAlone": false
+          "isAlone": false,
+          "calls_annotations": {
+            "1": [
+              "I consider LQ with an off A as strong enough to order the R, but with them down 3, passing to allow partner to potentially loner seems correct."
+            ]
+          }
         },
         {
-          "phaseNumber": 1,
+          "phaseNumber": 2,
           "type": "TRICK_PLAY",
-          "initialLead": 0,
           "tricks": [
             [
               "Qc",
@@ -372,7 +554,9 @@
               "Ah",
               "9c"
             ]
-          ]
+          ],
+          "isAlone": false,
+          "initialLead": 0
         }
       ]
     },
@@ -380,12 +564,11 @@
       "dealNumber": 6,
       "initialState": {
         "dealer": 0,
-        "upCard": "Ks",
-        "kitty": []
+        "upCard": "Ks"
       },
       "phases": [
         {
-          "phaseNumber": 0,
+          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -393,12 +576,16 @@
             "Pass",
             "Order"
           ],
-          "isAlone": false
+          "isAlone": false,
+          "calls_annotations": {
+            "3": [
+              "I would consider a loner if we were down a lot, but up 2 points I just order this and hope partner can help with the bare right."
+            ]
+          }
         },
         {
-          "phaseNumber": 1,
+          "phaseNumber": 2,
           "type": "TRICK_PLAY",
-          "initialLead": 1,
           "tricks": [
             [
               "9d",
@@ -430,7 +617,9 @@
               "Kh",
               "Tc"
             ]
-          ]
+          ],
+          "isAlone": false,
+          "initialLead": 1
         }
       ]
     },
@@ -438,12 +627,11 @@
       "dealNumber": 7,
       "initialState": {
         "dealer": 1,
-        "upCard": "Ts",
-        "kitty": []
+        "upCard": "Ts"
       },
       "phases": [
         {
-          "phaseNumber": 0,
+          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -454,9 +642,8 @@
           "isAlone": true
         },
         {
-          "phaseNumber": 1,
+          "phaseNumber": 2,
           "type": "TRICK_PLAY",
-          "initialLead": 2,
           "tricks": [
             [
               "9d",
@@ -483,7 +670,14 @@
               "Tc",
               "Jh"
             ]
-          ]
+          ],
+          "isAlone": true,
+          "initialLead": 2,
+          "tricks_annotations": {
+            "8": [
+              "If S1 had two diamonds instead of two clubs we would get the euchre here."
+            ]
+          }
         }
       ]
     },
@@ -491,12 +685,11 @@
       "dealNumber": 8,
       "initialState": {
         "dealer": 2,
-        "upCard": "As",
-        "kitty": []
+        "upCard": "As"
       },
       "phases": [
         {
-          "phaseNumber": 0,
+          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -507,9 +700,8 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
+          "phaseNumber": 2,
           "type": "TRICK_PLAY",
-          "initialLead": 3,
           "tricks": [
             [
               "Td",
@@ -541,7 +733,9 @@
               "Ah",
               "9s"
             ]
-          ]
+          ],
+          "isAlone": false,
+          "initialLead": 3
         }
       ],
       "alternativeLines": [
@@ -551,7 +745,6 @@
             {
               "phaseNumber": 1,
               "type": "TRICK_PLAY",
-              "initialLead": 3,
               "tricks": [
                 [
                   "Qs",
@@ -571,7 +764,14 @@
                   "Qh",
                   "Ad"
                 ]
-              ]
+              ],
+              "isAlone": false,
+              "initialLead": 2,
+              "tricks_annotations": {
+                "0": [
+                  "Partner has shown void in trump by trumping in with the left and then leading offsuit. It's safe to lead trump again as we have a guaranteed trick even if opponents have the right."
+                ]
+              }
             }
           ]
         }
@@ -581,22 +781,25 @@
       "dealNumber": 9,
       "initialState": {
         "dealer": 3,
-        "upCard": "Jc",
-        "kitty": []
+        "upCard": "Jc"
       },
       "phases": [
         {
-          "phaseNumber": 0,
+          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Order"
           ],
-          "isAlone": false
+          "isAlone": false,
+          "calls_annotations": {
+            "0": [
+              "Feels like a clear donation here, but we would have had the stopper against the S2 loner with KQd."
+            ]
+          }
         },
         {
-          "phaseNumber": 1,
+          "phaseNumber": 2,
           "type": "TRICK_PLAY",
-          "initialLead": 0,
           "tricks": [
             [
               "Ts",
@@ -628,7 +831,9 @@
               "9d",
               "Ah"
             ]
-          ]
+          ],
+          "isAlone": false,
+          "initialLead": 0
         }
       ]
     },
@@ -636,12 +841,11 @@
       "dealNumber": 10,
       "initialState": {
         "dealer": 0,
-        "upCard": "9d",
-        "kitty": []
+        "upCard": "9d"
       },
       "phases": [
         {
-          "phaseNumber": 0,
+          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -649,12 +853,16 @@
             "Pass",
             "Order"
           ],
-          "isAlone": false
+          "isAlone": false,
+          "calls_annotations": {
+            "3": [
+              "Down in points or if we only had 6 I would loner this, but decided to be more conservative with it at 7 points."
+            ]
+          }
         },
         {
-          "phaseNumber": 1,
+          "phaseNumber": 2,
           "type": "TRICK_PLAY",
-          "initialLead": 1,
           "tricks": [
             [
               "Ac",
@@ -686,6 +894,43 @@
               "9c",
               "Ah"
             ]
+          ],
+          "isAlone": false,
+          "initialLead": 1,
+          "tricks_annotations": {
+            "4": [
+              "playing this to allow partner to help, but it actually made things dicier."
+            ],
+            "12": [
+              "If S3 leads off here, and I failed to trump with the Left we get euchred. S3 was hoping I had L+1 rather than L+2."
+            ]
+          }
+        }
+      ],
+      "alternativeLines": [
+        {
+          "branchIndex": 16,
+          "phases": [
+            {
+              "phaseNumber": 1,
+              "type": "TRICK_PLAY",
+              "tricks": [
+                [
+                  "Qh",
+                  "Kd",
+                  "Ad",
+                  "Kh"
+                ],
+                [
+                  "9c",
+                  "Ah",
+                  "Jd",
+                  "Jh"
+                ]
+              ],
+              "isAlone": false,
+              "initialLead": 3
+            }
           ]
         }
       ]
@@ -694,25 +939,25 @@
       "dealNumber": 11,
       "initialState": {
         "dealer": 1,
-        "upCard": "Tc",
-        "kitty": []
+        "upCard": "Tc"
       },
       "phases": [
         {
-          "phaseNumber": 0,
+          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Order"
           ],
           "isAlone": false,
           "calls_annotations": {
-            "0": ["Probably unnecessary to donate here given the strength of our hand. Maybe at 9-7, but not 8-6"]
+            "0": [
+              "Probably unnecessary to donate here given the strength of our hand. Maybe at 9-7, but not 8-6"
+            ]
           }
         },
         {
-          "phaseNumber": 1,
+          "phaseNumber": 2,
           "type": "TRICK_PLAY",
-          "initialLead": 2,
           "tricks": [
             [
               "Js",
@@ -744,6 +989,69 @@
               "9d",
               "Ah"
             ]
+          ],
+          "isAlone": false,
+          "initialLead": 2
+        }
+      ],
+      "alternativeLines": [
+        {
+          "branchIndex": 0,
+          "phases": [
+            {
+              "phaseNumber": 1,
+              "type": "EUCHRE_BIDDING",
+              "calls": [
+                "Pass",
+                "Pass",
+                "Pass",
+                "Order"
+              ],
+              "isAlone": false
+            },
+            {
+              "phaseNumber": 2,
+              "type": "TRICK_PLAY",
+              "tricks": [
+                [
+                  "Ah",
+                  "9h",
+                  "Kh",
+                  "Tc"
+                ],
+                [
+                  "Jc",
+                  "Js",
+                  "9s",
+                  "Kc"
+                ],
+                [
+                  "As",
+                  "Qs",
+                  "Ts",
+                  "Ac"
+                ],
+                [
+                  "Jh",
+                  "9d",
+                  "Qh",
+                  "Jd"
+                ],
+                [
+                  "Ks",
+                  "Ad",
+                  "Td",
+                  "Qd"
+                ]
+              ],
+              "isAlone": false,
+              "initialLead": 2,
+              "tricks_annotations": {
+                "2": [
+                  "The euchre depends on playing high here as S3 so my Jh doesn't win a trick later on. Very unintuitive."
+                ]
+              }
+            }
           ]
         }
       ]
@@ -752,12 +1060,11 @@
       "dealNumber": 12,
       "initialState": {
         "dealer": 2,
-        "upCard": "Tc",
-        "kitty": []
+        "upCard": "Tc"
       },
       "phases": [
         {
-          "phaseNumber": 0,
+          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -765,12 +1072,16 @@
             "Pass",
             "Order"
           ],
-          "isAlone": false
+          "isAlone": false,
+          "calls_annotations": {
+            "3": [
+              "Super standard to order with three trump and a suited ace, even at 8-8."
+            ]
+          }
         },
         {
-          "phaseNumber": 1,
+          "phaseNumber": 2,
           "type": "TRICK_PLAY",
-          "initialLead": 3,
           "tricks": [
             [
               "Kh",
@@ -802,6 +1113,57 @@
               "Ts",
               "Qd"
             ]
+          ],
+          "isAlone": false,
+          "initialLead": 3,
+          "tricks_annotations": {
+            "2": [
+              "If S3 plays the R on S1's false lead, they would have missed the euchre."
+            ]
+          }
+        }
+      ],
+      "alternativeLines": [
+        {
+          "branchIndex": 8,
+          "phases": [
+            {
+              "phaseNumber": 1,
+              "type": "TRICK_PLAY",
+              "tricks": [
+                [
+                  "Ad",
+                  "Ac",
+                  "9d",
+                  "9s"
+                ],
+                [
+                  "Ah",
+                  "Th",
+                  "Jc",
+                  "Qd"
+                ],
+                [
+                  "As",
+                  "Qc",
+                  "Qh",
+                  "Qs"
+                ],
+                [
+                  "Kc",
+                  "9c",
+                  "Js",
+                  "Ts"
+                ]
+              ],
+              "isAlone": false,
+              "initialLead": 2,
+              "tricks_annotations": {
+                "1": [
+                  "If S1 trumps high here, they would miss the euchre. Trumping low would get the euchre."
+                ]
+              }
+            }
           ]
         }
       ]
