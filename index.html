@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Euchre Game Notation (EGN) - The open, deterministic, platform-agnostic standard for recording and sharing competitive Euchre match data by NextSuit Labs.">
+  <title>EGN | Euchre Game Notation Specification</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="landing.css">
+</head>
+
+<body>
+  <!-- Background Glow Accents -->
+  <div class="glow-accent glow-top-left" aria-hidden="true"></div>
+  <div class="glow-accent glow-bottom-right" aria-hidden="true"></div>
+
+  <!-- Navigation Bar -->
+  <header id="main-header">
+    <div class="header-container">
+      <a href="#" class="logo" id="nav-logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2" />
+          <path d="M6 9L9 12L6 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+          <line x1="11" y1="15" x2="18" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        <span class="logo-text">NextSuit <span class="accent-text">Labs</span></span>
+      </a>
+      <nav id="navbar">
+        <ul>
+          <li><a href="#rationale" id="nav-link-rationale">Rationale</a></li>
+          <li><a href="#philosophy" id="nav-link-philosophy">Philosophy</a></li>
+          <li><a href="#spec" id="nav-link-spec">Spec Reference</a></li>
+          <li><a href="#serialization" id="nav-link-serialization">Serialization</a></li>
+          <li><a href="#applications" id="nav-link-applications">Companion Apps</a></li>
+        </ul>
+      </nav>
+      <div class="nav-cta">
+        <a href="https://github.com/nextsuitlabs/euchre-game-notation/" target="_blank" class="btn btn-outline" id="header-cta">View on GitHub</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="hero">
+    <div class="hero-content">
+      <div class="tagline-badge" id="hero-badge">EGN Specification v1.0.0</div>
+      <h1 class="hero-title" id="hero-title">
+        The Open Standard for <br>
+        <span class="gradient-text">Euchre Game Data</span>
+      </h1>
+      <p class="hero-subtitle" id="hero-subtitle">
+        Euchre Game Notation (.egn) is a platform-agnostic, human-readable, and machine-optimized file format designed
+        to record the complete chronological play of competitive Euchre matches.
+      </p>
+      <div class="hero-buttons">
+        <a href="#rationale" class="btn btn-primary" id="btn-explore">Explore Rationale</a>
+        <a href="#applications" class="btn btn-secondary" id="btn-showcase">See EGN in Action</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="glass-card egn-preview-card" id="hero-json-card">
+        <div class="card-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="card-title">match.egn</span>
+        </div>
+        <pre><code>{
+  <span class="json-key">"fileType"</span>: <span class="json-string">"Euchre Game Notation"</span>,
+  <span class="json-key">"version"</span>: <span class="json-string">"1.0.0"</span>,
+  <span class="json-key">"metadata"</span>: {
+    <span class="json-key">"title"</span>: <span class="json-string">"WEC Finals"</span>,
+    <span class="json-key">"players"</span>: [<span class="json-string">"P1"</span>, <span class="json-string">"P2"</span>, <span class="json-string">"P3"</span>, <span class="json-string">"P4"</span>],
+    <span class="json-key">"ruleset"</span>: { <span class="json-key">"std"</span>: <span class="json-literal">true</span> }
+  },
+  <span class="json-key">"deals"</span>: [
+    {
+      <span class="json-key">"dealNumber"</span>: <span class="json-number">0</span>,
+      <span class="json-key">"initialState"</span>: {
+        <span class="json-key">"dealer"</span>: <span class="json-number">3</span>,
+        <span class="json-key">"upCard"</span>: <span class="json-string">"Jd"</span>
+      },
+      <span class="json-key">"phases"</span>: [
+        {
+          <span class="json-key">"type"</span>: <span class="json-string">"EUCHRE_BIDDING"</span>,
+          <span class="json-key">"calls"</span>: [<span class="json-string">"Pass"</span>, <span class="json-string">"Pass"</span>, <span class="json-string">"Order"</span>]
+        }
+      ]
+    }
+  ]
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Rationale Section -->
+  <section id="rationale" class="section-padding">
+    <div class="container">
+      <div class="section-header">
+        <h2 id="rationale-heading">Why a Standard Notation?</h2>
+        <p class="section-subheader">The Euchre ecosystem has historically suffered from fragmentation. EGN establishes
+          a common language for players, developers, and platforms.</p>
+      </div>
+      <div class="grid-3">
+        <div class="glass-card feature-card" id="rat-interoperability">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M4 12V6a2 2 0 012-2h3M4 12h16M20 12V6a2 2 0 00-2-2h-3M9 4V2M15 4V2"
+                stroke-linecap="round" />
+            </svg>
+          </div>
+          <h3>Platform Interoperability</h3>
+          <p>Different digital Euchre sites use custom database rows or raw log configurations. EGN acts as a bridge,
+            allowing matches played on any client to be exported, shared, and evaluated on a unified engine.</p>
+        </div>
+        <div class="glass-card feature-card" id="rat-neutrality">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" />
+              <path d="M12 6V12L16 14" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <h3>Engine Neutrality</h3>
+          <p>EGN isolates the chronological facts of the game from internal application representations. A parser can
+            load the format independently of specific rendering frameworks or proprietary state management structures.
+          </p>
+        </div>
+        <div class="glass-card feature-card" id="rat-efficiency">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m12 0V5a2 2 0 00-2-2H7a2 2 0 00-2 2v2m14 0h-3M5 7h3"
+                stroke-linecap="round" />
+            </svg>
+          </div>
+          <h3>Archival & Analysis Sizing</h3>
+          <p>By eliminating redundant state data, EGN compresses entire games into an incredibly tiny memory footprint.
+            This makes massive databases of historical games and tournament statistics highly accessible and cheap to
+            host.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Philosophy Section -->
+  <section id="philosophy" class="section-padding dark-bg">
+    <div class="container philosophy-container">
+      <div class="philosophy-text">
+        <div class="section-header align-left">
+          <h2 id="philosophy-heading">Deterministic Minimalism</h2>
+          <p class="section-subheader">EGN is built on a simple rule: store only the raw, unpredictable actions of a
+            game, and let the parser calculate the rest.</p>
+        </div>
+        <div class="philosophy-body">
+          <p>Unlike verbose database schemas that duplicate real-time player points, trick counts, or whose turn it is
+            to lead, EGN stores four foundational pieces of information:</p>
+          <ul class="styled-list">
+            <li><strong>Initial Environment:</strong> The dealer seat index and the revealed up-card.</li>
+            <li><strong>Bidding Calls:</strong> Sequential decisions made clockwise from the dealer's left.</li>
+            <li><strong>Play Stream:</strong> The chronological card drops exactly as they hit the table.</li>
+            <li><strong>Annotations:</strong> Human commentaries, events like misdeals, or alternate branching lines
+            </li>
+          </ul>
+          <p>By relying on a deterministic rules engine, parsers reconstruct the exact game state dynamically. This
+            guarantees 100% data integrity while stripping out unnecessary data bloating.</p>
+        </div>
+      </div>
+      <div class="philosophy-visual">
+        <div class="glass-card workflow-card" id="philosophy-diagram">
+          <div class="workflow-step">
+            <span class="step-num">01</span>
+            <div class="step-content">
+              <h4>Minimal Input (.egn)</h4>
+              <p>Contains Dealer, Up-Card, Calls, Plays, and Ruleset rules.</p>
+            </div>
+          </div>
+          <div class="workflow-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M19 12l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <div class="workflow-step highlight">
+            <span class="step-num">02</span>
+            <div class="step-content">
+              <h4>Rules Engine Parsing</h4>
+              <p>Applies standard rules, handles Left Bower, computes winning cards.</p>
+            </div>
+          </div>
+          <div class="workflow-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M19 12l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <div class="workflow-step">
+            <span class="step-num">03</span>
+            <div class="step-content">
+              <h4>Full Match State</h4>
+              <p>Calculates trick winners, scores, led suits, and player turn orders.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Spec Reference Section -->
+  <section id="spec" class="section-padding">
+    <div class="container">
+      <div class="section-header">
+        <h2 id="spec-heading">Specification Reference</h2>
+        <p class="section-subheader">Quick guide to the EGN v1.0.0 vocabulary and standard card representations. View the JSON schema on <a href="https://github.com/nextsuitlabs/euchre-game-notation/" target="_blank" class="text-link">GitHub</a>.</p>
+      </div>
+
+      <!-- Card Notation & Bidding -->
+      <div class="grid-2">
+        <div class="glass-card doc-card" id="spec-cards">
+          <h3>Card Representations</h3>
+          <p>Cards are written as 2-character strings combining Rank (Capital letter) and Suit (Lowercase letter).
+            Special characters support edge cases:</p>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Format</th>
+                  <th>Description</th>
+                  <th>Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>[Rank][Suit]</code></td>
+                  <td>Standard card (9s, Tens, J, Q, K, A)</td>
+                  <td><code>As</code> (Ace of Spades), <code>9h</code> (9 of Hearts)</td>
+                </tr>
+                <tr>
+                  <td><code>N[Suit]</code></td>
+                  <td>Alternative notation for 9</td>
+                  <td><code>Nc</code> (9 of Clubs)</td>
+                </tr>
+                <tr>
+                  <td><code>R</code> or <code>L</code></td>
+                  <td>Explicit Right or Left Bower markers</td>
+                  <td><code>R</code> (Right Bower), <code>L</code> (Left Bower)</td>
+                </tr>
+                <tr>
+                  <td><code>B</code></td>
+                  <td>Joker / Benny (if ruleset enabled)</td>
+                  <td><code>B</code> (Best Bower)</td>
+                </tr>
+                <tr>
+                  <td><code>Xx</code></td>
+                  <td>Unknown rank/suit (hidden data)</td>
+                  <td><code>Xc</code> (Unknown Club), <code>Xx</code> (Unknown card)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="glass-card doc-card" id="spec-calls">
+          <h3>Bidding Calls</h3>
+          <p>Decisions are mapped sequentially in the bidding phases. Standard calls include:</p>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Call</th>
+                  <th>Meaning</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>"Pass"</code></td>
+                  <td>Pass</td>
+                  <td>Player passes action.</td>
+                </tr>
+                <tr>
+                  <td><code>"Order"</code></td>
+                  <td>Order Up / Pick Up</td>
+                  <td>Orders dealer to pick up up-card (Round 1).</td>
+                </tr>
+                <tr>
+                  <td><code>"s"</code>, <code>"h"</code>, <code>"d"</code>, <code>"c"</code></td>
+                  <td>Suit Bid</td>
+                  <td>Calls Spades, Hearts, Diamonds, or Clubs (Round 2).</td>
+                </tr>
+                <tr>
+                  <td><code>"n"</code></td>
+                  <td>No Trump</td>
+                  <td>Calls No Trump (if ruleset allows).</td>
+                </tr>
+                <tr>
+                  <td><code>"x"</code></td>
+                  <td>Unknown Call</td>
+                  <td>Used for incomplete or partial logging.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alternate Rulesets -->
+      <div class="rules-box glass-card" id="spec-rulesets">
+        <h3>Supported Ruleset Variables</h3>
+        <p>EGN supports regional and local variations through the <code>ruleset</code> metadata object. This lets engine
+          parsers validate actions accordingly:</p>
+        <div class="rules-grid">
+          <div class="rule-item">
+            <strong>std (boolean)</strong>
+            <span>Enforces standard rules, including "Stick the Dealer" (prevents throw-ins).</span>
+          </div>
+          <div class="rule-item">
+            <strong>min_rank (integer)</strong>
+            <span>Lowest card in the deck (e.g. <code>9</code> for 24-card deck, <code>7</code> for 32-card
+              deck).</span>
+          </div>
+          <div class="rule-item">
+            <strong>winning_score (integer)</strong>
+            <span>Target score required to win the game (defaults to <code>10</code>).</span>
+          </div>
+          <div class="rule-item">
+            <strong>canadian (boolean)</strong>
+            <span>If the dealer's partner orders, they must play alone (Canadian Loner).</span>
+          </div>
+          <div class="rule-item">
+            <strong>loner_lead (string)</strong>
+            <span>Lead rule: <code>"LEFT_OF_DEALER"</code> or <code>"LEFT_OF_LONER"</code>.</span>
+          </div>
+          <div class="rule-item">
+            <strong>partners_best (boolean)</strong>
+            <span>Allow loners to swap one card with their partner (Call for Best).</span>
+          </div>
+          <div class="rule-item">
+            <strong>joker (boolean)</strong>
+            <span>Adds Joker (Benny <code>B</code>) as the highest trump card.</span>
+          </div>
+          <div class="rule-item">
+            <strong>allow_no_trump (boolean)</strong>
+            <span>Enables No Trump bidding call (<code>"n"</code>) in Round 2.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Serialization Section -->
+  <section id="serialization" class="section-padding dark-bg">
+    <div class="container">
+      <div class="section-header">
+        <h2 id="serialization-heading">Space-Optimized Serialization</h2>
+        <p class="section-subheader">EGN supports multiple formats to fit different application demands, from human
+          debugging to production network transfer.</p>
+      </div>
+      <div class="grid-3">
+        <div class="glass-card format-card" id="fmt-json">
+          <div class="format-badge json">JSON</div>
+          <h3>Standard JSON (.egn)</h3>
+          <p>Highly readable, structured, and easy to edit. Perfect for game logging databases, human analysis notes,
+            and sharing on github repos.</p>
+          <div class="size-estimate">~ 15.0 KB</div>
+        </div>
+        <div class="glass-card format-card" id="fmt-condensed">
+          <div class="format-badge condensed">Condensed</div>
+          <h3>Condensed Bitpack</h3>
+          <p>Replaces the verbose JSON arrays with base64URL bitpacked strings. Encodes bids, dealer, cards, commentary,
+            and alternative lines into tiny bitstreams.</p>
+          <div class="size-estimate">~ 800 Bytes</div>
+        </div>
+        <div class="glass-card format-card" id="fmt-expanded">
+          <div class="format-badge expanded">Protobuf</div>
+          <h3>Expanded Binary</h3>
+          <p>Serialized binary format powered by Google Protobuf schema. Provides strong types, speed, and compatibility
+            for enterprise backend integration.</p>
+          <div class="size-estimate">~ 1.5 KB</div>
+        </div>
+      </div>
+
+      <!-- CLI Utility -->
+      <div class="cli-box glass-card" id="cli-utility">
+        <div class="cli-header">
+          <h3>CLI Utility: <code>egn-convert</code></h3>
+          <span class="cli-badge">npm package</span>
+        </div>
+        <p>Convert seamlessly between human-readable JSON files and condensed/expanded binary representations using our
+          Node CLI.</p>
+        <div class="code-terminal">
+          <div class="terminal-bar">
+            <span>bash</span>
+          </div>
+          <pre><code><span class="term-comment"># Install global library</span>
+<span class="term-cmd">npm install -g euchre-game-notation</span>
+
+<span class="term-comment"># Convert EGN JSON to condensed binary bitpack</span>
+<span class="term-cmd">egn-convert game.egn game.condensed.bin</span>
+
+<span class="term-comment"># Convert condensed binary back to human JSON</span>
+<span class="term-cmd">egn-convert game.condensed.bin restored.egn</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Applications Section -->
+  <section id="applications" class="section-padding">
+    <div class="container">
+      <div class="section-header">
+        <h2 id="apps-heading">Powered by EGN</h2>
+        <p class="section-subheader">NextSuit Labs develops a companion application suite leveraging the EGN standard to
+          analyze, render, and capture Euchre matches.</p>
+      </div>
+
+      <div class="apps-grid">
+        <!-- Replayer -->
+        <div class="glass-card app-card" id="app-replayer">
+          <div class="app-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" />
+              <path d="M10 9l5 3-5 3V9z" fill="currentColor" />
+            </svg>
+          </div>
+          <div class="app-info">
+            <h3><a href="https://nextsuitlabs.com/replayer.html" target="_blank" class="app-link">Interactive Replayer &rarr;</a></h3>
+            <p>A desktop-grade analysis web app. Allows users to load EGN files, scrub through plays step-by-step, view
+              annotations, switch perspective focus to any player's seat, and analyze alternative branching gameplay
+              lines.</p>
+            <span class="tech-tag">React + Vite</span>
+          </div>
+        </div>
+
+        <!-- Logger -->
+        <div class="glass-card app-card" id="app-logger">
+          <div class="app-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.364 5.636a9 9 0 010 12.728M16.243 7.757a5 5 0 010 7.07"
+                stroke-linecap="round" />
+              <path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div class="app-info">
+            <h3><a href="https://nextsuitlabs.com/logger.html" target="_blank" class="app-link">Step & Full Logger &rarr;</a></h3>
+            <p>Manual game loggers built for real-time match logging. Provides button-based entry for live
+              game recording, saving directly to clean EGN format without the need manual code formatting.</p>
+            <span class="tech-tag">React + TypeScript</span>
+          </div>
+        </div>
+
+        <!-- Auto-Logger -->
+        <div class="glass-card app-card" id="app-autologger">
+          <div class="app-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 10l5-5v14l-5-5V10zM12 5H4a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2z"
+                stroke-linecap="round" />
+            </svg>
+          </div>
+          <div class="app-info">
+            <h3><a href="https://nextsuitlabs.com/auto-logger.html" target="_blank" class="app-link">CV Auto-Logger (Coming soon!) &rarr;</a></h3>
+            <p>Computer vision processing pipeline. Users upload match video files, and the automated pipeline detects
+              dealers, card distributions, bidding calls, and tricks, outputting schema-compliant EGN records.</p>
+            <span class="tech-tag">Computer Vision + TypeScript Pipeline</span>
+          </div>
+        </div>
+
+        <!-- Renderer -->
+        <div class="glass-card app-card" id="app-renderer">
+          <div class="app-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                stroke-linecap="round" />
+            </svg>
+          </div>
+          <div class="app-info">
+            <h3><a href="https://nextsuitlabs.com/renderer.html" target="_blank" class="app-link">Broadcast Overlay Renderer (Coming soon!) &rarr;</a></h3>
+            <p>HTML5 Canvas-based graphic overlay system. Features timing controls and studio settings. Headless
+              Puppeteer runner captures the canvas overlay dynamically, injecting real-time game cards into broadcast
+              streams.</p>
+            <span class="tech-tag">Canvas2D + Puppeteer</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="main-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>Copyright &copy; 2026 Write Words - Make Magic LLC. All rights reserved.</p>
+        <p>EGN is an open specification published under the <a href="LICENSE" target="_blank"
+            id="footer-license-link">Apache License 2.0</a> on <a href="https://github.com/nextsuitlabs/euchre-game-notation/" target="_blank" id="footer-github-link">GitHub</a>.</p>
+        <p class="brand-signature">NextSuit Labs</p>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>

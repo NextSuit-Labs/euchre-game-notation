@@ -50,7 +50,7 @@ function main() {
 
   try {
     const isBinInput = inputPath.endsWith(".bin");
-    
+
     if (isBinInput) {
       console.log(`Converting binary "${inputPath}" to JSON "${outputPath}" (condensed: ${condensed})...`);
       const json = convertBinToEgnJson(inputPath, condensed);

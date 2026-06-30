@@ -5,7 +5,8 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "bin": {
-    "egn-convert": "./dist/src/cli.js"
+    "egn-convert": "./dist/src/cli.js",
+    "egn-bitpack-deal": "./dist/src/cli-bitpack.js"
   },
   "files": [
     "dist",

@@ -198,6 +198,16 @@ This format can be used to denote partial games by indicating the initial score 
 
 ---
 
+## 🚀 Applications & Ecosystem
+
+EGN is developed under the **NextSuit Labs** brand (copyrighted by **Write Words - Make Magic LLC**). The following companion applications leverage the EGN standard to analyze, render, and record Euchre matches:
+
+* **[Replayer](https://nextsuitlabs.com/replayer.html)**: Interactive desktop-grade replay and analysis board. Load `.egn` files, scrub through bidding and card drops, toggle player perspectives, edit annotations, and study alternate theoretical branching lines.
+* **[Logger](https://nextsuitlabs.com/logger.html)**: Real-time speed logger allowing tournament watchers or game coordinators to record live matches and immediately compile valid EGN logs.
+* **[Renderer](https://nextsuitlabs.com/renderer.html)**: High-fidelity transparent overlay rendering studio and canvas editor for OBS live-stream overlays and broadcast video production.
+
+---
+
 ## 🛠️ CLI Utility (`egn-convert`)
 
 The package includes a command-line tool `egn-convert` to convert between human-readable JSON (`.egn`) files and optimized binary Protobuf (`.bin`) representations.

@@ -1,9 +1,10 @@
-import { describe, it, expect, beforeAll } from "@jest/globals";
+import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
 import { execSync } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
 
 const cliPath = path.resolve(__dirname, "../dist/src/cli.js");
+const bitpackCliPath = path.resolve(__dirname, "../dist/src/cli-bitpack.js");
 
 function deleteFileSync(filePath: string) {
   if (!fs.existsSync(filePath)) return;
@@ -236,3 +237,107 @@ describe("EGN Converter CLI", () => {
     expect(errOutput).toContain("Error during conversion:");
   });
 });
+
+describe("EGN Deal Bitpacker CLI", () => {
+  const tempDir = path.resolve(__dirname, "../temp_cli_bitpack_test");
+
+  beforeAll(() => {
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
+    }
+  });
+
+  afterAll(() => {
+    removeDirSync(tempDir);
+  });
+
+  it("should show help when run with --help or -h", () => {
+    const stdoutHelp = execSync(`node "${bitpackCliPath}" --help`).toString();
+    expect(stdoutHelp).toContain("Usage:");
+    expect(stdoutHelp).toContain("egn-bitpack-deal");
+
+    const stdoutH = execSync(`node "${bitpackCliPath}" -h`).toString();
+    expect(stdoutH).toContain("Usage:");
+  });
+
+  it("should fail when missing input file path", () => {
+    let threw = false;
+    let errOutput = "";
+    try {
+      execSync(`node "${bitpackCliPath}"`, { stdio: "pipe" });
+    } catch (err: any) {
+      threw = true;
+      expect(err.status).toBe(1);
+      errOutput = err.stderr.toString();
+    }
+    expect(threw).toBe(true);
+    expect(errOutput).toContain("Error: Missing input EGN file path.");
+  });
+
+  it("should fail when input file does not exist", () => {
+    let threw = false;
+    let errOutput = "";
+    try {
+      execSync(`node "${bitpackCliPath}" non_existent_file_xyz.egn`, { stdio: "pipe" });
+    } catch (err: any) {
+      threw = true;
+      expect(err.status).toBe(1);
+      errOutput = err.stderr.toString();
+    }
+    expect(threw).toBe(true);
+    expect(errOutput).toContain("Error: Input file not found");
+  });
+
+  it("should output all deals as base64url strings when --deals is not specified", () => {
+    const testJsonPath = path.join(tempDir, "all_deals.egn");
+    const testData = {
+      fileType: "Euchre Game Notation",
+      version: "1.0.0",
+      deals: [
+        validMockData.deals[0], // deal 0 is an object
+        "AQAFA3dKZAABAgIDBAE"  // deal 1 is already a string
+      ]
+    };
+    fs.writeFileSync(testJsonPath, JSON.stringify(testData), "utf8");
+
+    try {
+      const stdout = execSync(`node "${bitpackCliPath}" "${testJsonPath}"`).toString().trim();
+      const lines = stdout.split(/\r?\n/);
+      expect(lines.length).toBe(2);
+      expect(lines[0]).toMatch(/^[A-Za-z0-9_-]+$/); // Should be base64url
+      expect(lines[1]).toBe("AQAFA3dKZAABAgIDBAE"); // Already a string, output as-is
+    } finally {
+      deleteFileSync(testJsonPath);
+    }
+  });
+
+  it("should output only specified deals when --deals is specified", () => {
+    const testJsonPath = path.join(tempDir, "specific_deals.egn");
+    const testData = {
+      fileType: "Euchre Game Notation",
+      version: "1.0.0",
+      deals: [
+        { ...validMockData.deals[0], dealNumber: 0 },
+        "AQAFA3dKZAABAgIDBAE", // deal 1
+        { ...validMockData.deals[0], dealNumber: 2 }
+      ]
+    };
+    fs.writeFileSync(testJsonPath, JSON.stringify(testData), "utf8");
+
+    try {
+      // Test --deals 1
+      const stdout1 = execSync(`node "${bitpackCliPath}" "${testJsonPath}" --deals 1`).toString().trim();
+      expect(stdout1).toBe("AQAFA3dKZAABAgIDBAE");
+
+      // Test --deals=0,2
+      const stdout2 = execSync(`node "${bitpackCliPath}" "${testJsonPath}" --deals=0,2`).toString().trim();
+      const lines2 = stdout2.split(/\r?\n/);
+      expect(lines2.length).toBe(2);
+      expect(lines2[0]).not.toBe("AQAFA3dKZAABAgIDBAE");
+      expect(lines2[1]).not.toBe("AQAFA3dKZAABAgIDBAE");
+    } finally {
+      deleteFileSync(testJsonPath);
+    }
+  });
+});
+
