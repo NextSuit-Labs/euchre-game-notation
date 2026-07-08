@@ -13,8 +13,8 @@ Usage:
   egn-bitpack-deal <input-file> [options]
 
 Examples:
-  egn-bitpack-deal match.egn --deals 0,2
-  egn-bitpack-deal match.egn
+  egn-bitpack-deal game.egn --deals 0,2
+  egn-bitpack-deal game.egn
 
 Options:
   --deals <list>  Comma-separated list of 0-based deal indices or deal numbers to bitpack (e.g. 0,2).

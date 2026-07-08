@@ -23,7 +23,7 @@ export interface Ruleset {
 }
 
 export interface Metadata {
-  matchId?: string;
+  gameId?: string;
   title?: string;
   description?: string;
   players: string[];

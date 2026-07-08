@@ -15,17 +15,27 @@
     "metadata": {
       "type": "object",
       "properties": {
-        "matchId": { "type": "string" },
-        "title": { "type": "string" },
-        "description": { "type": "string" },
+        "gameId": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
         "players": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Array of player names, starting with Player 0 and proceeding clockwise."
         },
         "initialScore": {
           "type": "array",
-          "items": { "type": "integer" },
+          "items": {
+            "type": "integer"
+          },
           "minItems": 2,
           "maxItems": 2,
           "description": "Initial team scores. [Team 0/2 Score, Team 1/3 Score]."
@@ -33,30 +43,77 @@
         "date": {
           "type": "string",
           "anyOf": [
-            { "format": "date-time" },
-            { "pattern": "^\\d{4}-\\d{2}-\\d{2}[T ]\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?$" }
+            {
+              "format": "date-time"
+            },
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}[T ]\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?$"
+            }
           ],
           "description": "Date and time when the game was played."
         },
         "ruleset": {
-            "type": "object",
-            "properties": {
-                "std": { "type": "boolean", "default": true },
-                "min_rank": { "type": "integer", "default": 9 },
-                "winning_score": { "type": "integer", "default": 10 },
-                "canadian": { "type": "boolean", "default": false },
-                "loner_lead": { "type": "string", "enum": ["LEFT_OF_DEALER", "LEFT_OF_LONER"], "default": "LEFT_OF_DEALER" },
-                "farmers": { "type": "boolean", "default": false },
-                "partners_best": { "type": "boolean", "default": false },
-                "go_under": { "type": "boolean", "default": false },
-                "joker": { "type": "boolean", "default": false },
-                "allow_no_trump": { "type": "boolean", "default": false },
-                "fast_break": { "type": "boolean", "default": false },
-                "four_trick_tokens": { "type": "boolean", "default": false }
+          "type": "object",
+          "properties": {
+            "std": {
+              "type": "boolean",
+              "default": true
+            },
+            "min_rank": {
+              "type": "integer",
+              "default": 9
+            },
+            "winning_score": {
+              "type": "integer",
+              "default": 10
+            },
+            "canadian": {
+              "type": "boolean",
+              "default": false
+            },
+            "loner_lead": {
+              "type": "string",
+              "enum": [
+                "LEFT_OF_DEALER",
+                "LEFT_OF_LONER"
+              ],
+              "default": "LEFT_OF_DEALER"
+            },
+            "farmers": {
+              "type": "boolean",
+              "default": false
+            },
+            "partners_best": {
+              "type": "boolean",
+              "default": false
+            },
+            "go_under": {
+              "type": "boolean",
+              "default": false
+            },
+            "joker": {
+              "type": "boolean",
+              "default": false
+            },
+            "allow_no_trump": {
+              "type": "boolean",
+              "default": false
+            },
+            "fast_break": {
+              "type": "boolean",
+              "default": false
+            },
+            "four_trick_tokens": {
+              "type": "boolean",
+              "default": false
             }
+          }
         }
       },
-      "required": ["players", "initialScore"]
+      "required": [
+        "players",
+        "initialScore"
+      ]
     },
     "deals": {
       "type": "array",
@@ -65,7 +122,10 @@
           {
             "type": "object",
             "properties": {
-              "dealNumber": { "type": "integer", "minimum": 0 },
+              "dealNumber": {
+                "type": "integer",
+                "minimum": 0
+              },
               "initialState": {
                 "type": "object",
                 "properties": {
@@ -74,14 +134,23 @@
                     "minimum": 0,
                     "maximum": 3
                   },
-                  "upCard": { "$ref": "#/definitions/card" },
-                  "kitty": { "$ref": "#/definitions/card_list" },
+                  "upCard": {
+                    "$ref": "#/definitions/card"
+                  },
+                  "kitty": {
+                    "$ref": "#/definitions/card_list"
+                  },
                   "player_cards": {
                     "type": "array",
-                    "items": { "$ref": "#/definitions/card_list" }
+                    "items": {
+                      "$ref": "#/definitions/card_list"
+                    }
                   }
                 },
-                "required": ["dealer", "upCard"]
+                "required": [
+                  "dealer",
+                  "upCard"
+                ]
               },
               "phases": {
                 "type": "array",
@@ -89,17 +158,27 @@
                 "maxItems": 2,
                 "items": {
                   "oneOf": [
-                    { "$ref": "#/definitions/biddingPhase" },
-                    { "$ref": "#/definitions/trickPlayPhase" }
+                    {
+                      "$ref": "#/definitions/biddingPhase"
+                    },
+                    {
+                      "$ref": "#/definitions/trickPlayPhase"
+                    }
                   ]
                 }
               },
               "alternativeLines": {
                 "type": "array",
-                "items": { "$ref": "#/definitions/alternativeLine" }
+                "items": {
+                  "$ref": "#/definitions/alternativeLine"
+                }
               }
             },
-            "required": ["dealNumber", "initialState", "phases"]
+            "required": [
+              "dealNumber",
+              "initialState",
+              "phases"
+            ]
           },
           {
             "type": "string",
@@ -109,7 +188,12 @@
       }
     }
   },
-  "required": ["fileType", "version", "metadata", "deals"],
+  "required": [
+    "fileType",
+    "version",
+    "metadata",
+    "deals"
+  ],
   "definitions": {
     "card": {
       "type": "string",
@@ -117,43 +201,93 @@
     },
     "card_list": {
       "type": "array",
-      "items": { "$ref": "#/definitions/card" }
+      "items": {
+        "$ref": "#/definitions/card"
+      }
     },
     "biddingPhase": {
       "type": "object",
-      "required": ["phaseNumber", "type", "calls", "isAlone"],
+      "required": [
+        "phaseNumber",
+        "type",
+        "calls",
+        "isAlone"
+      ],
       "properties": {
-        "phaseNumber": { "type": "integer" },
-        "type": { "const": "EUCHRE_BIDDING" },
+        "phaseNumber": {
+          "type": "integer"
+        },
+        "type": {
+          "const": "EUCHRE_BIDDING"
+        },
         "calls": {
           "type": "array",
           "minItems": 0,
           "maxItems": 8,
-          "items": { "type": "string", "enum": ["Pass", "Order", "s", "h", "d", "c", "n", "x"] }
+          "items": {
+            "type": "string",
+            "enum": [
+              "Pass",
+              "Order",
+              "s",
+              "h",
+              "d",
+              "c",
+              "n",
+              "x"
+            ]
+          }
         },
-        "isAlone": { "type": "boolean" },
-        "discard": { "$ref": "#/definitions/card" },
+        "isAlone": {
+          "type": "boolean"
+        },
+        "discard": {
+          "$ref": "#/definitions/card"
+        },
         "card_exchanges": {
           "type": "array",
           "items": {
             "type": "object",
             "properties": {
-              "sender": { "type": "integer", "minimum": 0, "maximum": 5 },
-              "receiver": { "type": "integer", "minimum": 0, "maximum": 5 },
-              "cards": { "$ref": "#/definitions/card_list" }
+              "sender": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "receiver": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "cards": {
+                "$ref": "#/definitions/card_list"
+              }
             },
-            "required": ["receiver", "cards"]
+            "required": [
+              "receiver",
+              "cards"
+            ]
           }
         },
-        "calls_annotations": { "$ref": "#/definitions/annotations" }
+        "calls_annotations": {
+          "$ref": "#/definitions/annotations"
+        }
       }
     },
     "trickPlayPhase": {
       "type": "object",
-      "required": ["phaseNumber", "type", "tricks"],
+      "required": [
+        "phaseNumber",
+        "type",
+        "tricks"
+      ],
       "properties": {
-        "phaseNumber": { "type": "integer" },
-        "type": { "const": "TRICK_PLAY" },
+        "phaseNumber": {
+          "type": "integer"
+        },
+        "type": {
+          "const": "TRICK_PLAY"
+        },
         "initialLead": {
           "type": "integer",
           "minimum": 0,
@@ -163,23 +297,37 @@
           "type": "array",
           "minItems": 0,
           "maxItems": 5,
-          "items": { "$ref": "#/definitions/card_list" }
+          "items": {
+            "$ref": "#/definitions/card_list"
+          }
         },
-        "tricks_annotations": { "$ref": "#/definitions/annotations" }
+        "tricks_annotations": {
+          "$ref": "#/definitions/annotations"
+        }
       }
     },
     "alternativeLine": {
       "type": "object",
-      "required": ["branchIndex", "phases"],
+      "required": [
+        "branchIndex",
+        "phases"
+      ],
       "properties": {
-        "branchIndex": { "type": "integer", "minimum": 0 },
+        "branchIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
         "phases": {
           "type": "array",
           "minItems": 1,
           "items": {
             "oneOf": [
-              { "$ref": "#/definitions/biddingPhase" },
-              { "$ref": "#/definitions/trickPlayPhase" }
+              {
+                "$ref": "#/definitions/biddingPhase"
+              },
+              {
+                "$ref": "#/definitions/trickPlayPhase"
+              }
             ]
           }
         }
@@ -189,7 +337,9 @@
       "type": "object",
       "additionalProperties": {
         "type": "array",
-        "items": { "type": "string" }
+        "items": {
+          "type": "string"
+        }
       },
       "propertyNames": {
         "pattern": "^[0-9]+$"

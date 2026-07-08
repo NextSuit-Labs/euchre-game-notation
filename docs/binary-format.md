@@ -49,7 +49,7 @@ Each phase starts with a **Phase Type** bit:
      * `0`: Calls **Pass**.
 2. **Second Round Bidding** (only if all 4 seats passed in the first round):
    Iterate clockwise from the dealer's left (up to 4 seats).
-   * For each seat, read `3` bits representing the choice:
+   * For each seat, read `2` bits representing the choice:
      * `0`: **Pass**.
      * `1-3`: Index of the called suit mapping to the remaining 3 suits (excluding the turned-down up-card's suit in alphabetical order: `c`, `d`, `h`, `s`). The loop terminates immediately.
 3. **Go Alone**: 1 bit (`1` for alone, `0` otherwise).
@@ -77,6 +77,7 @@ If **Has Alt Lines** is `1`, the alternative lines are decoded as follows:
      For each alternative phase:
      * Read **Phase Type** bit (`0` or `1`).
      * Decode bidding or trick play phase exactly as in main line.
+     * *Note on Mid-Bidding Branches*: If the alternative line branches during a bidding phase (i.e. `branchIndex` is less than the total number of bidding decisions in the main line), the bidding phase in the alternative line begins decoding at `startActionIndex = branchIndex`. Bidding decisions in the main line prior to `branchIndex` are skipped, and the loops for Round 1 and Round 2 bidding are adjusted to decode only the remaining decisions.
      * *Note on Mid-Trick Branches*: If the alternative line branches mid-trick in a play phase (e.g. `branchPlayIndex % cardsPerTrick > 0`), the first trick of the alternative play phase contains only the remaining cards needed to complete that trick (`cardsPerTrick - (branchPlayIndex % cardsPerTrick)`). The decoder adjusts the loop limit for the first trick accordingly.
 
 ---
@@ -110,12 +111,12 @@ To achieve maximum compression, EGN does not write static card bytes. Instead, c
      "Kc", "Kd", "Kh", "Ks", "Ac", "Ad", "Ah", "As"
    ]
    ```
-2. **Upcard Removal**:
-   * Read the upcard index as an integer in range `[0, 23]` (encoded using 5 bits).
-   * Retrieve the upcard from the deck and remove it. The deck now has 23 cards.
+2. **Upcard Encoding/Decoding**:
+   * Read/write the upcard index as an integer in range `[0, 23]` (encoded using 5 bits).
+   * Note that the upcard is **not** immediately removed from the `cardsRemaining` deck. The deck retains 24 cards at the start of the play phase. If the upcard is actually played during trick play, it is removed at that point like any other card.
 3. **Card Encoding/Decoding**:
-   * For each card played, read its index in the `cardsRemaining` array.
-   * The number of bits read is determined by $\lceil \log_2(\text{deck length}) \rceil$.
+   * For each card played, read/write its index in the `cardsRemaining` array.
+   * The number of bits read/written is determined by $\lceil \log_2(\text{deck length}) \rceil$.
    * Once decoded, the card is removed from `cardsRemaining`.
 4. **Alternative Line Simulation**:
    When branching at `branchIndex`, the encoder/decoder simulates the main line plays up to that branch index to compute the exact subset of `cardsRemaining` available at the start of the alternative line.

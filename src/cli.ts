@@ -11,9 +11,9 @@ Usage:
   egn-convert <input-file> <output-file> [options]
 
 Examples:
-  egn-convert match.egn match.condensed.bin
-  egn-convert match.egn match.expanded.bin --expanded
-  egn-convert match.condensed.bin match.egn
+  egn-convert game.egn game.condensed.bin
+  egn-convert game.egn game.expanded.bin --expanded
+  egn-convert game.condensed.bin game.egn
 
 Options:
   --expanded      Use expanded Protobuf schema instead of the default condensed mode

@@ -24,7 +24,7 @@ message Ruleset {
 }
 
 message Metadata {
-  optional string match_id = 1;
+  optional string game_id = 1;
   optional string title = 2;
   optional string description = 3;
   repeated string players = 4;

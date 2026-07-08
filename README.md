@@ -1,6 +1,6 @@
 # Euchre Game Notation (EGN) Specification
 
-**Euchre Game Notation (.egn)** is an open-source, platform-agnostic file format specification designed to capture the complete chronological flow of a competitive Euchre match. 
+**Euchre Game Notation (.egn)** is an open-source, platform-agnostic file format specification designed to capture the complete chronological flow of a competitive Euchre game. 
 
 Inspired by Chess PGN (Portable Game Notation), EGN provides a highly optimized, structured canvas to record the details of a Euchre game.
 
@@ -10,7 +10,7 @@ Inspired by Chess PGN (Portable Game Notation), EGN provides a highly optimized,
 
 Unlike ad-hoc database schemas or nested JSON models that duplicate real-time game states, EGN operates on a philosophy of **strict rule-engine deduction**. 
 
-An `.egn` file purposefully strips out easily calculated metrics—such as trick winners, scoring mutations, or whose turn it is to lead. A compliant parsing engine hydrates this data into a full match state by applying the deterministic rules of Euchre to four foundational variables:
+An `.egn` file purposefully strips out easily calculated metrics—such as trick winners, scoring mutations, or whose turn it is to lead. A compliant parsing engine hydrates this data into a full game state by applying the deterministic rules of Euchre to four foundational variables:
 1. **The initial environment** (Who the dealer is and what card is turned up).
 2. **The bidding calls** (Sequential decisions mapped clockwise from the dealer's left).
 3. **The chronological play stream** (An array-of-arrays mapping card drops exactly as they hit the table).
@@ -27,9 +27,9 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
   "fileType": "Euchre Game Notation",
   "version": "1.0.0",
   "metadata": {
-    "matchId": "egn_m_20260528_01",
+    "gameId": "egn_m_20260528_01",
     "title": "WEC Finals",
-    "description": "Championship bracket match recorded live from local venue stream.",
+    "description": "Championship bracket game recorded live from local venue stream.",
     "date": "2026-05-17T19:00:00Z",
     "players": ["Player0", "Player1", "Player2", "Player3"],
     "initialScore": [0, 0],
@@ -158,7 +158,7 @@ In EGN, cards are primarily represented by a two-character string indicating the
 
 * **`N`**: Can be used as an alternative notation for the 9 rank (e.g., `"Nc"` for the 9 of Clubs).
 * **`R` and `L`**: Can be used to explicitly denote the Right and Left Bowers. It is important to note that the Left Bower (`"L"`) always represents the Jack of the same color as the called trump suit.
-* **`Xx`**: Used to denote an unknown rank or suit (e.g., `"Xc"` for an unknown Club, `"Jx"` for an unknown Jack, or `"Xx"` for a completely unknown card). This is especially useful for incomplete match logs or hidden cards.
+* **`Xx`**: Used to denote an unknown rank or suit (e.g., `"Xc"` for an unknown Club, `"Jx"` for an unknown Jack, or `"Xx"` for a completely unknown card). This is especially useful for incomplete game logs or hidden cards.
 * **`tngh`**: Used to denote generic trump (`"t"`), next (`"n"`), green suit 1 (`"g"`) and green suit 2 (`"h"`) for when the actual suit doesn't matter to your scenario
 * **`B` (Joker/Benny)**: In rulesets that include a Joker (the "Best Bower" or "Benny"), `"B"` represents the Joker.
 
@@ -168,7 +168,7 @@ In EGN, cards are primarily represented by a two-character string indicating the
 
 When implementing or parsing EGN, keep the following details in mind:
 
-1. **Unknown/Hidden Information (`discard` and `kitty`)**: Depending on how the match data was recorded (e.g., manually transcribed from a live stream vs. exported from a fully observable digital game engine), the dealer's `discard` and the unplayed `kitty` cards might not be known. These properties are optional in the specification and can be omitted if the data is unavailable.
+1. **Unknown/Hidden Information (`discard` and `kitty`)**: Depending on how the game data was recorded (e.g., manually transcribed from a live stream vs. exported from a fully observable digital game engine), the dealer's `discard` and the unplayed `kitty` cards might not be known. These properties are optional in the specification and can be omitted if the data is unavailable.
 2. **Trick Order and Lead Determination**: The `tricks` array records cards strictly in the chronological order they were dropped on the table. It does not explicitly state which player led each trick. Instead, the lead for the very first trick can be defaulted to the player to the left of the dealer or can be indicated by the `initialLead` property. For all subsequent tricks, the lead is implicitly determined by calculating the winner of the prior trick using standard Euchre rules. This aligns with EGN's philosophy of deterministic minimalism.
 3. **Annotations**: Optional commentary infrastructure for bidding or trick play. Annotations are defined under `calls_annotations` (for bidding phases) and `tricks_annotations` (for trick play phases) as a map from a decision/trick index to an array of strings (e.g., `{"3": ["Order Up on Jacks", "Maker went alone"]}`).
 4. **Alternative Lines (Branching)**: Analysis networks or theoretical branching plays can be specified via the optional `alternativeLines` array on any deal. Each alternative line contains a `branchIndex` (a 0-based decision index representing the point of deviation from the main game flow) and a `phases` list containing alternative Bidding or TrickPlay phases representing the sequence of alternate actions.
@@ -180,7 +180,7 @@ When implementing or parsing EGN, keep the following details in mind:
 
 ## 💾 Binary Serialization (Condensed vs. Expanded)
 
-EGN supports two binary serialization modes for storage optimization. For detailed layout details, see the [Condensed Binary Format Specification](file:///c:/Users/Rob/OneDrive/Desktop/Desktop%202/Rob/Coding%20Projects/EuchreGameNotation/euchre-game-notation/docs/binary-format.md).
+EGN supports two binary serialization modes for storage optimization. For detailed layout details, see the [Condensed Binary Format Specification](docs/binary-format.md).
 
 ### ⚡ Condensed Mode (Default)
 In condensed mode, the `deals` list is replaced by an array of Base64URL-encoded bitpacked strings. 
@@ -200,10 +200,10 @@ This format can be used to denote partial games by indicating the initial score 
 
 ## 🚀 Applications & Ecosystem
 
-EGN is developed under the **NextSuit Labs** brand (copyrighted by **Write Words - Make Magic LLC**). The following companion applications leverage the EGN standard to analyze, render, and record Euchre matches:
+EGN is developed under the **NextSuit Labs** brand (copyrighted by **Write Words - Make Magic LLC**). The following companion applications leverage the EGN standard to analyze, render, and record Euchre games:
 
 * **[Replayer](https://nextsuitlabs.com/replayer.html)**: Interactive desktop-grade replay and analysis board. Load `.egn` files, scrub through bidding and card drops, toggle player perspectives, edit annotations, and study alternate theoretical branching lines.
-* **[Logger](https://nextsuitlabs.com/logger.html)**: Real-time speed logger allowing tournament watchers or game coordinators to record live matches and immediately compile valid EGN logs.
+* **[Logger](https://nextsuitlabs.com/logger.html)**: Real-time speed logger allowing tournament watchers or game coordinators to record live games and immediately compile valid EGN logs.
 * **[Renderer](https://nextsuitlabs.com/renderer.html)**: High-fidelity transparent overlay rendering studio and canvas editor for OBS live-stream overlays and broadcast video production.
 
 ---
@@ -231,17 +231,17 @@ npx egn-convert --help
 Convert a JSON EGN file to an optimized condensed binary file:
 
 ```bash
-egn-convert match.egn match.condensed.bin
+egn-convert game.egn game.condensed.bin
 ```
 
 Convert a JSON EGN file to an expanded binary file:
 
 ```bash
-egn-convert match.egn match.expanded.bin --expanded
+egn-convert game.egn game.expanded.bin --expanded
 ```
 
 Convert a binary file back to a JSON EGN file:
 
 ```bash
-egn-convert match.condensed.bin match.egn
+egn-convert game.condensed.bin game.egn
 ```

@@ -42,7 +42,7 @@ function getLonerLeadEnum(condensed: boolean): protobuf.Enum {
 
 const protoToJsonKeyMap: Record<string, string> = {
   file_type: "fileType",
-  match_id: "matchId",
+  game_id: "gameId",
   initial_score: "initialScore",
   deal_number: "dealNumber",
   initial_state: "initialState",
@@ -56,7 +56,7 @@ const protoToJsonKeyMap: Record<string, string> = {
 
 const jsonToProtoKeyMap: Record<string, string> = {
   fileType: "file_type",
-  matchId: "match_id",
+  gameId: "game_id",
   initialScore: "initial_score",
   dealNumber: "deal_number",
   initialState: "initial_state",

@@ -8,9 +8,9 @@ const validMockData = {
   "fileType": "Euchre Game Notation",
   "version": "1.0.0",
   "metadata": {
-    "matchId": "egn_m_20260528_01",
+    "gameId": "egn_m_20260528_01",
     "title": "WEC Finals",
-    "description": "Championship bracket match recorded live from local venue stream.",
+    "description": "Championship bracket game recorded live from local venue stream.",
     "date": "2026-05-17T19:00:00Z",
     "players": ["Player0", "Player1", "Player2", "Player3"],
     "initialScore": [0, 0],
@@ -373,9 +373,9 @@ describe("EGN Protobuf Converter", () => {
       const res: any = {};
       for (const key of Object.keys(obj)) {
         // Skip fields that the bitpacker drops:
-        if (key === "kitty" || key === "discard" || key === "initialLead" || 
-            key === "card_exchanges" || key === "calls_annotations" || key === "tricks_annotations" ||
-            key === "alternativeLines") {
+        if (key === "kitty" || key === "discard" || key === "initialLead" ||
+          key === "card_exchanges" || key === "calls_annotations" || key === "tricks_annotations" ||
+          key === "alternativeLines") {
           continue;
         }
         res[key] = normalizeCondensedEgn(obj[key]);

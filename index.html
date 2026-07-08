@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
-    content="Euchre Game Notation (EGN) - The open, deterministic, platform-agnostic standard for recording and sharing competitive Euchre match data by NextSuit Labs.">
+    content="Euchre Game Notation (EGN) - The open, deterministic, platform-agnostic standard for recording and sharing competitive Euchre game data by NextSuit Labs.">
   <title>EGN | Euchre Game Notation Specification</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,7 +58,7 @@
       </h1>
       <p class="hero-subtitle" id="hero-subtitle">
         Euchre Game Notation (.egn) is a platform-agnostic, human-readable, and machine-optimized file format designed
-        to record the complete chronological play of competitive Euchre matches.
+        to record the complete chronological play of competitive Euchre games.
       </p>
       <div class="hero-buttons">
         <a href="#rationale" class="btn btn-primary" id="btn-explore">Explore Rationale</a>
@@ -71,7 +71,7 @@
           <span class="dot red"></span>
           <span class="dot yellow"></span>
           <span class="dot green"></span>
-          <span class="card-title">match.egn</span>
+          <span class="card-title">game.egn</span>
         </div>
         <pre><code>{
   <span class="json-key">"fileType"</span>: <span class="json-string">"Euchre Game Notation"</span>,
@@ -120,7 +120,7 @@
           </div>
           <h3>Platform Interoperability</h3>
           <p>Different digital Euchre sites use custom database rows or raw log configurations. EGN acts as a bridge,
-            allowing matches played on any client to be exported, shared, and evaluated on a unified engine.</p>
+            allowing games played on any client to be exported, shared, and evaluated on a unified engine.</p>
         </div>
         <div class="glass-card feature-card" id="rat-neutrality">
           <div class="feature-icon">
@@ -204,7 +204,7 @@
           <div class="workflow-step">
             <span class="step-num">03</span>
             <div class="step-content">
-              <h4>Full Match State</h4>
+              <h4>Full Game State</h4>
               <p>Calculates trick winners, scores, led suits, and player turn orders.</p>
             </div>
           </div>
@@ -420,7 +420,7 @@
       <div class="section-header">
         <h2 id="apps-heading">Powered by EGN</h2>
         <p class="section-subheader">NextSuit Labs develops a companion application suite leveraging the EGN standard to
-          analyze, render, and capture Euchre matches.</p>
+          analyze, render, and capture Euchre games.</p>
       </div>
 
       <div class="apps-grid">
@@ -455,7 +455,7 @@
           <div class="app-info">
             <h3><a href="https://nextsuitlabs.com/logger.html" target="_blank" class="app-link">Step & Full Logger
                 &rarr;</a></h3>
-            <p>Manual game loggers built for real-time match logging. Provides button-based entry for live
+            <p>Manual game loggers built for real-time game logging. Provides button-based entry for live
               game recording, saving directly to clean EGN format without the need manual code formatting.</p>
             <span class="tech-tag">React + TypeScript</span>
           </div>
@@ -472,7 +472,7 @@
           <div class="app-info">
             <h3><a href="https://nextsuitlabs.com/auto-logger.html" target="_blank" class="app-link">CV Auto-Logger
                 (Coming soon!) &rarr;</a></h3>
-            <p>Computer vision processing pipeline. Users upload match video files, and the automated pipeline detects
+            <p>Computer vision processing pipeline. Users upload game video files, and the automated pipeline detects
               dealers, card distributions, bidding calls, and tricks, outputting schema-compliant EGN records.</p>
             <span class="tech-tag">Computer Vision + TypeScript Pipeline</span>
           </div>
