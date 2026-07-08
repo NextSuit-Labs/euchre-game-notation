@@ -153,10 +153,11 @@ function decodeAnnotations(reader: BitReader): Record<number, string[]> | undefi
   return annotations;
 }
 
-function encodeBiddingPhase(bidding: BiddingPhase, upCard: string): string {
+function encodeBiddingPhase(bidding: BiddingPhase, upCard: string, startActionIndex = 0): string {
   let bits = "";
   bidding.calls.forEach((call, callIndex) => {
-    if (callIndex < 4) {
+    const actualIndex = startActionIndex + callIndex;
+    if (actualIndex < 4) {
       bits += encodeR1Call(call);
     } else {
       const remainingSuits = SUITS.filter(
@@ -170,24 +171,27 @@ function encodeBiddingPhase(bidding: BiddingPhase, upCard: string): string {
   return bits;
 }
 
-function decodeBiddingPhase(reader: BitReader, upCard: string): BiddingPhase {
+function decodeBiddingPhase(reader: BitReader, upCard: string, startActionIndex = 0): BiddingPhase {
   const calls: Call[] = [];
   let orderedUp = false;
 
-  for (let i = 0; i < 4; i++) {
-    const bit = reader.readBits(1);
-    if (bit === "0") {
-      calls.push("Pass");
-    } else {
-      calls.push("Order");
-      orderedUp = true;
-      break;
+  if (startActionIndex < 4) {
+    for (let i = startActionIndex; i < 4; i++) {
+      const bit = reader.readBits(1);
+      if (bit === "0") {
+        calls.push("Pass");
+      } else {
+        calls.push("Order");
+        orderedUp = true;
+        break;
+      }
     }
   }
 
   if (!orderedUp) {
     const remainingSuits = SUITS.filter((suit) => suit !== upCard[1].toLowerCase());
-    for (let i = 0; i < 4; i++) {
+    const round2Start = Math.max(0, startActionIndex - 4);
+    for (let i = round2Start; i < 4; i++) {
       const val = reader.readInteger(3);
       if (val === 0) {
         calls.push("Pass");
@@ -345,7 +349,7 @@ export function packDeal(deal: Deal): string {
       altLine.phases.forEach((phase) => {
         if (phase.type === "EUCHRE_BIDDING") {
           binaryString += "0";
-          binaryString += encodeBiddingPhase(phase as BiddingPhase, deal.initialState.upCard);
+          binaryString += encodeBiddingPhase(phase as BiddingPhase, deal.initialState.upCard, altLine.branchIndex);
           altIsAlone = (phase as BiddingPhase).isAlone;
         } else if (phase.type === "TRICK_PLAY") {
           binaryString += "1";
@@ -539,7 +543,7 @@ export function unpackDeal(base64Url: string, dealNumber: number = 0): Deal {
       for (let p = 0; p < numPhases; p++) {
         const phaseType = reader.readBits(1);
         if (phaseType === "0") {
-          const biddingPhase = decodeBiddingPhase(reader, upCard);
+          const biddingPhase = decodeBiddingPhase(reader, upCard, branchIndex);
           biddingPhase.phaseNumber = p;
           altIsAlone = biddingPhase.isAlone;
           phases.push(biddingPhase);

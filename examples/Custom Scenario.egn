@@ -1,0 +1,120 @@
+{
+  "fileType": "Euchre Game Notation",
+  "version": "1.0.0",
+  "metadata": {
+    "title": "Custom Scenario",
+    "description": "Reshuffled Euchre Scenario",
+    "date": "2026-07-06",
+    "players": [
+      "North",
+      "East",
+      "South",
+      "West"
+    ],
+    "initialScore": [
+      0,
+      0
+    ],
+    "ruleset": {
+      "std": true,
+      "canadian": false,
+      "loner_lead": "LEFT_OF_DEALER"
+    }
+  },
+  "deals": [
+    {
+      "dealNumber": 0,
+      "initialState": {
+        "dealer": 0,
+        "upCard": "Jc",
+        "kitty": [
+          "Qh",
+          "Ks",
+          "Ts"
+        ],
+        "player_cards": [
+          [
+            "Kh",
+            "As",
+            "Jd",
+            "Th",
+            "Ah"
+          ],
+          [
+            "9c",
+            "9h",
+            "Qc",
+            "Qd",
+            "Kc"
+          ],
+          [
+            "Jh",
+            "Ad",
+            "Tc",
+            "Kd",
+            "Ac"
+          ],
+          [
+            "Qs",
+            "9d",
+            "Js",
+            "9s",
+            "Td"
+          ]
+        ]
+      },
+      "phases": [
+        {
+          "phaseNumber": 1,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Pass",
+            "Pass",
+            "Pass",
+            "s"
+          ],
+          "isAlone": false
+        },
+        {
+          "phaseNumber": 2,
+          "type": "TRICK_PLAY",
+          "tricks": [
+            [
+              "9h",
+              "Jh",
+              "9s",
+              "Ah"
+            ],
+            [
+              "Js",
+              "As",
+              "9c",
+              "Tc"
+            ],
+            [
+              "Td",
+              "Jd",
+              "Qd",
+              "Kd"
+            ],
+            [
+              "Ad",
+              "9d",
+              "Th",
+              "Qc"
+            ],
+            [
+              "Ac",
+              "Qs",
+              "Kh",
+              "Kc"
+            ]
+          ],
+          "isAlone": false,
+          "initialLead": 1
+        }
+      ]
+    }
+  ]
+}
