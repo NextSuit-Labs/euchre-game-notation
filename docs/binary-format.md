@@ -1,8 +1,8 @@
-# EGN Condensed Binary Format Specification (v0 & v1)
+# EGN Condensed Binary Format Specification (v0, v1, & v2)
 
 This document describes the binary representation of Euchre Game Notation (EGN) files in **Condensed Mode**. 
 
-Condensed mode encodes the full bidding and card play history of individual deals into compact, Base64URL-encoded bitstreams. This document details the bit-level structure, encoding rules, and deck tracking requirements for both **Version 0** (legacy) and **Version 1** (current).
+Condensed mode encodes the full bidding and card play history of individual deals into compact, Base64URL-encoded bitstreams. This document details the bit-level structure, encoding rules, and deck tracking requirements for **Version 0** (legacy), **Version 1** (current standard), and **Version 2** (extended alternate rules).
 
 ---
 
@@ -26,7 +26,7 @@ The bitstream of a Version 1 deal consists of a **Header**, **Main Phase Payload
 | :--- | :--- | :--- |
 | **Version Header** | 4 bits | Always `0001` (denoting Version 1). |
 | **Dealer Seat** | 3 bits | Dealer index: `0` (South), `1` (West), `2` (North), `3` (East). |
-| **Up-Card** | Variable | Index of the up-card in the initial remaining deck (see Section 4). |
+| **Up-Card** | Variable | Index of the up-card in the initial remaining deck (see Section 5). |
 | **Num Phases** | 3 bits | Total number of bidding and play phases (e.g. `2`). |
 | **Phases** | Variable | Sequence of phase payloads (see Section 2.1). |
 | **Has Alt Lines** | 1 bit | `1` if the deal has alternative branching lines, `0` otherwise. |
@@ -53,15 +53,15 @@ Each phase starts with a **Phase Type** bit:
      * `0`: **Pass**.
      * `1-3`: Index of the called suit mapping to the remaining 3 suits (excluding the turned-down up-card's suit in alphabetical order: `c`, `d`, `h`, `s`). The loop terminates immediately.
 3. **Go Alone**: 1 bit (`1` for alone, `0` otherwise).
-4. **Annotations**: Optional bidding comments (see Section 5).
+4. **Annotations**: Optional bidding comments (see Section 6).
 
 #### Trick Play Phase Payload (`1`)
 1. **Num Tricks**: 3 bits (number of tricks, up to 5).
 2. **Played Cards Loop**:
    Iterate through each trick. For each trick:
    * Read `cardsPerTrick` cards sequentially. `cardsPerTrick` is `3` if the bidding phase was marked `isAlone`, otherwise `4`.
-   * Each card is read as a variable-width integer indexing into the `cardsRemaining` array (see Section 4).
-3. **Annotations**: Optional play comments (see Section 5).
+   * Each card is read as a variable-width integer indexing into the `cardsRemaining` array (see Section 5).
+3. **Annotations**: Optional play comments (see Section 6).
 
 ---
 
@@ -82,7 +82,58 @@ If **Has Alt Lines** is `1`, the alternative lines are decoded as follows:
 
 ---
 
-## 🕰️ 3. Version 0 Bitstream Structure (Legacy)
+## 🏗️ 3. Version 2 Bitstream Structure (Extended Rules)
+
+Version 2 extends the header to support variable player counts (1–8), alternate deck sizes (24, 28, 32, or 36 cards), and the `aloneDefender` feature.
+
+| Field Name | Bit Width | Description |
+| :--- | :--- | :--- |
+| **Version Header** | 4 bits | Always `0010` (denoting Version 2). |
+| **Dealer Seat** | 3 bits | Dealer index (`0-7` to support up to 8 players). |
+| **Num Players** | 3 bits | Value encoded is `numPlayers - 1` (covers range of 1–8 players). |
+| **Min Rank Code** | 2 bits | Determines the lowest rank in the deck:<br>`00`: Rank 9 (24-card)<br>`01`: Rank 8 (28-card)<br>`10`: Rank 7 (32-card)<br>`11`: Rank 6 (36-card) |
+| **Up-Card** | Variable | Index of the up-card in the initial dynamic remaining deck (see Section 5). |
+| **Num Phases** | 3 bits | Total number of bidding and play phases. |
+| **Phases** | Variable | Sequence of phase payloads (see Section 3.1). |
+| **Has Alt Lines** | 1 bit | `1` if the deal has alternative branching lines, `0` otherwise. |
+| **Alt Lines Payload** | Variable | List of alternative lines (only if `Has Alt Lines == 1`). |
+| **End Marker** | 4 bits | Always `1010`. |
+
+---
+
+### 📥 3.1. Phase Payloads
+
+#### Bidding Phase Payload (`0`)
+1. **Bidding Decisions Loop**:
+   Iterate clockwise from the dealer's left (up to `numPlayers` seats).
+   * For each seat, read 1 bit:
+     * `1`: Calls **Order** (first round) or another suit (second round). The loop terminates immediately.
+     * `0`: Calls **Pass**.
+2. **Second Round Bidding** (only if all `numPlayers` seats passed in the first round):
+   Iterate clockwise from the dealer's left (up to `numPlayers` seats).
+   * For each seat, read `2` bits representing the choice:
+     * `0`: **Pass**.
+     * `1-3`: Index of the called suit mapping to the remaining 3 suits (excluding the turned-down up-card's suit in alphabetical order: `c`, `d`, `h`, `s`). The loop terminates immediately.
+3. **Go Alone**: 1 bit (`1` for alone, `0` otherwise).
+4. **Alone Defender** (only if Go Alone is `1`):
+   * **Has Defender**: 1 bit (`1` if a defender is defending alone, `0` otherwise).
+   * **Defender Seat**: 3 bits (only if Has Defender is `1`). Seat index of the defender (`0-7`).
+5. **Annotations**: Optional bidding comments (see Section 6).
+
+#### Trick Play Phase Payload (`1`)
+1. **Num Tricks**: 3 bits (number of tricks).
+2. **Played Cards Loop**:
+   Iterate through each trick. For each trick:
+   * Read `cardsPerTrick` cards sequentially:
+     * **Normal**: `numPlayers` cards.
+     * **Maker Alone**: `numPlayers - 1` cards (maker's partner sits out).
+     * **Maker + Defender Alone**: `numPlayers - 2` cards (both partners sit out).
+   * Each card is read as a variable-width integer indexing into the dynamic `cardsRemaining` array (see Section 5).
+3. **Annotations**: Optional play comments (see Section 6).
+
+---
+
+## 🕰️ 4. Version 0 Bitstream Structure (Legacy)
 
 Version 0 was used in initial EGN implementations. It has no version header, no annotations, and no alternative lines.
 
@@ -94,17 +145,24 @@ Version 0 was used in initial EGN implementations. It has no version header, no 
 | **Go Alone** | 1 bit | `1` for alone, `0` otherwise. |
 | **Played Cards Loop** | Variable | Loop of tricks and cards read using the dynamic `cardsRemaining` deck. |
 
-*Note: The parser distinguishes Version 0 from Version 1 by checking if the first 4 bits are `0001`. If they are not, it resets the bit stream reader and decodes as Version 0.*
+*Note: The parser distinguishes Version 0 from Version 1 & 2 by checking if the first 4 bits are `0001` or `0010`. If they are not, it resets the bit stream reader and decodes as Version 0.*
 
 ---
 
-## 🎴 4. Dynamic Deck Tracking (`cardsRemaining`)
+## 🎴 5. Dynamic Deck Tracking (`cardsRemaining`)
 
 To achieve maximum compression, EGN does not write static card bytes. Instead, cards are index-compressed against a dynamic array of remaining cards in the deck (`cardsRemaining`).
 
 1. **Initial Deck**:
-   Start with a standard 24-card Euchre deck ordered alphabetically by rank then suit:
+   Constructed based on the **Min Rank Code** (Version 2) or standard 24-card deck (Version 0 & 1):
+   * Rank 9 (Code `00` / Standard): 24 cards (`9` and up).
+   * Rank 8 (Code `01`): 28 cards (`8` and up).
+   * Rank 7 (Code `10`): 32 cards (`7` and up).
+   * Rank 6 (Code `11`): 36 cards (`6` and up).
+   
+   All decks are ordered alphabetically by rank then suit:
    ```ts
+   // Example standard 24-card deck:
    [
      "9c", "9d", "9h", "9s", "Tc", "Td", "Th", "Ts",
      "Jc", "Jd", "Jh", "Js", "Qc", "Qd", "Qh", "Qs",
@@ -112,8 +170,8 @@ To achieve maximum compression, EGN does not write static card bytes. Instead, c
    ]
    ```
 2. **Upcard Encoding/Decoding**:
-   * Read/write the upcard index as an integer in range `[0, 23]` (encoded using 5 bits).
-   * Note that the upcard is **not** immediately removed from the `cardsRemaining` deck. The deck retains 24 cards at the start of the play phase. If the upcard is actually played during trick play, it is removed at that point like any other card.
+   * Read/write the upcard index as an integer in range `[0, deckSize - 1]` (encoded using $\lceil \log_2(\text{deckSize}) \rceil$ bits).
+   * Note that the upcard is **not** immediately removed from the `cardsRemaining` deck. The deck retains all cards at the start of the play phase. If the upcard is actually played during trick play, it is removed at that point like any other card.
 3. **Card Encoding/Decoding**:
    * For each card played, read/write its index in the `cardsRemaining` array.
    * The number of bits read/written is determined by $\lceil \log_2(\text{deck length}) \rceil$.
@@ -123,16 +181,16 @@ To achieve maximum compression, EGN does not write static card bytes. Instead, c
 
 ---
 
-## 💬 5. Annotations Bit-Packing Layout
+## 💬 6. Annotations Bit-Packing Layout
 
-Annotations map an action index (call index or trick index) to a list of commentary strings.
+Annotations map an action index (call index or play index) to a list of commentary strings.
 
 1. **Presence Flag**: 1 bit (`1` if annotations exist, `0` otherwise).
 2. **Annotations Map Payload** (only if Presence Flag is `1`):
    * **Count**: 8 bits (number of annotated actions).
    * **Annotated Action Loop**:
      For each annotation:
-     * **Action Index**: 8 bits (which call or trick number contains the comment).
+     * **Action Index**: 8 bits (which call index or play index contains the comment).
      * **Strings Count**: 8 bits (number of comments on this action).
      * **Strings Loop**:
        For each comment string:

@@ -16,23 +16,24 @@ message InitialState {
   optional int32 dealer = 1;
   optional string up_card = 2;
   repeated string kitty = 3;
-  repeated CardList player_cards = 4;
+  repeated CardList playerCards = 4;
 }
 
 message BiddingPhase {
   optional int32 phase_number = 1;
   repeated string calls = 2;
   optional bool is_alone = 3;
-  optional string discard = 4;
+  optional int32 alone_defender = 4; // Seat index defending alone against loner, or -1 if none
+  optional string discard = 5;
 
   message CardExchange {
     optional int32 sender = 1;
     optional int32 receiver = 2;
     repeated string cards = 3;
   }
-  repeated CardExchange card_exchanges = 5;
+  repeated CardExchange cardExchanges = 6;
 
-  map<int32, AnnotationList> calls_annotations = 6;
+  map<int32, AnnotationList> callAnnotations = 7;
 }
 
 message TrickPlayPhase {
@@ -44,7 +45,7 @@ message TrickPlayPhase {
   }
   repeated Trick tricks = 3;
 
-  map<int32, AnnotationList> tricks_annotations = 4;
+  map<int32, AnnotationList> playAnnotations = 4;
 }
 
 message Phase {

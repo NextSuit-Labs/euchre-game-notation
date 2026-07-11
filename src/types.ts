@@ -13,10 +13,14 @@ export interface Ruleset {
   winning_score?: number;
   canadian?: boolean;
   loner_lead?: "LEFT_OF_DEALER" | "LEFT_OF_LONER";
+  loner_march_score?: number;
+  loner_euchred_score?: number;
+  defend_alone?: boolean;
   farmers?: boolean;
   partners_best?: boolean;
   go_under?: boolean;
   joker?: boolean;
+  num_players?: number;
   allow_no_trump?: boolean;
   fast_break?: boolean;
   four_trick_tokens?: boolean;
@@ -36,7 +40,7 @@ export interface InitialState {
   dealer: number;
   upCard: Card;
   kitty?: Card[];
-  player_cards?: Card[][];
+  playerCards?: Card[][];
 }
 
 export interface CardExchange {
@@ -52,9 +56,10 @@ export interface BiddingPhase {
   type: "EUCHRE_BIDDING";
   calls: Call[];
   isAlone: boolean;
+  aloneDefender?: number; // Seat index of player defending alone, or -1 if none. Only used when ruleset.defend_alone is true.
   discard?: Card;
-  card_exchanges?: CardExchange[];
-  calls_annotations?: Annotations;
+  cardExchanges?: CardExchange[];
+  callAnnotations?: Annotations;
 }
 
 export interface TrickPlayPhase {
@@ -62,7 +67,7 @@ export interface TrickPlayPhase {
   type: "TRICK_PLAY";
   initialLead?: number;
   tricks: Card[][];
-  tricks_annotations?: Annotations;
+  playAnnotations?: Annotations;
 }
 
 export type Phase = BiddingPhase | TrickPlayPhase;

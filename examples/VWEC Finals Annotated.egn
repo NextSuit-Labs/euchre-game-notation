@@ -114,7 +114,7 @@
               ],
               "isAlone": false,
               "initialLead": 2,
-              "tricks_annotations": {
+              "playAnnotations": {
                 "0": [
                   "This line leads to a march, but I don't think it's possible to play it this way without knowing what your partner and opponents have."
                 ]
@@ -142,7 +142,7 @@
             "c"
           ],
           "isAlone": false,
-          "calls_annotations": {
+          "callAnnotations": {
             "4": [
               "Pretty ambitious next call. Dealer was baiting it but got lucky that S3 was so strong in next. If I pass, S2 calls hearts and makes an easy point."
             ]
@@ -185,7 +185,7 @@
           ],
           "isAlone": false,
           "initialLead": 0,
-          "tricks_annotations": {
+          "playAnnotations": {
             "10": [
               "Even if dealer trumps here we get the last two tricks."
             ]
@@ -248,7 +248,7 @@
           ],
           "isAlone": false,
           "initialLead": 1,
-          "tricks_annotations": {
+          "playAnnotations": {
             "7": [
               "Nothing I could do here to prevent the euchre. Even if I trumped high. I'm not sure which is correct."
             ]
@@ -311,7 +311,7 @@
           ],
           "isAlone": false,
           "initialLead": 2,
-          "tricks_annotations": {
+          "playAnnotations": {
             "4": [
               "Double led spades here hoping dealer had KQs to allow partner to trump in on it. Saving the Ad for later."
             ],
@@ -344,7 +344,7 @@
             "c"
           ],
           "isAlone": false,
-          "calls_annotations": {
+          "callAnnotations": {
             "4": [
               "S1's hand is decent in every suit so they didn't force a diamonds call. Would have been euchred on it."
             ],
@@ -390,7 +390,7 @@
           ],
           "isAlone": false,
           "initialLead": 3,
-          "tricks_annotations": {
+          "playAnnotations": {
             "1": [
               "Probably better to trump high here and lead low. My partner is supposed to have the right more often here given they passed on red in R1. Prevents getting overtrumped like this."
             ]
@@ -437,7 +437,7 @@
               ],
               "isAlone": false,
               "initialLead": 0,
-              "tricks_annotations": {
+              "playAnnotations": {
                 "0": [
                   "Turns out trumping high and leading low is a disaster here. S3 gets to duck their spade."
                 ]
@@ -484,7 +484,7 @@
               ],
               "isAlone": false,
               "initialLead": 0,
-              "tricks_annotations": {
+              "playAnnotations": {
                 "0": [
                   "Turns out trumping high and leading low is a disaster here. S3 gets to duck their spade."
                 ],
@@ -514,7 +514,7 @@
             "Order"
           ],
           "isAlone": false,
-          "calls_annotations": {
+          "callAnnotations": {
             "1": [
               "I consider LQ with an off A as strong enough to order the R, but with them down 3, passing to allow partner to potentially loner seems correct."
             ]
@@ -577,7 +577,7 @@
             "Order"
           ],
           "isAlone": false,
-          "calls_annotations": {
+          "callAnnotations": {
             "3": [
               "I would consider a loner if we were down a lot, but up 2 points I just order this and hope partner can help with the bare right."
             ]
@@ -673,7 +673,7 @@
           ],
           "isAlone": true,
           "initialLead": 2,
-          "tricks_annotations": {
+          "playAnnotations": {
             "8": [
               "If S1 had two diamonds instead of two clubs we would get the euchre here."
             ]
@@ -767,7 +767,7 @@
               ],
               "isAlone": false,
               "initialLead": 2,
-              "tricks_annotations": {
+              "playAnnotations": {
                 "0": [
                   "Partner has shown void in trump by trumping in with the left and then leading offsuit. It's safe to lead trump again as we have a guaranteed trick even if opponents have the right."
                 ]
@@ -791,7 +791,7 @@
             "Order"
           ],
           "isAlone": false,
-          "calls_annotations": {
+          "callAnnotations": {
             "0": [
               "Feels like a clear donation here, but we would have had the stopper against the S2 loner with KQd."
             ]
@@ -854,7 +854,7 @@
             "Order"
           ],
           "isAlone": false,
-          "calls_annotations": {
+          "callAnnotations": {
             "3": [
               "Down in points or if we only had 6 I would loner this, but decided to be more conservative with it at 7 points."
             ]
@@ -897,7 +897,7 @@
           ],
           "isAlone": false,
           "initialLead": 1,
-          "tricks_annotations": {
+          "playAnnotations": {
             "4": [
               "playing this to allow partner to help, but it actually made things dicier."
             ],
@@ -949,7 +949,7 @@
             "Order"
           ],
           "isAlone": false,
-          "calls_annotations": {
+          "callAnnotations": {
             "0": [
               "Probably unnecessary to donate here given the strength of our hand. Maybe at 9-7, but not 8-6"
             ]
@@ -1046,7 +1046,7 @@
               ],
               "isAlone": false,
               "initialLead": 2,
-              "tricks_annotations": {
+              "playAnnotations": {
                 "2": [
                   "The euchre depends on playing high here as S3 so my Jh doesn't win a trick later on. Very unintuitive."
                 ]
@@ -1073,7 +1073,7 @@
             "Order"
           ],
           "isAlone": false,
-          "calls_annotations": {
+          "callAnnotations": {
             "3": [
               "Super standard to order with three trump and a suited ace, even at 8-8."
             ]
@@ -1116,7 +1116,7 @@
           ],
           "isAlone": false,
           "initialLead": 3,
-          "tricks_annotations": {
+          "playAnnotations": {
             "2": [
               "If S3 plays the R on S1's false lead, they would have missed the euchre."
             ]
@@ -1158,7 +1158,7 @@
               ],
               "isAlone": false,
               "initialLead": 2,
-              "tricks_annotations": {
+              "playAnnotations": {
                 "1": [
                   "If S1 trumps high here, they would miss the euchre. Trumping low would get the euchre."
                 ]

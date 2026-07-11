@@ -71,6 +71,9 @@ function main() {
       targetDeals = dealsArg.split(",").map(val => Number(val.trim()));
     }
 
+    const numPlayers = jsonObj.metadata?.ruleset?.num_players ?? 4;
+    const minRank = jsonObj.metadata?.ruleset?.min_rank ?? 9;
+
     jsonObj.deals.forEach((deal: any, idx: number) => {
       // Determine if this deal is targeted
       const isTarget = targetDeals === null || targetDeals.includes(idx) || (typeof deal === "object" && targetDeals.includes(deal.dealNumber));
@@ -81,7 +84,11 @@ function main() {
       if (typeof deal === "string") {
         console.log(deal);
       } else if (typeof deal === "object") {
-        const packed = packDeal(deal);
+        const hasDefendAlone = deal.phases?.some((p: any) => p.type === "EUCHRE_BIDDING" && p.aloneDefender !== undefined && p.aloneDefender !== -1);
+        const dealer = deal.initialState?.dealer ?? 0;
+        const needsV2 = numPlayers !== 4 || minRank !== 9 || hasDefendAlone || dealer >= 4;
+        const version = needsV2 ? 2 : 1;
+        const packed = packDeal(deal, { version, numPlayers, minRank });
         console.log(packed);
       }
     });

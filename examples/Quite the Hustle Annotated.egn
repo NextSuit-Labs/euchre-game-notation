@@ -178,7 +178,7 @@
               ],
               "isAlone": false,
               "initialLead": 0,
-              "tricks_annotations": {
+              "playAnnotations": {
                 "0": [
                   "Seems like an easy euchre when leading the Ad. Leading the 9h doesn't make much sense when we're not guaranteed to get the lead back later to play diamonds."
                 ]
@@ -339,7 +339,7 @@
               ],
               "isAlone": false,
               "initialLead": 2,
-              "tricks_annotations": {
+              "playAnnotations": {
                 "0": [
                   "I think either lead is fine here. Neither gets a march."
                 ]
@@ -536,7 +536,7 @@
               ],
               "isAlone": false,
               "discard": "Js",
-              "calls_annotations": {
+              "callAnnotations": {
                 "0": [
                   "Definitely need to order this as dealer."
                 ]
@@ -682,7 +682,7 @@
               ],
               "isAlone": false,
               "initialLead": 2,
-              "tricks_annotations": {
+              "playAnnotations": {
                 "0": [
                   "I would have tried to double-lead hearts, but it wouldn't have done anything here."
                 ]
@@ -762,7 +762,7 @@
               ],
               "isAlone": false,
               "discard": "9s",
-              "calls_annotations": {
+              "callAnnotations": {
                 "0": [
                   "Wild pass here with R+1, have to order up."
                 ]
@@ -880,7 +880,7 @@
             "Order"
           ],
           "isAlone": true,
-          "calls_annotations": {
+          "callAnnotations": {
             "0": [
               "Can't really consider donating with the L here. Just bad luck for them."
             ]

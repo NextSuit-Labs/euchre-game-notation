@@ -1,8 +1,53 @@
 import { Deal, BiddingPhase, TrickPlayPhase, Call, AlternativeLine, Phase } from "./types";
 
 const SUITS = ["s", "h", "c", "d"];
-const RANKS = ["9", "T", "J", "Q", "K", "A"];
-const ALL_CARDS = RANKS.flatMap((rank) => SUITS.map((suit) => rank + suit));
+
+// All ranks from lowest to highest (for deck building)
+const ALL_RANKS = ["6", "7", "8", "9", "T", "J", "Q", "K", "A"];
+
+// Min-rank to 2-bit code: 0=9 (24-card), 1=8 (28-card), 2=7 (32-card), 3=6 (36-card)
+const MIN_RANK_TO_CODE: Record<number, number> = { 9: 0, 8: 1, 7: 2, 6: 3 };
+const CODE_TO_MIN_RANK: number[] = [9, 8, 7, 6];
+
+/**
+ * Builds the ordered deck for a given minimum rank.
+ * @param minRank Lowest card rank in the deck (9, 8, 7, or 6). Default 9.
+ */
+function buildDeck(minRank: number = 9): string[] {
+  const rankStr = String(minRank);
+  const startIdx = ALL_RANKS.indexOf(rankStr);
+  const ranks = startIdx >= 0 ? ALL_RANKS.slice(startIdx) : ALL_RANKS.slice(ALL_RANKS.indexOf("9"));
+  return ranks.flatMap((rank) => SUITS.map((suit) => rank + suit));
+}
+
+/** Standard 24-card deck (min_rank = 9) used by V0 and V1. */
+const STANDARD_DECK = buildDeck(9);
+
+/**
+ * Options for {@link packDeal}.
+ */
+export interface PackOptions {
+  /**
+   * Bitpack version to encode as.
+   * - `1` (default): V1 — standard 4-player, 24-card deck. Compact and widely supported.
+   * - `2`: V2 — extended header supporting variable player counts, deck sizes, and defend-alone.
+   */
+  version?: 1 | 2;
+  /**
+   * Number of players (1–8). Default 4.
+   * Only used in V2 encoding. Determines R1/R2 call boundary and cards per trick.
+   */
+  numPlayers?: number;
+  /**
+   * Minimum card rank in the deck (9, 8, 7, or 6). Default 9 (standard 24-card deck).
+   * Only used in V2 encoding.
+   */
+  minRank?: number;
+}
+
+// ---------------------------------------------------------------------------
+// Primitive encoders / decoders
+// ---------------------------------------------------------------------------
 
 function encodeInteger(value: number, maxValue: number): string {
   const bitLen = maxValue.toString(2).length;
@@ -60,7 +105,7 @@ export function base64UrlToBinaryString(base64Url: string): string {
 
 class BitReader {
   private pos = 0;
-  constructor(private binaryStr: string) {}
+  constructor(private binaryStr: string) { }
 
   readBits(numBits: number): string {
     if (this.pos + numBits > this.binaryStr.length) {
@@ -153,11 +198,29 @@ function decodeAnnotations(reader: BitReader): Record<number, string[]> | undefi
   return annotations;
 }
 
-function encodeBiddingPhase(bidding: BiddingPhase, upCard: string, startActionIndex = 0): string {
+// ---------------------------------------------------------------------------
+// Phase encoders / decoders (parameterized for V1 and V2)
+// ---------------------------------------------------------------------------
+
+/**
+ * Encodes a EUCHRE_BIDDING phase.
+ * @param bidding The phase to encode.
+ * @param upCard The up-card for the deal.
+ * @param startActionIndex Offset into the call sequence (used for alt-line branches).
+ * @param numPlayers Number of active players. Default 4 (V1). Determines R1/R2 boundary.
+ * @param version Bitpack version. Default 1. V2 encodes aloneDefender after isAlone.
+ */
+function encodeBiddingPhase(
+  bidding: BiddingPhase,
+  upCard: string,
+  startActionIndex = 0,
+  numPlayers = 4,
+  version = 1,
+): string {
   let bits = "";
   bidding.calls.forEach((call, callIndex) => {
     const actualIndex = startActionIndex + callIndex;
-    if (actualIndex < 4) {
+    if (actualIndex < numPlayers) {
       bits += encodeR1Call(call);
     } else {
       const remainingSuits = SUITS.filter(
@@ -167,16 +230,41 @@ function encodeBiddingPhase(bidding: BiddingPhase, upCard: string, startActionIn
     }
   });
   bits += encodeBoolean(bidding.isAlone ?? false);
-  bits += encodeAnnotations(bidding.calls_annotations);
+
+  // V2 only: encode aloneDefender immediately after isAlone, gated on isAlone=true
+  if (version >= 2 && (bidding.isAlone ?? false)) {
+    const hasDefendAlone =
+      bidding.aloneDefender !== undefined && bidding.aloneDefender >= 0;
+    bits += encodeBoolean(hasDefendAlone);
+    if (hasDefendAlone) {
+      bits += encodeInteger(bidding.aloneDefender!, 7); // 3 bits — seat 0–7
+    }
+  }
+
+  bits += encodeAnnotations(bidding.callAnnotations);
   return bits;
 }
 
-function decodeBiddingPhase(reader: BitReader, upCard: string, startActionIndex = 0): BiddingPhase {
+/**
+ * Decodes a EUCHRE_BIDDING phase from the bit reader.
+ * @param reader The bit reader at the correct position.
+ * @param upCard The up-card for the deal.
+ * @param startActionIndex Offset into the call sequence.
+ * @param numPlayers Number of active players. Default 4 (V1). Determines R1/R2 boundary.
+ * @param version Bitpack version. Default 1. V2 decodes aloneDefender after isAlone.
+ */
+function decodeBiddingPhase(
+  reader: BitReader,
+  upCard: string,
+  startActionIndex = 0,
+  numPlayers = 4,
+  version = 1,
+): BiddingPhase {
   const calls: Call[] = [];
   let orderedUp = false;
 
-  if (startActionIndex < 4) {
-    for (let i = startActionIndex; i < 4; i++) {
+  if (startActionIndex < numPlayers) {
+    for (let i = startActionIndex; i < numPlayers; i++) {
       const bit = reader.readBits(1);
       if (bit === "0") {
         calls.push("Pass");
@@ -190,8 +278,8 @@ function decodeBiddingPhase(reader: BitReader, upCard: string, startActionIndex 
 
   if (!orderedUp) {
     const remainingSuits = SUITS.filter((suit) => suit !== upCard[1].toLowerCase());
-    const round2Start = Math.max(0, startActionIndex - 4);
-    for (let i = round2Start; i < 4; i++) {
+    const round2Start = Math.max(0, startActionIndex - numPlayers);
+    for (let i = round2Start; i < numPlayers; i++) {
       const val = reader.readInteger(3);
       if (val === 0) {
         calls.push("Pass");
@@ -204,7 +292,17 @@ function decodeBiddingPhase(reader: BitReader, upCard: string, startActionIndex 
   }
 
   const isAlone = reader.readBoolean();
-  const calls_annotations = decodeAnnotations(reader);
+
+  // V2 only: decode aloneDefender (gated on isAlone=true)
+  let aloneDefender: number | undefined = undefined;
+  if (version >= 2 && isAlone) {
+    const hasDefendAlone = reader.readBoolean();
+    if (hasDefendAlone) {
+      aloneDefender = reader.readInteger(7); // 3 bits
+    }
+  }
+
+  const callAnnotations = decodeAnnotations(reader);
 
   const phase: BiddingPhase = {
     phaseNumber: 0,
@@ -212,12 +310,19 @@ function decodeBiddingPhase(reader: BitReader, upCard: string, startActionIndex 
     calls,
     isAlone,
   };
-  if (calls_annotations) {
-    phase.calls_annotations = calls_annotations;
+  if (aloneDefender !== undefined) {
+    phase.aloneDefender = aloneDefender;
+  }
+  if (callAnnotations) {
+    phase.callAnnotations = callAnnotations;
   }
   return phase;
 }
 
+/**
+ * Encodes a TRICK_PLAY phase.
+ * Card index encoding adapts automatically to any deck size via cardsRemaining.
+ */
 function encodePlayPhase(play: TrickPlayPhase, cardsRemaining: string[]): string {
   let bits = "";
   bits += encodeInteger(play.tricks.length, 7);
@@ -230,14 +335,42 @@ function encodePlayPhase(play: TrickPlayPhase, cardsRemaining: string[]): string
       }
     });
   });
-  bits += encodeAnnotations(play.tricks_annotations);
+  bits += encodeAnnotations(play.playAnnotations);
   return bits;
 }
 
-function decodePlayPhase(reader: BitReader, isAlone: boolean, cardsRemaining: string[], firstTrickCards?: number): TrickPlayPhase {
+/**
+ * Computes the number of cards played per trick.
+ * - Normal:              `numPlayers`
+ * - Maker alone:         `numPlayers - 1` (maker's partner sits out)
+ * - Maker + defender alone: `numPlayers - 2` (both partners sit out)
+ */
+function computeCardsPerTrick(numPlayers: number, isAlone: boolean, hasDefendAlone: boolean): number {
+  if (!isAlone) return numPlayers;
+  return hasDefendAlone ? numPlayers - 2 : numPlayers - 1;
+}
+
+/**
+ * Decodes a TRICK_PLAY phase from the bit reader.
+ * @param reader The bit reader at the correct position.
+ * @param isAlone Whether the maker called a loner.
+ * @param cardsRemaining The current remaining-cards pool.
+ * @param numPlayers Number of active players. Default 4.
+ * @param firstTrickCards Override cards-per-trick for the first trick (alt-line partial trick support).
+ * @param hasDefendAlone Whether a defender is also going alone (V2 only). Default false.
+ *   When true, cardsPerTrick = numPlayers - 2 instead of numPlayers - 1.
+ */
+function decodePlayPhase(
+  reader: BitReader,
+  isAlone: boolean,
+  cardsRemaining: string[],
+  numPlayers = 4,
+  firstTrickCards?: number,
+  hasDefendAlone = false,
+): TrickPlayPhase {
   const numTricks = reader.readInteger(7);
   const tricks: string[][] = [];
-  const cardsPerTrick = isAlone ? 3 : 4;
+  const cardsPerTrick = computeCardsPerTrick(numPlayers, isAlone, hasDefendAlone);
 
   for (let t = 0; t < numTricks; t++) {
     const trick: string[] = [];
@@ -253,21 +386,31 @@ function decodePlayPhase(reader: BitReader, isAlone: boolean, cardsRemaining: st
     tricks.push(trick);
   }
 
-  const tricks_annotations = decodeAnnotations(reader);
+  const playAnnotations = decodeAnnotations(reader);
 
   const phase: TrickPlayPhase = {
     phaseNumber: 1,
     type: "TRICK_PLAY",
     tricks,
   };
-  if (tricks_annotations) {
-    phase.tricks_annotations = tricks_annotations;
+  if (playAnnotations) {
+    phase.playAnnotations = playAnnotations;
   }
   return phase;
 }
 
-function getCardsRemainingAtActionIndex(deal: Deal, branchIndex: number): string[] {
-  const cardsRemaining = [...ALL_CARDS];
+/**
+ * Returns a copy of the cards remaining after all actions up to (but not including) branchIndex.
+ * @param deal The main deal.
+ * @param branchIndex The action index at which the branch diverges.
+ * @param deck The starting deck for this deal. Defaults to the standard 24-card deck.
+ */
+function getCardsRemainingAtActionIndex(
+  deal: Deal,
+  branchIndex: number,
+  deck: string[] = STANDARD_DECK,
+): string[] {
+  const cardsRemaining = [...deck];
   let actionCount = 0;
 
   for (const phase of deal.phases) {
@@ -307,49 +450,67 @@ function getCardsRemainingAtActionIndex(deal: Deal, branchIndex: number): string
   return cardsRemaining;
 }
 
-/**
- * Encodes/bitpacks an EgnDeal object to a Base64URL string in Version 1.
- * @param deal The Deal object to encode.
- * @returns The Base64URL representation.
- */
-export function packDeal(deal: Deal): string {
-  let binaryString = "0001"; // Version 1 header (4 bits)
-  binaryString += encodeInteger(deal.initialState.dealer, 3);
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
 
-  const cardsRemaining = [...ALL_CARDS];
+/**
+ * Encodes/bitpacks an EgnDeal object to a Base64URL string.
+ *
+ * @param deal The Deal object to encode.
+ * @param options Encoding options. Defaults to Version 1 (4-player, standard 24-card deck).
+ * @returns The Base64URL representation.
+ *
+ * ### Version 1 (default)
+ * Standard 4-player, 24-card (9s and up) encoding. Compact and widely supported.
+ * Header: `[0001][dealer:2bits][upCard:5bits]...`
+ *
+ * ### Version 2
+ * Extended encoding supporting variable player counts (4–11), alternate deck sizes
+ * (min_rank 9/8/7/6), and defend-alone.
+ * Header: `[0010][dealer:3bits][numPlayers-4:3bits][minRankCode:2bits][upCard:Nbits]...`
+ */
+export function packDeal(deal: Deal, options?: PackOptions): string {
+  const version = options?.version ?? 1;
+
+  if (version === 2) {
+    return packDealV2(deal, options);
+  }
+  return packDealV1(deal);
+}
+
+function packDealV1(deal: Deal): string {
+  let binaryString = "0001"; // Version 1 header (4 bits)
+  binaryString += encodeInteger(deal.initialState.dealer, 3); // 2 bits (dealer 0–3)
+
+  const cardsRemaining = [...STANDARD_DECK];
   binaryString += encodeCard(deal.initialState.upCard, cardsRemaining);
 
-  // 1. Encode main phases
   binaryString += encodeInteger(deal.phases.length, 7); // 3 bits
   let isAlone = false;
   deal.phases.forEach((phase) => {
     if (phase.type === "EUCHRE_BIDDING") {
-      binaryString += "0"; // Phase type 0
-      binaryString += encodeBiddingPhase(phase as BiddingPhase, deal.initialState.upCard);
+      binaryString += "0"; // Phase type flag
+      binaryString += encodeBiddingPhase(phase as BiddingPhase, deal.initialState.upCard, 0, 4, 1);
       isAlone = (phase as BiddingPhase).isAlone;
     } else if (phase.type === "TRICK_PLAY") {
-      binaryString += "1"; // Phase type 1
+      binaryString += "1";
       binaryString += encodePlayPhase(phase as TrickPlayPhase, cardsRemaining);
     }
   });
 
-  // 2. Encode alternative lines
   if (deal.alternativeLines && deal.alternativeLines.length > 0) {
-    binaryString += "1"; // Has alternative lines flag
-    binaryString += encodeInteger(deal.alternativeLines.length, 255); // 8 bits
+    binaryString += "1";
+    binaryString += encodeInteger(deal.alternativeLines.length, 255);
     deal.alternativeLines.forEach((altLine) => {
-      binaryString += encodeInteger(altLine.branchIndex, 65535); // 16 bits
-
-      // Simulate cardsRemaining up to branchIndex
-      const altCardsRemaining = getCardsRemainingAtActionIndex(deal, altLine.branchIndex);
-
-      // Encode alternative phases
-      binaryString += encodeInteger(altLine.phases.length, 15); // 4 bits
+      binaryString += encodeInteger(altLine.branchIndex, 65535);
+      const altCardsRemaining = getCardsRemainingAtActionIndex(deal, altLine.branchIndex, STANDARD_DECK);
+      binaryString += encodeInteger(altLine.phases.length, 15);
       let altIsAlone = isAlone;
       altLine.phases.forEach((phase) => {
         if (phase.type === "EUCHRE_BIDDING") {
           binaryString += "0";
-          binaryString += encodeBiddingPhase(phase as BiddingPhase, deal.initialState.upCard, altLine.branchIndex);
+          binaryString += encodeBiddingPhase(phase as BiddingPhase, deal.initialState.upCard, altLine.branchIndex, 4, 1);
           altIsAlone = (phase as BiddingPhase).isAlone;
         } else if (phase.type === "TRICK_PLAY") {
           binaryString += "1";
@@ -358,153 +519,206 @@ export function packDeal(deal: Deal): string {
       });
     });
   } else {
-    binaryString += "0"; // No alternative lines
+    binaryString += "0";
   }
 
-  // Explicit ending marker
-  binaryString += "1010";
+  binaryString += "1010"; // End marker
+  return binaryStringToBase64Url(binaryString);
+}
 
+function packDealV2(deal: Deal, options?: PackOptions): string {
+  const numPlayers = options?.numPlayers ?? 4;
+  const minRank = options?.minRank ?? 9;
+  const minRankCode = MIN_RANK_TO_CODE[minRank] ?? 0;
+  const deck = buildDeck(minRank);
+
+  let binaryString = "0010"; // Version 2 header (4 bits)
+  binaryString += encodeInteger(deal.initialState.dealer, 7); // 3 bits (dealer 0–7)
+  binaryString += encodeInteger(numPlayers - 1, 7);            // 3 bits (0=1p … 7=8p)
+  binaryString += encodeInteger(minRankCode, 3);               // 2 bits (deck variant)
+
+  const cardsRemaining = [...deck];
+  binaryString += encodeCard(deal.initialState.upCard, cardsRemaining);
+
+  binaryString += encodeInteger(deal.phases.length, 7); // 3 bits
+  let isAlone = false;
+  deal.phases.forEach((phase) => {
+    if (phase.type === "EUCHRE_BIDDING") {
+      binaryString += "0";
+      binaryString += encodeBiddingPhase(phase as BiddingPhase, deal.initialState.upCard, 0, numPlayers, 2);
+      isAlone = (phase as BiddingPhase).isAlone;
+    } else if (phase.type === "TRICK_PLAY") {
+      binaryString += "1";
+      binaryString += encodePlayPhase(phase as TrickPlayPhase, cardsRemaining);
+    }
+  });
+
+  if (deal.alternativeLines && deal.alternativeLines.length > 0) {
+    binaryString += "1";
+    binaryString += encodeInteger(deal.alternativeLines.length, 255);
+    deal.alternativeLines.forEach((altLine) => {
+      binaryString += encodeInteger(altLine.branchIndex, 65535);
+      const altCardsRemaining = getCardsRemainingAtActionIndex(deal, altLine.branchIndex, deck);
+      binaryString += encodeInteger(altLine.phases.length, 15);
+      let altIsAlone = isAlone;
+      altLine.phases.forEach((phase) => {
+        if (phase.type === "EUCHRE_BIDDING") {
+          binaryString += "0";
+          binaryString += encodeBiddingPhase(phase as BiddingPhase, deal.initialState.upCard, altLine.branchIndex, numPlayers, 2);
+          altIsAlone = (phase as BiddingPhase).isAlone;
+        } else if (phase.type === "TRICK_PLAY") {
+          binaryString += "1";
+          binaryString += encodePlayPhase(phase as TrickPlayPhase, altCardsRemaining);
+        }
+      });
+    });
+  } else {
+    binaryString += "0";
+  }
+
+  binaryString += "1010"; // End marker
   return binaryStringToBase64Url(binaryString);
 }
 
 /**
  * Decodes a Base64URL representation back into an EgnDeal object.
- * Supports both Version 0 (legacy) and Version 1 format.
+ * Automatically detects and handles Version 0 (legacy), Version 1, and Version 2 formats.
+ *
  * @param base64Url The Base64URL representation.
  * @param dealNumber Optional dealNumber to set in the returned Deal object. Defaults to 0.
  * @returns The reconstructed Deal object.
  */
 export function unpackDeal(base64Url: string, dealNumber: number = 0): Deal {
   const binaryString = base64UrlToBinaryString(base64Url);
-  let reader = new BitReader(binaryString);
+  const reader = new BitReader(binaryString);
+  const headerBits = binaryString.slice(0, 4);
 
-  let isV1 = false;
-  let dealer = 0;
-  if (reader.remainingBits() >= 4 && binaryString.slice(0, 4) === "0001") {
-    isV1 = true;
-    reader.readBits(4); // Consume Version 1 header
-    dealer = reader.readInteger(3);
+  if (reader.remainingBits() >= 4 && headerBits === "0010") {
+    try {
+      return unpackDealV2(reader, binaryString, dealNumber);
+    } catch (e) {
+      // Coincidental collision: V0 deal started with "0010" but failed to decode as V2. Fall back to V0.
+      return unpackDealV0(binaryString, dealNumber);
+    }
   }
 
-  if (!isV1) {
-    // Fall back to legacy Version 0 parsing logic
-    reader = new BitReader(binaryString);
-    const legacyDealer = reader.readInteger(3);
-    let cardsRemaining = [...ALL_CARDS];
-
-    const upCardIndex = reader.readInteger(cardsRemaining.length - 1);
-    const upCard = cardsRemaining[upCardIndex];
-
-    const deal: Deal = {
-      dealNumber,
-      initialState: {
-        dealer: legacyDealer,
-        upCard,
-      },
-      phases: [],
-    };
-
-    if (!reader.hasMoreBits() || (reader.remainingBits() < 8 && reader.peekRemaining().indexOf("1") === -1)) {
-      return deal;
+  if (reader.remainingBits() >= 4 && headerBits === "0001") {
+    try {
+      return unpackDealV1(reader, binaryString, dealNumber);
+    } catch (e) {
+      // Coincidental collision: V0 deal started with "0001" but failed to decode as V1. Fall back to V0.
+      return unpackDealV0(binaryString, dealNumber);
     }
-
-    // Decode bidding phase
-    const calls: Call[] = [];
-    let orderedUp = false;
-
-    for (let i = 0; i < 4; i++) {
-      const bit = reader.readBits(1);
-      if (bit === "0") {
-        calls.push("Pass");
-      } else {
-        calls.push("Order");
-        orderedUp = true;
-        break;
-      }
-    }
-
-    if (!orderedUp) {
-      const remainingSuits = SUITS.filter((suit) => suit !== upCard[1].toLowerCase());
-      for (let i = 0; i < 4; i++) {
-        const val = reader.readInteger(3);
-        if (val === 0) {
-          calls.push("Pass");
-        } else {
-          calls.push(remainingSuits[val - 1] as Call);
-          orderedUp = true;
-          break;
-        }
-      }
-    }
-
-    const isAlone = reader.readBoolean();
-
-    deal.phases.push({
-      phaseNumber: 0,
-      type: "EUCHRE_BIDDING",
-      calls,
-      isAlone,
-    });
-
-    if (!reader.hasMoreBits() || (reader.remainingBits() < 8 && reader.peekRemaining().indexOf("1") === -1)) {
-      deal.phases[0].phaseNumber = 0;
-      return deal;
-    }
-
-    // Decode play phase
-    const tricks: string[][] = [];
-    let currentTrick: string[] = [];
-    const cardsPerTrick = isAlone ? 3 : 4;
-
-    while (reader.hasMoreBits()) {
-      const maxVal = cardsRemaining.length - 1;
-      if (maxVal < 0) break;
-      const bitLen = maxVal.toString(2).length;
-
-      if (reader.remainingBits() < bitLen) {
-        break;
-      }
-
-      if (currentTrick.length === 0 && reader.remainingBits() < 8 && reader.peekRemaining().indexOf("1") === -1) {
-        break;
-      }
-
-      const cardIndex = reader.readInteger(maxVal);
-      const card = cardsRemaining[cardIndex];
-      cardsRemaining = cardsRemaining.filter((c) => c !== card);
-      currentTrick.push(card);
-
-      if (currentTrick.length === cardsPerTrick) {
-        tricks.push(currentTrick);
-        currentTrick = [];
-      }
-    }
-
-    if (currentTrick.length > 0) {
-      tricks.push(currentTrick);
-    }
-
-    deal.phases[0].phaseNumber = 0;
-    deal.phases.push({
-      phaseNumber: 1,
-      type: "TRICK_PLAY",
-      tricks,
-    });
-
-    return deal;
   }
 
-  // Version 1 parsing logic
-  let cardsRemaining = [...ALL_CARDS];
+  // Fall back to legacy Version 0
+  return unpackDealV0(binaryString, dealNumber);
+}
+
+function unpackDealV2(reader: BitReader, binaryString: string, dealNumber: number): Deal {
+  reader.readBits(4); // Consume V2 header
+
+  const dealer = reader.readInteger(7);             // 3 bits
+  const numPlayersOffset = reader.readInteger(7);   // 3 bits
+  const numPlayers = numPlayersOffset + 1;
+  const minRankCode = reader.readInteger(3);        // 2 bits
+  const minRank = CODE_TO_MIN_RANK[minRankCode] ?? 9;
+  const deck = buildDeck(minRank);
+
+  const cardsRemaining = [...deck];
   const upCardIndex = reader.readInteger(cardsRemaining.length - 1);
   const upCard = cardsRemaining[upCardIndex];
 
   const deal: Deal = {
     dealNumber,
-    initialState: {
-      dealer,
-      upCard,
-    },
+    initialState: { dealer, upCard },
+    phases: [],
+  };
+
+  const numPhases = reader.readInteger(7);
+  let isAlone = false;
+  let hasDefendAlone = false;
+  for (let p = 0; p < numPhases; p++) {
+    const phaseType = reader.readBits(1);
+    if (phaseType === "0") {
+      const biddingPhase = decodeBiddingPhase(reader, upCard, 0, numPlayers, 2);
+      biddingPhase.phaseNumber = p;
+      isAlone = biddingPhase.isAlone;
+      hasDefendAlone = biddingPhase.aloneDefender !== undefined && biddingPhase.aloneDefender >= 0;
+      deal.phases.push(biddingPhase);
+    } else {
+      const playPhase = decodePlayPhase(reader, isAlone, cardsRemaining, numPlayers, undefined, hasDefendAlone);
+      playPhase.phaseNumber = p;
+      deal.phases.push(playPhase);
+    }
+  }
+
+  const hasAltLines = reader.readBoolean();
+  if (hasAltLines) {
+    const numAltLines = reader.readInteger(255);
+    const alternativeLines: AlternativeLine[] = [];
+
+    for (let a = 0; a < numAltLines; a++) {
+      const branchIndex = reader.readInteger(65535);
+      const altCardsRemaining = getCardsRemainingAtActionIndex(deal, branchIndex, deck);
+      const numAltPhases = reader.readInteger(15);
+      const phases: Phase[] = [];
+      let altIsAlone = isAlone;
+      let altHasDefendAlone = hasDefendAlone;
+
+      for (let p = 0; p < numAltPhases; p++) {
+        const phaseType = reader.readBits(1);
+        if (phaseType === "0") {
+          const biddingPhase = decodeBiddingPhase(reader, upCard, branchIndex, numPlayers, 2);
+          biddingPhase.phaseNumber = p;
+          altIsAlone = biddingPhase.isAlone;
+          altHasDefendAlone = biddingPhase.aloneDefender !== undefined && biddingPhase.aloneDefender >= 0;
+          phases.push(biddingPhase);
+        } else {
+          let firstTrickCards = undefined;
+          if (p === 0) {
+            const mainBiddingPhase = deal.phases.find((ph) => ph.type === "EUCHRE_BIDDING") as BiddingPhase | undefined;
+            const biddingDecisionsCount = mainBiddingPhase ? mainBiddingPhase.calls.length : 0;
+            const branchPlayIndex = branchIndex - biddingDecisionsCount;
+            if (branchPlayIndex > 0) {
+              const cardsPerTrick = computeCardsPerTrick(numPlayers, altIsAlone, altHasDefendAlone);
+              const cardsAlreadyPlayed = branchPlayIndex % cardsPerTrick;
+              if (cardsAlreadyPlayed > 0) {
+                firstTrickCards = cardsPerTrick - cardsAlreadyPlayed;
+              }
+            }
+          }
+          const playPhase = decodePlayPhase(reader, altIsAlone, altCardsRemaining, numPlayers, firstTrickCards, altHasDefendAlone);
+          playPhase.phaseNumber = p;
+          phases.push(playPhase);
+        }
+      }
+
+      alternativeLines.push({ branchIndex, phases });
+    }
+
+    deal.alternativeLines = alternativeLines;
+  }
+
+  const endMarker = reader.readBits(4);
+  if (endMarker !== "1010") {
+    throw new Error("Invalid end marker. Bitpack data may be corrupted.");
+  }
+
+  return deal;
+}
+
+function unpackDealV1(reader: BitReader, binaryString: string, dealNumber: number): Deal {
+  reader.readBits(4); // Consume V1 header
+  const dealer = reader.readInteger(3); // 2 bits (dealer 0–3)
+
+  const cardsRemaining = [...STANDARD_DECK];
+  const upCardIndex = reader.readInteger(cardsRemaining.length - 1);
+  const upCard = cardsRemaining[upCardIndex];
+
+  const deal: Deal = {
+    dealNumber,
+    initialState: { dealer, upCard },
     phases: [],
   };
 
@@ -513,18 +727,17 @@ export function unpackDeal(base64Url: string, dealNumber: number = 0): Deal {
   for (let p = 0; p < numPhases; p++) {
     const phaseType = reader.readBits(1);
     if (phaseType === "0") {
-      const biddingPhase = decodeBiddingPhase(reader, upCard);
+      const biddingPhase = decodeBiddingPhase(reader, upCard, 0, 4, 1);
       biddingPhase.phaseNumber = p;
       isAlone = biddingPhase.isAlone;
       deal.phases.push(biddingPhase);
     } else {
-      const playPhase = decodePlayPhase(reader, isAlone, cardsRemaining);
+      const playPhase = decodePlayPhase(reader, isAlone, cardsRemaining, 4);
       playPhase.phaseNumber = p;
       deal.phases.push(playPhase);
     }
   }
 
-  // Decode alternative lines
   const hasAltLines = reader.readBoolean();
   if (hasAltLines) {
     const numAltLines = reader.readInteger(255);
@@ -532,25 +745,22 @@ export function unpackDeal(base64Url: string, dealNumber: number = 0): Deal {
 
     for (let a = 0; a < numAltLines; a++) {
       const branchIndex = reader.readInteger(65535);
-
-      // Simulate cardsRemaining up to branchIndex
-      const altCardsRemaining = getCardsRemainingAtActionIndex(deal, branchIndex);
-
-      const numPhases = reader.readInteger(15);
+      const altCardsRemaining = getCardsRemainingAtActionIndex(deal, branchIndex, STANDARD_DECK);
+      const numAltPhases = reader.readInteger(15);
       const phases: Phase[] = [];
       let altIsAlone = isAlone;
 
-      for (let p = 0; p < numPhases; p++) {
+      for (let p = 0; p < numAltPhases; p++) {
         const phaseType = reader.readBits(1);
         if (phaseType === "0") {
-          const biddingPhase = decodeBiddingPhase(reader, upCard, branchIndex);
+          const biddingPhase = decodeBiddingPhase(reader, upCard, branchIndex, 4, 1);
           biddingPhase.phaseNumber = p;
           altIsAlone = biddingPhase.isAlone;
           phases.push(biddingPhase);
         } else {
           let firstTrickCards = undefined;
           if (p === 0) {
-            const mainBiddingPhase = deal.phases.find((phase) => phase.type === "EUCHRE_BIDDING") as BiddingPhase | undefined;
+            const mainBiddingPhase = deal.phases.find((ph) => ph.type === "EUCHRE_BIDDING") as BiddingPhase | undefined;
             const biddingDecisionsCount = mainBiddingPhase ? mainBiddingPhase.calls.length : 0;
             const branchPlayIndex = branchIndex - biddingDecisionsCount;
             if (branchPlayIndex > 0) {
@@ -561,26 +771,125 @@ export function unpackDeal(base64Url: string, dealNumber: number = 0): Deal {
               }
             }
           }
-          const playPhase = decodePlayPhase(reader, altIsAlone, altCardsRemaining, firstTrickCards);
+          const playPhase = decodePlayPhase(reader, altIsAlone, altCardsRemaining, 4, firstTrickCards);
           playPhase.phaseNumber = p;
           phases.push(playPhase);
         }
       }
 
-      alternativeLines.push({
-        branchIndex,
-        phases,
-      });
+      alternativeLines.push({ branchIndex, phases });
     }
 
     deal.alternativeLines = alternativeLines;
   }
 
-  // Explicit ending code assertion
   const endMarker = reader.readBits(4);
   if (endMarker !== "1010") {
     throw new Error("Invalid end marker. Bitpack data may be corrupted.");
   }
+
+  return deal;
+}
+
+function unpackDealV0(binaryString: string, dealNumber: number): Deal {
+  // Legacy Version 0 — no version header, no annotations, no alternative lines
+  const reader = new BitReader(binaryString);
+  const legacyDealer = reader.readInteger(3);
+  let cardsRemaining = [...STANDARD_DECK];
+
+  const upCardIndex = reader.readInteger(cardsRemaining.length - 1);
+  const upCard = cardsRemaining[upCardIndex];
+
+  const deal: Deal = {
+    dealNumber,
+    initialState: { dealer: legacyDealer, upCard },
+    phases: [],
+  };
+
+  if (!reader.hasMoreBits() || (reader.remainingBits() < 8 && reader.peekRemaining().indexOf("1") === -1)) {
+    return deal;
+  }
+
+  const calls: Call[] = [];
+  let orderedUp = false;
+
+  for (let i = 0; i < 4; i++) {
+    const bit = reader.readBits(1);
+    if (bit === "0") {
+      calls.push("Pass");
+    } else {
+      calls.push("Order");
+      orderedUp = true;
+      break;
+    }
+  }
+
+  if (!orderedUp) {
+    const remainingSuits = SUITS.filter((suit) => suit !== upCard[1].toLowerCase());
+    for (let i = 0; i < 4; i++) {
+      const val = reader.readInteger(3);
+      if (val === 0) {
+        calls.push("Pass");
+      } else {
+        calls.push(remainingSuits[val - 1] as Call);
+        orderedUp = true;
+        break;
+      }
+    }
+  }
+
+  const isAlone = reader.readBoolean();
+
+  deal.phases.push({
+    phaseNumber: 0,
+    type: "EUCHRE_BIDDING",
+    calls,
+    isAlone,
+  });
+
+  if (!reader.hasMoreBits() || (reader.remainingBits() < 8 && reader.peekRemaining().indexOf("1") === -1)) {
+    deal.phases[0].phaseNumber = 0;
+    return deal;
+  }
+
+  const tricks: string[][] = [];
+  let currentTrick: string[] = [];
+  const cardsPerTrick = isAlone ? 3 : 4;
+
+  while (reader.hasMoreBits()) {
+    const maxVal = cardsRemaining.length - 1;
+    if (maxVal < 0) break;
+    const bitLen = maxVal.toString(2).length;
+
+    if (reader.remainingBits() < bitLen) {
+      break;
+    }
+
+    if (currentTrick.length === 0 && reader.remainingBits() < 8 && reader.peekRemaining().indexOf("1") === -1) {
+      break;
+    }
+
+    const cardIndex = reader.readInteger(maxVal);
+    const card = cardsRemaining[cardIndex];
+    cardsRemaining = cardsRemaining.filter((c) => c !== card);
+    currentTrick.push(card);
+
+    if (currentTrick.length === cardsPerTrick) {
+      tricks.push(currentTrick);
+      currentTrick = [];
+    }
+  }
+
+  if (currentTrick.length > 0) {
+    tricks.push(currentTrick);
+  }
+
+  deal.phases[0].phaseNumber = 0;
+  deal.phases.push({
+    phaseNumber: 1,
+    type: "TRICK_PLAY",
+    tricks,
+  });
 
   return deal;
 }

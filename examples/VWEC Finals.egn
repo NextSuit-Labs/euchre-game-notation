@@ -194,7 +194,7 @@
               "Ts"
             ]
           ],
-          "tricks_annotations": {
+          "playAnnotations": {
             "2": ["Nothing I could do here to prevent the euchre. Even if I trumped high. I'm not sure which is correct"]
           }
         }
@@ -705,7 +705,7 @@
             "Order"
           ],
           "isAlone": false,
-          "calls_annotations": {
+          "callAnnotations": {
             "0": ["Probably unnecessary to donate here given the strength of our hand. Maybe at 9-7, but not 8-6"]
           }
         },

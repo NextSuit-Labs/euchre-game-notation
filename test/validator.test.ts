@@ -35,7 +35,7 @@ const validMockData = {
           "calls": ["Pass", "Pass", "Pass", "Order"],
           "isAlone": false,
           "discard": "9s",
-          "calls_annotations": {
+          "callAnnotations": {
             3: ["Strong order by Player 3"]
           }
         },
@@ -50,8 +50,8 @@ const validMockData = {
             ["Jh", "Td", "Ks", "Ts"],
             ["Qc", "Qs", "Js", "Jc"]
           ],
-          "tricks_annotations": {
-            1: ["Trick 1 annotation"]
+          "playAnnotations": {
+            1: ["Play 1 annotation for the Tc play"]
           }
         }
       ],
@@ -120,7 +120,7 @@ describe("EGN Validator", () => {
               "type": "EUCHRE_BIDDING",
               "calls": ["Pass", "Pass", "Pass", "x"], // Unknown call
               "isAlone": false,
-              "card_exchanges": [
+              "cardExchanges": [
                 { "sender": 2, "receiver": 1, "cards": ["9s", "9c", "Ts"] }
               ]
             }
@@ -220,13 +220,7 @@ describe("EGN Validator", () => {
     delete m2.metadata.initialScore;
     expect(validateEGN(m2).isValid).toBe(false);
 
-    // initialScore size != 2
-    const m3 = cloneMock();
-    m3.metadata.initialScore = [1];
-    expect(validateEGN(m3).isValid).toBe(false);
-
-    m3.metadata.initialScore = [1, 2, 3];
-    expect(validateEGN(m3).isValid).toBe(false);
+    // initialScore size is flexible (no min/max constraint — supports variable player counts)
 
     // initialScore contains non-integers
     const m4 = cloneMock();
@@ -286,10 +280,7 @@ describe("EGN Validator", () => {
     m1.deals[0].dealNumber = -1;
     expect(validateEGN(m1).isValid).toBe(false);
 
-    // dealer out of range
-    const m2 = cloneMock();
-    m2.deals[0].initialState.dealer = 4;
-    expect(validateEGN(m2).isValid).toBe(false);
+    // dealer has no max constraint — supports variable player counts (validated by ruleset/num_players)
 
     // malformed upCard
     const m3 = cloneMock();
@@ -304,20 +295,14 @@ describe("EGN Validator", () => {
     m4.deals[0].phases[0].calls = ["Pass", "Order", "InvalidCall"];
     expect(validateEGN(m4).isValid).toBe(false);
 
-    // bidding phase: calls length > 8
-    const m5 = cloneMock();
-    m5.deals[0].phases[0].calls = ["Pass", "Pass", "Pass", "Pass", "Pass", "Pass", "Pass", "Pass", "Pass"];
-    expect(validateEGN(m5).isValid).toBe(false);
+    // calls length has no max constraint — supports extended bidding variants
 
     // trick play: tricks with invalid cards
     const m6 = cloneMock();
     m6.deals[0].phases[1].tricks[0] = ["Ac", "Tc", "9z", "Kc"];
     expect(validateEGN(m6).isValid).toBe(false);
 
-    // trick play: initialLead out of range
-    const m7 = cloneMock();
-    m7.deals[0].phases[1].initialLead = 5;
-    expect(validateEGN(m7).isValid).toBe(false);
+    // initialLead has no max constraint — supports variable player counts (validated by ruleset/num_players)
   });
 
   it("should validate alternative lines and annotations", () => {
@@ -328,12 +313,12 @@ describe("EGN Validator", () => {
 
     // annotations with non-numeric key
     const m2 = cloneMock();
-    m2.deals[0].phases[0].calls_annotations["abc"] = ["annotation text"];
+    m2.deals[0].phases[0].callAnnotations["abc"] = ["annotation text"];
     expect(validateEGN(m2).isValid).toBe(false);
 
     // annotations value not string array
     const m3 = cloneMock();
-    m3.deals[0].phases[0].calls_annotations["2"] = "not-an-array";
+    m3.deals[0].phases[0].callAnnotations["2"] = "not-an-array";
     expect(validateEGN(m3).isValid).toBe(false);
   });
 
@@ -354,7 +339,7 @@ describe("EGN Protobuf Converter", () => {
       for (const key of Object.keys(obj)) {
         const val = obj[key];
         // Skip empty arrays for optional fields that might be defaulted by protobuf arrays option
-        if (Array.isArray(val) && val.length === 0 && (key === "kitty" || key === "player_cards" || key === "card_exchanges" || key === "alternativeLines")) {
+        if (Array.isArray(val) && val.length === 0 && (key === "kitty" || key === "playerCards" || key === "cardExchanges" || key === "alternativeLines")) {
           continue;
         }
         res[key] = normalizeEgn(val);
@@ -374,7 +359,7 @@ describe("EGN Protobuf Converter", () => {
       for (const key of Object.keys(obj)) {
         // Skip fields that the bitpacker drops:
         if (key === "kitty" || key === "discard" || key === "initialLead" ||
-          key === "card_exchanges" || key === "calls_annotations" || key === "tricks_annotations" ||
+          key === "cardExchanges" || key === "callAnnotations" || key === "playAnnotations" ||
           key === "alternativeLines") {
           continue;
         }

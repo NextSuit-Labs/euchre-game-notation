@@ -54,8 +54,8 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
           "calls": ["Pass", "Pass", "Pass", "Order"],
           "isAlone": false,
           "discard": "9s",
-          "calls_annotations": {
-            "3": ["Strong order by Dealer"]
+          "callAnnotations": {
+            "3": ["[!]Strong order by Dealer"]
           }
         },
         {
@@ -69,8 +69,8 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
             ["Jh", "Td", "Ks", "Ts"],
             ["Qc", "Qs", "Js", "Jc"]
           ],
-          "tricks_annotations": {
-            "1": ["Mistake here by Seat 2."]
+          "playAnnotations": {
+            "2": ["[?]Mistake here by Seat 2."]
           }
         }
       ],
@@ -170,7 +170,18 @@ When implementing or parsing EGN, keep the following details in mind:
 
 1. **Unknown/Hidden Information (`discard` and `kitty`)**: Depending on how the game data was recorded (e.g., manually transcribed from a live stream vs. exported from a fully observable digital game engine), the dealer's `discard` and the unplayed `kitty` cards might not be known. These properties are optional in the specification and can be omitted if the data is unavailable.
 2. **Trick Order and Lead Determination**: The `tricks` array records cards strictly in the chronological order they were dropped on the table. It does not explicitly state which player led each trick. Instead, the lead for the very first trick can be defaulted to the player to the left of the dealer or can be indicated by the `initialLead` property. For all subsequent tricks, the lead is implicitly determined by calculating the winner of the prior trick using standard Euchre rules. This aligns with EGN's philosophy of deterministic minimalism.
-3. **Annotations**: Optional commentary infrastructure for bidding or trick play. Annotations are defined under `calls_annotations` (for bidding phases) and `tricks_annotations` (for trick play phases) as a map from a decision/trick index to an array of strings (e.g., `{"3": ["Order Up on Jacks", "Maker went alone"]}`).
+3. **Annotations**: Optional commentary infrastructure for bidding or trick play. Annotations are defined under `callAnnotations` (for bidding phases) and `playAnnotations` (for trick play phases) as a map from a decision/trick index to an array of strings (e.g., `{"3": ["Order Up on Jacks", "Maker went alone"]}`). Annotation strings may optionally begin with a **label tag** to classify the quality of a decision:
+
+   | Label  | Meaning                                    |
+   |--------|--------------------------------------------|
+   | `[??]` | Blunder — a severely bad decision          |
+   | `[?]`  | Mistake — a clear error                    |
+   | `[?!]` | Dubious — questionable, probably wrong     |
+   | `[!?]` | Interesting — creative, but debatable      |
+   | `[!]`  | Great play — a solid, correct decision     |
+   | `[!!]` | Brilliant play — an excellent decision     |
+
+   For example: `"[??]Throwing trump here lost the hand."` or `"[!!]Perfect lone call."`. See [docs/annotations.md](docs/annotations.md) for full details.
 4. **Alternative Lines (Branching)**: Analysis networks or theoretical branching plays can be specified via the optional `alternativeLines` array on any deal. Each alternative line contains a `branchIndex` (a 0-based decision index representing the point of deviation from the main game flow) and a `phases` list containing alternative Bidding or TrickPlay phases representing the sequence of alternate actions.
 5. **Flexible Metadata Fields**:
    * **Player Count**: The `players` array supports any number of player names (instead of being strictly restricted to a size of 4) to accommodate different gameplay variants or incomplete logs.

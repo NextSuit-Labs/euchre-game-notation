@@ -36,5 +36,6 @@ At the end of the `TRICK_PLAY` phase, the parser counts the number of tricks won
 ### Standard Scoring
 * **Makers win 3 or 4 tricks:** 1 point.
 * **Makers win 5 tricks:** 2 points.
-* **Makers win 5 tricks (Alone):** 4 points (requires `isAlone: true` in the bidding phase).
+* **Makers win 5 tricks (Alone):** Points equal to `loner_march_score` (default: 4). Requires `isAlone: true` in the bidding phase.
 * **Defenders win 3 or more tricks (Euchred):** 2 points.
+* **Loner is Euchred (Defenders win 3+ tricks against a loner):** Points equal to `loner_euchred_score` (default: 2).

@@ -23,7 +23,7 @@ const validMockData = {
           "type": "EUCHRE_BIDDING",
           "calls": ["Pass", "Pass", "Pass", "Order"],
           "isAlone": false,
-          "calls_annotations": {
+          "callAnnotations": {
             8: ["High index annotation test"]
           }
         }
@@ -45,7 +45,7 @@ describe("EGN Protobuf Converter Core", () => {
     });
 
     const tempBinFilePath = path.join(__dirname, "invalid_temp_test.bin");
-    
+
     expect(() => {
       convertEgnJsonToBin(invalidJsonStr, tempBinFilePath);
     }).toThrow("Protobuf verification failed");
@@ -80,10 +80,10 @@ describe("EGN Protobuf Converter Core", () => {
 
       // Verify the annotations survived exactly
       const phase = backObj.deals[0].phases[0];
-      expect(phase.calls_annotations).toBeDefined();
-      
+      expect(phase.callAnnotations).toBeDefined();
+
       // In JS, object keys are strings at runtime, so we check "8"
-      expect(phase.calls_annotations["8"]).toEqual(["High index annotation test"]);
+      expect(phase.callAnnotations["8"]).toEqual(["High index annotation test"]);
     } finally {
       if (fs.existsSync(tempBinFilePath)) {
         fs.unlinkSync(tempBinFilePath);
@@ -100,10 +100,10 @@ describe("EGN Protobuf Converter Core", () => {
       fs.mkdirSync(tempDir);
     }
     const tempBinFilePath = path.join(tempDir, "corrupted.bin");
-    
+
     // Write trash bytes
     fs.writeFileSync(tempBinFilePath, Buffer.from([0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc]));
-    
+
     try {
       expect(() => {
         convertBinToEgnJson(tempBinFilePath);
@@ -151,7 +151,7 @@ describe("EGN Protobuf Converter Core", () => {
 
     try {
       const jsonStr = JSON.stringify(rulesData);
-      
+
       // Test expanded mode roundtrip for all rules
       convertEgnJsonToBin(jsonStr, tempBinFilePath, false);
       const decodedJsonStr = convertBinToEgnJson(tempBinFilePath, false);
@@ -196,7 +196,7 @@ describe("EGN Protobuf Converter Core", () => {
               type: "EUCHRE_BIDDING",
               calls: ["Pass", "Pass", "Pass", "Order"],
               isAlone: false,
-              calls_annotations: {
+              callAnnotations: {
                 3: ["Annotation on order"]
               }
             }
@@ -220,23 +220,82 @@ describe("EGN Protobuf Converter Core", () => {
 
     try {
       const jsonStr = JSON.stringify(testData);
-      
+
       // Convert to condensed binary
       convertEgnJsonToBin(jsonStr, tempBinFilePath, true);
-      
+
       // Convert back to JSON
       const backJsonStr = convertBinToEgnJson(tempBinFilePath, true);
       const backObj = JSON.parse(backJsonStr);
 
       // Verify they are preserved
       const phase = backObj.deals[0].phases[0];
-      expect(phase.calls_annotations).toBeDefined();
-      expect(phase.calls_annotations["3"]).toEqual(["Annotation on order"]);
+      expect(phase.callAnnotations).toBeDefined();
+      expect(phase.callAnnotations["3"]).toEqual(["Annotation on order"]);
 
       expect(backObj.deals[0].alternativeLines).toBeDefined();
       expect(backObj.deals[0].alternativeLines.length).toBe(1);
       expect(backObj.deals[0].alternativeLines[0].branchIndex).toBe(0);
       expect(backObj.deals[0].alternativeLines[0].phases[0].calls).toEqual(["Pass", "Pass", "Pass", "Pass", "Pass", "s"]);
+    } finally {
+      if (fs.existsSync(tempBinFilePath)) {
+        fs.unlinkSync(tempBinFilePath);
+      }
+      if (fs.existsSync(tempDir)) {
+        fs.rmdirSync(tempDir);
+      }
+    }
+  });
+
+  it("should preserve aloneDefender in both condensed and expanded modes", () => {
+    const tempDir = path.resolve(__dirname, "../temp_test_dir_alonedefer");
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
+    }
+    const tempBinFilePath = path.join(tempDir, "alonedefer.bin");
+
+    const testData = {
+      fileType: "Euchre Game Notation",
+      version: "1.0.0",
+      metadata: {
+        players: ["P0", "P1", "P2", "P3"],
+        initialScore: [0, 0],
+        ruleset: {
+          defend_alone: true
+        }
+      },
+      deals: [
+        {
+          dealNumber: 0,
+          initialState: {
+            dealer: 3,
+            upCard: "Jd",
+          },
+          phases: [
+            {
+              phaseNumber: 0,
+              type: "EUCHRE_BIDDING",
+              calls: ["Pass", "Pass", "Pass", "Order"],
+              isAlone: true,
+              aloneDefender: 1
+            }
+          ]
+        }
+      ]
+    };
+
+    try {
+      const jsonStr = JSON.stringify(testData);
+
+      // 1. Test condensed mode
+      convertEgnJsonToBin(jsonStr, tempBinFilePath, true);
+      let backObj = JSON.parse(convertBinToEgnJson(tempBinFilePath, true));
+      expect(backObj.deals[0].phases[0].aloneDefender).toBe(1);
+
+      // 2. Test expanded mode
+      convertEgnJsonToBin(jsonStr, tempBinFilePath, false);
+      backObj = JSON.parse(convertBinToEgnJson(tempBinFilePath, false));
+      expect(backObj.deals[0].phases[0].aloneDefender).toBe(1);
     } finally {
       if (fs.existsSync(tempBinFilePath)) {
         fs.unlinkSync(tempBinFilePath);

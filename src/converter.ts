@@ -49,6 +49,7 @@ const protoToJsonKeyMap: Record<string, string> = {
   up_card: "upCard",
   phase_number: "phaseNumber",
   is_alone: "isAlone",
+  alone_defender: "aloneDefender",
   initial_lead: "initialLead",
   branch_index: "branchIndex",
   alternative_lines: "alternativeLines",
@@ -63,6 +64,7 @@ const jsonToProtoKeyMap: Record<string, string> = {
   upCard: "up_card",
   phaseNumber: "phase_number",
   isAlone: "is_alone",
+  aloneDefender: "alone_defender",
   initialLead: "initial_lead",
   branchIndex: "branch_index",
   alternativeLines: "alternative_lines",
@@ -81,9 +83,9 @@ function mapProtoToEgn(protoObj: any): any {
       const val = protoObj[key];
       const mappedKey = protoToJsonKeyMap[key] || key;
 
-      // Convert card lists in player_cards (from array of CardList messages to array of string arrays)
-      if (key === "player_cards" && Array.isArray(val)) {
-        res["player_cards"] = val.map(item => item.cards || []);
+      // Convert card lists in playerCards (from array of CardList messages to array of string arrays)
+      if (key === "playerCards" && Array.isArray(val)) {
+        res["playerCards"] = val.map(item => item.cards || []);
         continue;
       }
 
@@ -111,7 +113,7 @@ function mapProtoToEgn(protoObj: any): any {
       }
 
       // Convert AnnotationList map back to string[] arrays
-      if ((key === "calls_annotations" || key === "tricks_annotations") && typeof val === "object" && val !== null) {
+      if ((key === "callAnnotations" || key === "playAnnotations") && typeof val === "object" && val !== null) {
         const mappedAnn: any = {};
         for (const annKey of Object.keys(val)) {
           const numKey = Number(annKey);
@@ -148,16 +150,16 @@ function mapEgnToProto(jsonObj: any, condensed: boolean): any {
       const val = jsonObj[key];
       const mappedKey = jsonToProtoKeyMap[key] || key;
 
-      // Convert player_cards to CardList messages
+      // Convert playerCards to CardList messages
       if (key === "loner_lead" && typeof val === "string") {
         const enumType = getLonerLeadEnum(condensed);
         res["loner_lead"] = enumType.values[val];
         continue;
       }
 
-      // Convert player_cards to CardList messages
-      if (key === "player_cards" || key === "playerCards") {
-        res["player_cards"] = val.map((cards: string[]) => ({ cards }));
+      // Convert playerCards to CardList messages
+      if (key === "playerCards" || key === "playerCards") {
+        res["playerCards"] = val.map((cards: string[]) => ({ cards }));
         continue;
       }
 
@@ -183,7 +185,7 @@ function mapEgnToProto(jsonObj: any, condensed: boolean): any {
       }
 
       // Convert string[] annotations to AnnotationList maps
-      if ((key === "calls_annotations" || key === "tricks_annotations") && typeof val === "object" && val !== null) {
+      if ((key === "callAnnotations" || key === "playAnnotations") && typeof val === "object" && val !== null) {
         const mappedAnn: any = {};
         for (const annKey of Object.keys(val)) {
           const numKey = Number(annKey);
@@ -256,9 +258,15 @@ export function convertEgnJsonToBin(egnJsonStr: string, outBinFilePath: string, 
   // Pre-process deals array to pack or unpack deals based on condensed flag
   if (Array.isArray(jsonObj.deals)) {
     if (condensed) {
+      const numPlayers = jsonObj.metadata?.ruleset?.num_players ?? 4;
+      const minRank = jsonObj.metadata?.ruleset?.min_rank ?? 9;
       jsonObj.deals = jsonObj.deals.map((d: any) => {
         if (typeof d === "object") {
-          return packDeal(d);
+          const hasDefendAlone = d.phases?.some((p: any) => p.type === "EUCHRE_BIDDING" && p.aloneDefender !== undefined && p.aloneDefender !== -1);
+          const dealer = d.initialState?.dealer ?? 0;
+          const needsV2 = numPlayers !== 4 || minRank !== 9 || hasDefendAlone || dealer >= 4;
+          const version = needsV2 ? 2 : 1;
+          return packDeal(d, { version, numPlayers, minRank });
         }
         return d;
       });

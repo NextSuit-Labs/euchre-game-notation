@@ -21,6 +21,10 @@ message Ruleset {
   optional bool allow_no_trump = 10;
   optional bool fast_break = 11;
   optional bool four_trick_tokens = 12;
+  optional int32 loner_march_score = 13;
+  optional int32 loner_euchred_score = 14;
+  optional bool defend_alone = 15;
+  optional int32 num_players = 16;
 }
 
 message Metadata {

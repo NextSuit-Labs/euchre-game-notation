@@ -27,7 +27,7 @@
       "initialState": {
         "dealer": 1,
         "upCard": "Js",
-        "player_cards": [
+        "playerCards": [
           [],
           [],
           [],
@@ -91,7 +91,7 @@
       "initialState": {
         "dealer": 2,
         "upCard": "Jh",
-        "player_cards": [
+        "playerCards": [
           [],
           [],
           [],
@@ -156,7 +156,7 @@
       "initialState": {
         "dealer": 3,
         "upCard": "Ah",
-        "player_cards": [
+        "playerCards": [
           [],
           [],
           [],
@@ -219,7 +219,7 @@
       "initialState": {
         "dealer": 0,
         "upCard": "Tc",
-        "player_cards": [
+        "playerCards": [
           [],
           [],
           [],
@@ -281,7 +281,7 @@
       "initialState": {
         "dealer": 1,
         "upCard": "Qd",
-        "player_cards": [
+        "playerCards": [
           [],
           [],
           [],
@@ -389,7 +389,7 @@
       "initialState": {
         "dealer": 2,
         "upCard": "9d",
-        "player_cards": [
+        "playerCards": [
           [],
           [],
           [],
@@ -551,7 +551,7 @@
       "initialState": {
         "dealer": 3,
         "upCard": "Th",
-        "player_cards": [
+        "playerCards": [
           [],
           [],
           [],
@@ -612,7 +612,7 @@
       "initialState": {
         "dealer": 0,
         "upCard": "Ac",
-        "player_cards": [
+        "playerCards": [
           [],
           [],
           [],
@@ -717,7 +717,7 @@
       "initialState": {
         "dealer": 1,
         "upCard": "9d",
-        "player_cards": [
+        "playerCards": [
           [],
           [],
           [],
@@ -781,7 +781,7 @@
       "initialState": {
         "dealer": 2,
         "upCard": "9d",
-        "player_cards": [
+        "playerCards": [
           [],
           [],
           [],
@@ -900,7 +900,7 @@
       "initialState": {
         "dealer": 3,
         "upCard": "Qc",
-        "player_cards": [
+        "playerCards": [
           [],
           [],
           [],
@@ -959,7 +959,7 @@
       "initialState": {
         "dealer": 0,
         "upCard": "Jd",
-        "player_cards": [
+        "playerCards": [
           [],
           [],
           [],
