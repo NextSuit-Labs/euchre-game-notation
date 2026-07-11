@@ -256,3 +256,51 @@ Convert a binary file back to a JSON EGN file:
 ```bash
 egn-convert game.condensed.bin game.egn
 ```
+
+---
+
+## 💻 Programmatic API Usage
+
+Install the package locally in your project:
+
+```bash
+npm install euchre-game-notation
+```
+
+### 1. Schema Validation
+
+Ensure an EGN JSON object conforms strictly to the specification:
+
+```typescript
+import { validateEGN, isEGNFile, EGNFile } from "euchre-game-notation";
+
+const parsedData = JSON.parse(egnJsonString);
+
+// Option A: Detailed validation result
+const result = validateEGN(parsedData);
+if (result.isValid) {
+  console.log("Valid EGN file!");
+} else {
+  console.error("Schema validation errors:", result.errors);
+}
+
+// Option B: TypeScript Type Guard
+if (isEGNFile(parsedData)) {
+  const egn: EGNFile = parsedData; // Typecasted automatically
+  console.log(`Loaded game: ${egn.metadata.title}`);
+}
+```
+
+### 2. Serialization & Format Conversion
+
+Convert between JSON strings and binary representations programmatically:
+
+```typescript
+import { convertEgnJsonToBin, convertBinToEgnJson } from "euchre-game-notation";
+
+// Convert EGN JSON string to a condensed binary file
+convertEgnJsonToBin(egnJsonString, "path/to/output.bin", true);
+
+// Convert a condensed binary file back to a pretty-printed EGN JSON string
+const decodedJsonString = convertBinToEgnJson("path/to/output.bin", true);
+```
