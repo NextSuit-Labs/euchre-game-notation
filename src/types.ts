@@ -1,6 +1,6 @@
 /**
  * Core TypeScript definitions for Euchre Game Notation (EGN).
- * Maps directly to the EGN schema v1.0.0.
+ * Maps directly to the EGN schema v1.1.0.
  */
 
 export type Card = string; // Pattern: ^([78N9TJQKAX][SsHhCcDdxtngh]|[LRB])$
@@ -55,7 +55,7 @@ export interface BiddingPhase {
   phaseNumber: number;
   type: "EUCHRE_BIDDING";
   calls: Call[];
-  isAlone: boolean;
+  isAlone?: boolean;
   aloneDefender?: number; // Seat index of player defending alone, or -1 if none. Only used when ruleset.defend_alone is true.
   discard?: Card;
   cardExchanges?: CardExchange[];

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EGN Baseline Replayer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <h1>EGN Baseline Replayer</h1>
+  <p class="subtitle">A pure, minimal-game-logic parser & step-replayer for Euchre Game Notation (.egn)</p>
+
+  <div class="container">
+    <!-- Load Panel -->
+    <div class="card-panel load-area">
+      <label for="egn-input" style="font-weight: 600; font-size: 0.95rem;">Load EGN JSON File:</label>
+      <textarea id="egn-input" placeholder="Paste .egn JSON code here..."></textarea>
+
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <button class="btn" id="load-btn">Load & Initialize</button>
+        <span style="color: var(--text-gray); font-size: 0.9rem;">Or select sample deal:</span>
+        <select id="sample-select"
+          style="background-color: var(--bg-medium); color: var(--text-light); border: 1px solid var(--bg-light); border-radius: 8px; padding: 8px 12px; font-weight: 600; cursor: pointer;">
+          <option value="0">VWEC Finals - Hand 1 (Standard Order-Up)</option>
+          <option value="1">VWEC Finals - Hand 2 (Bidding Round 2)</option>
+          <option value="2">VWEC Finals - Hand 8 (Going Alone)</option>
+          <option value="3">WWMM and Bears (Entire Game)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Workspace -->
+    <div class="replayer-workspace">
+      <!-- Main Table view -->
+      <div>
+        <div class="table-container">
+          <!-- North Seat -->
+          <div class="seat seat-n">
+            <div class="seat-name" id="name-0">Player 1</div>
+            <div class="seat-cards" id="cards-0">-</div>
+          </div>
+
+          <!-- East Seat -->
+          <div class="seat seat-e">
+            <div class="seat-name" id="name-1">Player 2</div>
+            <div class="seat-cards" id="cards-1">-</div>
+          </div>
+
+          <!-- Center Trick Area -->
+          <div class="table-center">
+            <div id="center-cards-container"></div>
+            <div class="center-info" id="center-info">
+              <div>Dealer: <span id="dealer-val">-</span></div>
+              <div class="upcard-box" id="upcard-val">-</div>
+            </div>
+          </div>
+
+          <!-- West Seat -->
+          <div class="seat seat-w">
+            <div class="seat-name" id="name-3">Player 4</div>
+            <div class="seat-cards" id="cards-3">-</div>
+          </div>
+
+          <!-- South Seat -->
+          <div class="seat seat-s">
+            <div class="seat-name" id="name-2">Player 3</div>
+            <div class="seat-cards" id="cards-2">-</div>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="card-panel controls-panel">
+          <div class="step-info" id="step-info">Step: - / -</div>
+          <div class="step-controls">
+            <button class="btn" id="prev-hand-btn" style="background-color: var(--bg-light);">&lArr; Hand</button>
+            <button class="btn" id="prev-btn" style="background-color: var(--bg-light);">&larr; Prev</button>
+            <button class="btn" id="next-btn">Next &rarr;</button>
+            <button class="btn" id="next-hand-btn">Hand &rArr;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Information Sidebar -->
+      <div class="sidebar">
+        <!-- Metadata -->
+        <div class="card-panel info-section">
+          <h3>Metadata</h3>
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-label">Title:</span>
+              <span class="info-value" id="meta-title">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Deal:</span>
+              <span class="info-value" id="deal-num">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Phase:</span>
+              <span class="info-value" id="phase-type">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Tricks Won:</span>
+              <span class="info-value" id="tricks-won">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Deal Score:</span>
+              <span class="info-value" id="deal-score">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Game Score:</span>
+              <span class="info-value" id="game-score-val">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Step Action -->
+        <div class="card-panel info-section">
+          <h3>Last Action</h3>
+          <div id="action-val"
+            style="font-weight: 800; font-size: 1.1rem; color: var(--color-primary); margin-bottom: 10px;">
+            No game loaded
+          </div>
+        </div>
+
+        <!-- Annotations -->
+        <div class="card-panel info-section">
+          <h3>Annotations</h3>
+          <div class="annotation-text" id="annotation-box">
+            No annotation at this step.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="games.js"></script>
+  <script src="rules-engine.js"></script>
+  <script src="replayer.js"></script>
+</body>
+
+</html>

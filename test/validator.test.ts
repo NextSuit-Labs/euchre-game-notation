@@ -237,6 +237,43 @@ describe("EGN Validator", () => {
     expect(validateEGN(m6).isValid).toBe(false);
   });
 
+  it("should validate hardened schema constraints (additionalProperties, maxItems, maxLength)", () => {
+    // 1. Rejects unknown property in root
+    const rootBad = cloneMock();
+    (rootBad as any).extraProperty = "not allowed";
+    expect(validateEGN(rootBad).isValid).toBe(false);
+
+    // 2. Rejects unknown property in ruleset
+    const rulesetBad = cloneMock();
+    (rulesetBad.metadata.ruleset as any).extraRule = "not allowed";
+    expect(validateEGN(rulesetBad).isValid).toBe(false);
+
+    // 3. Rejects title exceeding maxLength of 128
+    const titleTooLong = cloneMock();
+    titleTooLong.metadata.title = "a".repeat(129);
+    expect(validateEGN(titleTooLong).isValid).toBe(false);
+
+    // 4. Rejects description exceeding maxLength of 1024
+    const descTooLong = cloneMock();
+    descTooLong.metadata.description = "a".repeat(1025);
+    expect(validateEGN(descTooLong).isValid).toBe(false);
+
+    // 5. Rejects player name exceeding maxLength of 64
+    const playerTooLong = cloneMock();
+    playerTooLong.metadata.players = ["P0", "P1", "P2", "a".repeat(65)];
+    expect(validateEGN(playerTooLong).isValid).toBe(false);
+
+    // 6. Rejects players count exceeding maxItems of 10
+    const tooManyPlayers = cloneMock();
+    tooManyPlayers.metadata.players = Array(11).fill("Player");
+    expect(validateEGN(tooManyPlayers).isValid).toBe(false);
+
+    // 7. Rejects deals count exceeding maxItems of 100
+    const tooManyDeals = cloneMock();
+    tooManyDeals.deals = Array(101).fill(cloneMock().deals[0]);
+    expect(validateEGN(tooManyDeals).isValid).toBe(false);
+  });
+
   it("should validate date property with or without timezone offset", () => {
     // Valid date with timezone offset (Z)
     const m1 = cloneMock();
@@ -320,6 +357,28 @@ describe("EGN Validator", () => {
     const m3 = cloneMock();
     m3.deals[0].phases[0].callAnnotations["2"] = "not-an-array";
     expect(validateEGN(m3).isValid).toBe(false);
+  });
+
+  it("should reject any values containing HTML/script tags or XSS-like injection patterns", () => {
+    // 1. HTML injection in title
+    const badTitle = cloneMock();
+    badTitle.metadata.title = "<script>alert('XSS')</script>";
+    expect(validateEGN(badTitle).isValid).toBe(false);
+
+    // 2. HTML injection in description
+    const badDesc = cloneMock();
+    badDesc.metadata.description = "This is a <p>paragraph</p>";
+    expect(validateEGN(badDesc).isValid).toBe(false);
+
+    // 3. HTML injection in players names
+    const badPlayer = cloneMock();
+    badPlayer.metadata.players = ["Player0", "Player1", "Player2", "<b>Player3</b>"];
+    expect(validateEGN(badPlayer).isValid).toBe(false);
+
+    // 4. HTML injection in annotations
+    const badAnnot = cloneMock();
+    badAnnot.deals[0].phases[0].callAnnotations["3"] = ["Strong order by Player 3", "More info <script>"];
+    expect(validateEGN(badAnnot).isValid).toBe(false);
   });
 
   it("isEGNFile should work correctly as a type guard", () => {

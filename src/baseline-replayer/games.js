@@ -1,8 +1,253 @@
-{
+var vwec1 = {
   "fileType": "Euchre Game Notation",
   "version": "1.0.0",
   "metadata": {
-    "title": "Me and Bears",
+    "title": "VWEC Finals - Hand 1",
+    "description": "First deal of the Virtual World Euchre Championship Finals. Standard order-up.",
+    "players": [
+      "WWMM",
+      "Llama",
+      "Euchrazy1",
+      "LeftyKnavey"
+    ],
+    "initialScore": [
+      0,
+      0
+    ],
+    "ruleset": {
+      "std": true,
+      "canadian": false,
+      "loner_lead": "LEFT_OF_LONER"
+    }
+  },
+  "deals": [
+    {
+      "dealNumber": 0,
+      "initialState": {
+        "dealer": 2,
+        "upCard": "Kc"
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Pass",
+            "Pass",
+            "Order"
+          ],
+          "isAlone": false
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 3,
+          "tricks": [
+            [
+              "Ad",
+              "9d",
+              "Qd",
+              "9c"
+            ],
+            [
+              "Ks",
+              "As",
+              "Ac",
+              "Js"
+            ],
+            [
+              "Kh",
+              "Qh",
+              "Ah",
+              "Tc"
+            ],
+            [
+              "Kd",
+              "9h",
+              "Kc",
+              "9s"
+            ],
+            [
+              "Jc",
+              "Qs",
+              "Jd",
+              "Jh"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+var vwec2 = {
+  "fileType": "Euchre Game Notation",
+  "version": "1.0.0",
+  "metadata": {
+    "title": "VWEC Finals - Hand 2",
+    "description": "Second deal of the VWEC Finals. All pass on Round 1, called Clubs in Round 2.",
+    "players": [
+      "WWMM",
+      "Llama",
+      "Euchrazy1",
+      "LeftyKnavey"
+    ],
+    "initialScore": [
+      0,
+      0
+    ],
+    "ruleset": {
+      "std": true,
+      "canadian": false,
+      "loner_lead": "LEFT_OF_LONER"
+    }
+  },
+  "deals": [
+    {
+      "dealNumber": 1,
+      "initialState": {
+        "dealer": 3,
+        "upCard": "9s"
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Pass",
+            "Pass",
+            "Pass",
+            "c"
+          ],
+          "isAlone": false
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 0,
+          "tricks": [
+            [
+              "Tc",
+              "Kc",
+              "Jc",
+              "Ac"
+            ],
+            [
+              "Qd",
+              "9d",
+              "Td",
+              "Ad"
+            ],
+            [
+              "Ks",
+              "Qs",
+              "Jh",
+              "As"
+            ],
+            [
+              "Ts",
+              "9h",
+              "9c",
+              "Js"
+            ],
+            [
+              "Kh",
+              "Kd",
+              "Th",
+              "Qc"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+var vwec8 = {
+  "fileType": "Euchre Game Notation",
+  "version": "1.0.0",
+  "metadata": {
+    "title": "VWEC Finals - Hand 8",
+    "description": "Eighth deal of the VWEC Finals. Llama goes alone on Spades.",
+    "players": [
+      "WWMM",
+      "Llama",
+      "Euchrazy1",
+      "LeftyKnavey"
+    ],
+    "initialScore": [
+      0,
+      0
+    ],
+    "ruleset": {
+      "std": true,
+      "canadian": false,
+      "loner_lead": "LEFT_OF_LONER"
+    }
+  },
+  "deals": [
+    {
+      "dealNumber": 7,
+      "initialState": {
+        "dealer": 1,
+        "upCard": "Ts"
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Pass",
+            "Pass",
+            "Order"
+          ],
+          "isAlone": true
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 2,
+          "tricks": [
+            [
+              "9d",
+              "Qd",
+              "Ts"
+            ],
+            [
+              "Js",
+              "Qs",
+              "9s"
+            ],
+            [
+              "Ah",
+              "Ks",
+              "Th"
+            ],
+            [
+              "9c",
+              "Qc",
+              "Ac"
+            ],
+            [
+              "Qh",
+              "Tc",
+              "Jh"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+var meAndBears = {
+  "fileType": "Euchre Game Notation",
+  "version": "1.0.0",
+  "metadata": {
+    "title": "WWMM and Bears",
     "description": "",
     "date": "2026-06-27T04:29",
     "players": [
@@ -81,6 +326,7 @@
               "As"
             ]
           ],
+          "isAlone": false,
           "initialLead": 2
         }
       ]
@@ -145,6 +391,7 @@
               "Jc"
             ]
           ],
+          "isAlone": false,
           "initialLead": 3
         }
       ]
@@ -207,6 +454,7 @@
               "Qc"
             ]
           ],
+          "isAlone": false,
           "initialLead": 0
         }
       ]
@@ -268,6 +516,7 @@
               "Kc"
             ]
           ],
+          "isAlone": false,
           "initialLead": 1
         }
       ]
@@ -323,6 +572,7 @@
               "Ah"
             ]
           ],
+          "isAlone": true,
           "initialLead": 2
         }
       ],
@@ -372,6 +622,7 @@
                   "Td"
                 ]
               ],
+              "isAlone": true,
               "initialLead": 2
             }
           ]
@@ -438,6 +689,7 @@
               "Jc"
             ]
           ],
+          "isAlone": false,
           "initialLead": 3
         }
       ],
@@ -489,6 +741,7 @@
                   "Jh"
                 ]
               ],
+              "isAlone": false,
               "initialLead": 3
             }
           ]
@@ -531,6 +784,7 @@
                   "Ad"
                 ]
               ],
+              "isAlone": false,
               "initialLead": 3
             }
           ]
@@ -593,6 +847,7 @@
               "Td"
             ]
           ],
+          "isAlone": false,
           "initialLead": 0
         }
       ]
@@ -654,6 +909,7 @@
               "Ks"
             ]
           ],
+          "isAlone": false,
           "initialLead": 1
         }
       ],
@@ -694,6 +950,7 @@
                   "Ks"
                 ]
               ],
+              "isAlone": false,
               "initialLead": 3
             }
           ]
@@ -759,6 +1016,7 @@
               "Qh"
             ]
           ],
+          "isAlone": false,
           "initialLead": 2
         }
       ]
@@ -823,6 +1081,7 @@
               "Kd"
             ]
           ],
+          "isAlone": false,
           "initialLead": 3
         }
       ],
@@ -874,6 +1133,7 @@
                   "9s"
                 ]
               ],
+              "isAlone": false,
               "initialLead": 3
             }
           ]
@@ -934,6 +1194,7 @@
               "As"
             ]
           ],
+          "isAlone": true,
           "initialLead": 0
         }
       ]
@@ -997,9 +1258,10 @@
               "Kc"
             ]
           ],
+          "isAlone": false,
           "initialLead": 1
         }
       ]
     }
   ]
-}
+};

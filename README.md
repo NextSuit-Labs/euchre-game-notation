@@ -18,14 +18,14 @@ An `.egn` file purposefully strips out easily calculated metrics—such as trick
 
 ---
 
-## 🛠️ File Structure Example (EGN v1.0.0)
+## 🛠️ File Structure Example (EGN v1.1.0)
 
 Under the hood, an `.egn` file utilizes human-readable, web-native JSON structural primitives:
 
 ```json
 {
   "fileType": "Euchre Game Notation",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "metadata": {
     "gameId": "egn_m_20260528_01",
     "title": "WEC Finals",

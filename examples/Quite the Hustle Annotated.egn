@@ -75,7 +75,6 @@
               "Qh"
             ]
           ],
-          "isAlone": false,
           "initialLead": 3
         }
       ]
@@ -133,7 +132,6 @@
               "Ac"
             ]
           ],
-          "isAlone": false,
           "initialLead": 0
         }
       ],
@@ -176,7 +174,6 @@
                   "Ac"
                 ]
               ],
-              "isAlone": false,
               "initialLead": 0,
               "playAnnotations": {
                 "0": [
@@ -239,7 +236,6 @@
               "Qc"
             ]
           ],
-          "isAlone": false,
           "initialLead": 1
         }
       ]
@@ -294,7 +290,6 @@
               "Ad"
             ]
           ],
-          "isAlone": false,
           "initialLead": 2
         }
       ],
@@ -337,7 +332,6 @@
                   "Ad"
                 ]
               ],
-              "isAlone": false,
               "initialLead": 2,
               "playAnnotations": {
                 "0": [
@@ -403,7 +397,6 @@
               "9s"
             ]
           ],
-          "isAlone": false,
           "initialLead": 3
         }
       ]
@@ -461,7 +454,6 @@
               "As"
             ]
           ],
-          "isAlone": false,
           "initialLead": 0
         }
       ]
@@ -520,7 +512,6 @@
               "Ah"
             ]
           ],
-          "isAlone": false,
           "initialLead": 1
         }
       ],
@@ -577,7 +568,6 @@
                   "Ac"
                 ]
               ],
-              "isAlone": false,
               "initialLead": 1
             }
           ]
@@ -637,7 +627,6 @@
               "Js"
             ]
           ],
-          "isAlone": false,
           "initialLead": 2
         }
       ],
@@ -680,7 +669,6 @@
                   "Ac"
                 ]
               ],
-              "isAlone": false,
               "initialLead": 2,
               "playAnnotations": {
                 "0": [
@@ -746,7 +734,6 @@
               "Js"
             ]
           ],
-          "isAlone": false,
           "initialLead": 3
         }
       ],
@@ -803,7 +790,6 @@
                   "Ad"
                 ]
               ],
-              "isAlone": false,
               "initialLead": 3
             }
           ]
@@ -858,7 +844,6 @@
               "Kd"
             ]
           ],
-          "isAlone": true,
           "initialLead": 0
         }
       ]
@@ -916,7 +901,6 @@
               "As"
             ]
           ],
-          "isAlone": true,
           "initialLead": 1
         }
       ]

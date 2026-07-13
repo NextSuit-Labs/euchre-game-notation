@@ -75,7 +75,6 @@
               "Jh"
             ]
           ],
-          "isAlone": false,
           "initialLead": 3
         }
       ],
@@ -112,7 +111,6 @@
                   "Kh"
                 ]
               ],
-              "isAlone": false,
               "initialLead": 2,
               "playAnnotations": {
                 "0": [
@@ -183,7 +181,6 @@
               "Qc"
             ]
           ],
-          "isAlone": false,
           "initialLead": 0,
           "playAnnotations": {
             "10": [
@@ -246,7 +243,6 @@
               "Ts"
             ]
           ],
-          "isAlone": false,
           "initialLead": 1,
           "playAnnotations": {
             "7": [
@@ -309,7 +305,6 @@
               "Ad"
             ]
           ],
-          "isAlone": false,
           "initialLead": 2,
           "playAnnotations": {
             "4": [
@@ -388,7 +383,6 @@
               "9s"
             ]
           ],
-          "isAlone": false,
           "initialLead": 3,
           "playAnnotations": {
             "1": [
@@ -435,7 +429,6 @@
                   "Js"
                 ]
               ],
-              "isAlone": false,
               "initialLead": 0,
               "playAnnotations": {
                 "0": [
@@ -482,7 +475,6 @@
                   "Kd"
                 ]
               ],
-              "isAlone": false,
               "initialLead": 0,
               "playAnnotations": {
                 "0": [
@@ -555,7 +547,6 @@
               "9c"
             ]
           ],
-          "isAlone": false,
           "initialLead": 0
         }
       ]
@@ -618,7 +609,6 @@
               "Tc"
             ]
           ],
-          "isAlone": false,
           "initialLead": 1
         }
       ]
@@ -671,7 +661,6 @@
               "Jh"
             ]
           ],
-          "isAlone": true,
           "initialLead": 2,
           "playAnnotations": {
             "8": [
@@ -734,7 +723,6 @@
               "9s"
             ]
           ],
-          "isAlone": false,
           "initialLead": 3
         }
       ],
@@ -765,7 +753,6 @@
                   "Ad"
                 ]
               ],
-              "isAlone": false,
               "initialLead": 2,
               "playAnnotations": {
                 "0": [
@@ -832,7 +819,6 @@
               "Ah"
             ]
           ],
-          "isAlone": false,
           "initialLead": 0
         }
       ]
@@ -895,7 +881,6 @@
               "Ah"
             ]
           ],
-          "isAlone": false,
           "initialLead": 1,
           "playAnnotations": {
             "4": [
@@ -928,7 +913,6 @@
                   "Jh"
                 ]
               ],
-              "isAlone": false,
               "initialLead": 3
             }
           ]
@@ -990,7 +974,6 @@
               "Ah"
             ]
           ],
-          "isAlone": false,
           "initialLead": 2
         }
       ],
@@ -1044,7 +1027,6 @@
                   "Qd"
                 ]
               ],
-              "isAlone": false,
               "initialLead": 2,
               "playAnnotations": {
                 "2": [
@@ -1114,7 +1096,6 @@
               "Qd"
             ]
           ],
-          "isAlone": false,
           "initialLead": 3,
           "playAnnotations": {
             "2": [
@@ -1156,7 +1137,6 @@
                   "Ts"
                 ]
               ],
-              "isAlone": false,
               "initialLead": 2,
               "playAnnotations": {
                 "1": [

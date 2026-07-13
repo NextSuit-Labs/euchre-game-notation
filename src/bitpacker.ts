@@ -43,6 +43,10 @@ export interface PackOptions {
    * Only used in V2 encoding.
    */
   minRank?: number;
+  /**
+   * If true, returns the raw binary string instead of Base64URL encoding. Defaults to false.
+   */
+  asBinary?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -472,11 +476,12 @@ function getCardsRemainingAtActionIndex(
  */
 export function packDeal(deal: Deal, options?: PackOptions): string {
   const version = options?.version ?? 1;
+  const binaryString = version === 2 ? packDealV2(deal, options) : packDealV1(deal);
 
-  if (version === 2) {
-    return packDealV2(deal, options);
+  if (options?.asBinary) {
+    return binaryString;
   }
-  return packDealV1(deal);
+  return binaryStringToBase64Url(binaryString);
 }
 
 function packDealV1(deal: Deal): string {
@@ -492,7 +497,7 @@ function packDealV1(deal: Deal): string {
     if (phase.type === "EUCHRE_BIDDING") {
       binaryString += "0"; // Phase type flag
       binaryString += encodeBiddingPhase(phase as BiddingPhase, deal.initialState.upCard, 0, 4, 1);
-      isAlone = (phase as BiddingPhase).isAlone;
+      isAlone = (phase as BiddingPhase).isAlone ?? false;
     } else if (phase.type === "TRICK_PLAY") {
       binaryString += "1";
       binaryString += encodePlayPhase(phase as TrickPlayPhase, cardsRemaining);
@@ -511,7 +516,7 @@ function packDealV1(deal: Deal): string {
         if (phase.type === "EUCHRE_BIDDING") {
           binaryString += "0";
           binaryString += encodeBiddingPhase(phase as BiddingPhase, deal.initialState.upCard, altLine.branchIndex, 4, 1);
-          altIsAlone = (phase as BiddingPhase).isAlone;
+          altIsAlone = (phase as BiddingPhase).isAlone ?? false;
         } else if (phase.type === "TRICK_PLAY") {
           binaryString += "1";
           binaryString += encodePlayPhase(phase as TrickPlayPhase, altCardsRemaining);
@@ -523,7 +528,7 @@ function packDealV1(deal: Deal): string {
   }
 
   binaryString += "1010"; // End marker
-  return binaryStringToBase64Url(binaryString);
+  return binaryString;
 }
 
 function packDealV2(deal: Deal, options?: PackOptions): string {
@@ -546,7 +551,7 @@ function packDealV2(deal: Deal, options?: PackOptions): string {
     if (phase.type === "EUCHRE_BIDDING") {
       binaryString += "0";
       binaryString += encodeBiddingPhase(phase as BiddingPhase, deal.initialState.upCard, 0, numPlayers, 2);
-      isAlone = (phase as BiddingPhase).isAlone;
+      isAlone = (phase as BiddingPhase).isAlone ?? false;
     } else if (phase.type === "TRICK_PLAY") {
       binaryString += "1";
       binaryString += encodePlayPhase(phase as TrickPlayPhase, cardsRemaining);
@@ -565,7 +570,7 @@ function packDealV2(deal: Deal, options?: PackOptions): string {
         if (phase.type === "EUCHRE_BIDDING") {
           binaryString += "0";
           binaryString += encodeBiddingPhase(phase as BiddingPhase, deal.initialState.upCard, altLine.branchIndex, numPlayers, 2);
-          altIsAlone = (phase as BiddingPhase).isAlone;
+          altIsAlone = (phase as BiddingPhase).isAlone ?? false;
         } else if (phase.type === "TRICK_PLAY") {
           binaryString += "1";
           binaryString += encodePlayPhase(phase as TrickPlayPhase, altCardsRemaining);
@@ -577,19 +582,20 @@ function packDealV2(deal: Deal, options?: PackOptions): string {
   }
 
   binaryString += "1010"; // End marker
-  return binaryStringToBase64Url(binaryString);
+  return binaryString;
 }
 
 /**
- * Decodes a Base64URL representation back into an EgnDeal object.
+ * Decodes a representation back into an EgnDeal object.
  * Automatically detects and handles Version 0 (legacy), Version 1, and Version 2 formats.
  *
- * @param base64Url The Base64URL representation.
+ * @param input The Base64URL string or binary string representation.
  * @param dealNumber Optional dealNumber to set in the returned Deal object. Defaults to 0.
+ * @param isBinary Optional flag to indicate input is already a binary string. Defaults to false.
  * @returns The reconstructed Deal object.
  */
-export function unpackDeal(base64Url: string, dealNumber: number = 0): Deal {
-  const binaryString = base64UrlToBinaryString(base64Url);
+export function unpackDeal(input: string, dealNumber: number = 0, isBinary: boolean = false): Deal {
+  const binaryString = isBinary ? input : base64UrlToBinaryString(input);
   const reader = new BitReader(binaryString);
   const headerBits = binaryString.slice(0, 4);
 
@@ -643,7 +649,7 @@ function unpackDealV2(reader: BitReader, binaryString: string, dealNumber: numbe
     if (phaseType === "0") {
       const biddingPhase = decodeBiddingPhase(reader, upCard, 0, numPlayers, 2);
       biddingPhase.phaseNumber = p;
-      isAlone = biddingPhase.isAlone;
+      isAlone = biddingPhase.isAlone ?? false;
       hasDefendAlone = biddingPhase.aloneDefender !== undefined && biddingPhase.aloneDefender >= 0;
       deal.phases.push(biddingPhase);
     } else {
@@ -671,7 +677,7 @@ function unpackDealV2(reader: BitReader, binaryString: string, dealNumber: numbe
         if (phaseType === "0") {
           const biddingPhase = decodeBiddingPhase(reader, upCard, branchIndex, numPlayers, 2);
           biddingPhase.phaseNumber = p;
-          altIsAlone = biddingPhase.isAlone;
+          altIsAlone = biddingPhase.isAlone ?? false;
           altHasDefendAlone = biddingPhase.aloneDefender !== undefined && biddingPhase.aloneDefender >= 0;
           phases.push(biddingPhase);
         } else {
@@ -729,7 +735,7 @@ function unpackDealV1(reader: BitReader, binaryString: string, dealNumber: numbe
     if (phaseType === "0") {
       const biddingPhase = decodeBiddingPhase(reader, upCard, 0, 4, 1);
       biddingPhase.phaseNumber = p;
-      isAlone = biddingPhase.isAlone;
+      isAlone = biddingPhase.isAlone ?? false;
       deal.phases.push(biddingPhase);
     } else {
       const playPhase = decodePlayPhase(reader, isAlone, cardsRemaining, 4);
@@ -755,7 +761,7 @@ function unpackDealV1(reader: BitReader, binaryString: string, dealNumber: numbe
         if (phaseType === "0") {
           const biddingPhase = decodeBiddingPhase(reader, upCard, branchIndex, 4, 1);
           biddingPhase.phaseNumber = p;
-          altIsAlone = biddingPhase.isAlone;
+          altIsAlone = biddingPhase.isAlone ?? false;
           phases.push(biddingPhase);
         } else {
           let firstTrickCards = undefined;

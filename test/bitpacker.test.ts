@@ -89,6 +89,43 @@ describe("packDeal and unpackDeal edge/error cases", () => {
     expect(unpacked.phases.length).toBe(0);
   });
 
+  it("should successfully unpack using raw binary string with isBinary=true", () => {
+    const deal: Deal = {
+      dealNumber: 5,
+      initialState: {
+        dealer: 1,
+        upCard: "Ah",
+      },
+      phases: []
+    };
+    const packed = packDeal(deal);
+    const binary = base64UrlToBinaryString(packed);
+    const unpacked = unpackDeal(binary, 5, true);
+
+    expect(unpacked.dealNumber).toBe(5);
+    expect(unpacked.initialState.dealer).toBe(1);
+    expect(unpacked.initialState.upCard).toBe("Ah");
+    expect(unpacked.phases.length).toBe(0);
+  });
+
+  it("should successfully pack as binary string with asBinary=true and roundtrip", () => {
+    const deal: Deal = {
+      dealNumber: 5,
+      initialState: {
+        dealer: 1,
+        upCard: "Ah",
+      },
+      phases: []
+    };
+    const binary = packDeal(deal, { asBinary: true });
+    expect(/^[01]+$/.test(binary)).toBe(true);
+
+    const unpacked = unpackDeal(binary, 5, true);
+    expect(unpacked.dealNumber).toBe(5);
+    expect(unpacked.initialState.dealer).toBe(1);
+    expect(unpacked.initialState.upCard).toBe("Ah");
+  });
+
   it("should successfully unpack a deal with only a bidding phase", () => {
     const deal: Deal = {
       dealNumber: 2,
