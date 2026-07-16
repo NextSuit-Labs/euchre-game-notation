@@ -2,11 +2,11 @@
 import { packDeal } from "./bitpacker";
 import * as path from "path";
 import * as fs from "fs";
-import { VERSION } from "./version";
+import { PACKAGE_VERSION } from "./version";
 
 function showHelp() {
   console.log(`
-EGN Deal Bitpacker CLI (egn-bitpack-deal) (v${VERSION})
+EGN Deal Bitpacker CLI (egn-bitpack-deal) (v${PACKAGE_VERSION})
 
 Converts specific deals in an EGN file into Base64URL-encoded condensed strings.
 
@@ -34,7 +34,7 @@ function main() {
   }
 
   if (args.includes("--version") || args.includes("-v")) {
-    console.log(`EGN Bitpacker v${VERSION}`);
+    console.log(`EGN Bitpacker v${PACKAGE_VERSION}`);
     process.exit(0);
   }
 

@@ -11,7 +11,7 @@
     },
     "version": {
       "type": "string",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+      "pattern": "^1\\.2(?:\\.\\d+)?$"
     },
     "metadata": {
       "type": "object",

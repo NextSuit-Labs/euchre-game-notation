@@ -1,6 +1,6 @@
 /**
  * Core TypeScript definitions for Euchre Game Notation (EGN).
- * Maps directly to the EGN schema v1.2.1.
+ * Maps directly to the EGN schema v1.2 family.
  */
 
 export type Card = string; // Pattern: ^([78N9TJQKAX][SsHhCcDdxtngh]|[LRB])$

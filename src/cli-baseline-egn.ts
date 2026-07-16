@@ -6,11 +6,11 @@ import egnSchema from "../schemas/egn-schema-v1.json";
 import { convertBinToEgnJson, convertEgnJsonToBin } from "./converter";
 import { validateEGN } from "./validator";
 import { EGNFile } from "./types";
-import { VERSION } from "./version";
+import { PACKAGE_VERSION } from "./version";
 
 function showHelp() {
   console.log(`
-EGN Baseline CLI (v${VERSION})
+EGN Baseline CLI (v${PACKAGE_VERSION})
 
 Usage:
   egn-baseline <input-file> [output-file] [options]
@@ -193,7 +193,7 @@ function main() {
   const args = process.argv.slice(2);
 
   if (args.includes("--version") || args.includes("-v")) {
-    console.log(`EGN Baseline v${VERSION}`);
+    console.log(`EGN Baseline v${PACKAGE_VERSION}`);
     process.exit(0);
   }
 

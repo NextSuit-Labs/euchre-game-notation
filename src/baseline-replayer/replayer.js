@@ -33,6 +33,7 @@ let currentDealIndex = 0;
 let steps = [];
 let currentStepIndex = 0;
 let dealStartingScores = [];
+const MAX_INPUT_CHARS = 2_000_000;
 
 // Helper to create card DOM element securely
 function createCardElement(cardStr) {
@@ -214,6 +215,10 @@ function initializeEGN(data = null) {
       document.getElementById("egn-input").value = JSON.stringify(egnData, null, 2);
     } else {
       const rawInput = document.getElementById("egn-input").value;
+      if (rawInput.length > MAX_INPUT_CHARS) {
+        alert(`Input is too large (${rawInput.length.toLocaleString()} chars). Max allowed is ${MAX_INPUT_CHARS.toLocaleString()} chars.`);
+        return;
+      }
       egnData = JSON.parse(rawInput);
     }
 

@@ -1,5 +1,25 @@
 /**
- * Central version constant for the EGN specification and utilities.
- * Update this single value when releasing a new version, and all components will use it.
+ * Canonical schema version emitted in EGN file metadata.
+ *
+ * The validator supports this family plus 1.2.x patch aliases for backward compatibility.
  */
-export const VERSION = "1.2.1";
+export const SCHEMA_VERSION = "1.2";
+
+/**
+ * Current npm package version for CLI/library releases.
+ */
+export const PACKAGE_VERSION = "1.2.2";
+
+/**
+ * Backward-compatible alias used across existing code/tests.
+ */
+export const VERSION = SCHEMA_VERSION;
+
+/**
+ * Supported schema version family matcher.
+ */
+export const SUPPORTED_SCHEMA_VERSION_RE = /^1\.2(?:\.\d+)?$/;
+
+export function isSupportedSchemaVersion(version: string): boolean {
+	return SUPPORTED_SCHEMA_VERSION_RE.test(version);
+}

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import * as fs from "fs";
-import { VERSION } from "./version";
+import { PACKAGE_VERSION, SCHEMA_VERSION } from "./version";
 
 function showHelp() {
   console.log(`
-EGN File Upgrade CLI (v${VERSION})
+EGN File Upgrade CLI (v${PACKAGE_VERSION})
 
 Upgrades older EGN files to current version format by:
   - Renaming snake_case properties to camelCase
@@ -112,7 +112,7 @@ function upgradeEgn(jsonString: string): string {
 
   // Update version to current version
   if (parsed.version) {
-    parsed.version = VERSION;
+    parsed.version = SCHEMA_VERSION;
   }
 
   // Recursively upgrade all properties
@@ -125,7 +125,7 @@ function main() {
   const args = process.argv.slice(2);
 
   if (args.includes("--version") || args.includes("-v")) {
-    console.log(`EGN Upgrade v${VERSION}`);
+    console.log(`EGN Upgrade v${PACKAGE_VERSION}`);
     process.exit(0);
   }
 

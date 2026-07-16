@@ -2,11 +2,11 @@
 import { convertBinToEgnJson, convertEgnJsonToBin, detectBinaryFormat } from "./converter";
 import * as path from "path";
 import * as fs from "fs";
-import { VERSION } from "./version";
+import { PACKAGE_VERSION } from "./version";
 
 function showHelp() {
   console.log(`
-Euchre Game Notation (EGN) Converter CLI (v${VERSION})
+Euchre Game Notation (EGN) Converter CLI (v${PACKAGE_VERSION})
 
 Usage:
   egn-convert <input-file> <output-file> [options]
@@ -28,7 +28,7 @@ function main() {
   const args = process.argv.slice(2);
 
   if (args.includes("--version") || args.includes("-v")) {
-    console.log(`EGN Converter v${VERSION}`);
+    console.log(`EGN Converter v${PACKAGE_VERSION}`);
     process.exit(0);
   }
 

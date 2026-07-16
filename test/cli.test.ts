@@ -435,11 +435,11 @@ describe("EGN Converter CLI", () => {
       expect(originalValidation.errors).not.toBeNull();
       if (originalValidation.errors) {
         expect(originalValidation.errors.length).toBeGreaterThan(0);
-        // The error should be about snake_case fields not matching camelCase schema
-        expect(originalValidation.errors[0].message).toMatch(/must NOT have additional properties|must have required property/);
+        // Legacy files can fail either version-family checks or snake_case/camelCase schema mismatches.
+        expect(originalValidation.errors[0].message).toMatch(/must match pattern|must NOT have additional properties|must have required property/);
       }
 
-      // 2. Run upgrade tool to convert to v1.2.1 format
+      // 2. Run upgrade tool to convert to v1.2 format
       execSync(`node "${upgradeCliPath}" "${testEgnPath}" "${upgradedPath}"`).toString();
       expect(fs.existsSync(upgradedPath)).toBe(true);
 

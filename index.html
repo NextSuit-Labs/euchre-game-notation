@@ -4,6 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="description"
     content="Euchre Game Notation (EGN) - The open, deterministic, platform-agnostic standard for recording and sharing competitive Euchre game data by NextSuit Labs.">
   <title>EGN | Euchre Game Notation Specification</title>
@@ -42,7 +46,8 @@
         </ul>
       </nav>
       <div class="nav-cta">
-        <a href="https://github.com/NextSuit-Labs/euchre-game-notation" target="_blank" class="btn btn-outline"
+        <a href="https://github.com/NextSuit-Labs/euchre-game-notation" target="_blank" rel="noopener noreferrer"
+          class="btn btn-outline"
           id="header-cta">View on GitHub</a>
       </div>
     </div>
@@ -51,7 +56,7 @@
   <!-- Hero Section -->
   <section id="hero">
     <div class="hero-content">
-      <div class="tagline-badge" id="hero-badge">EGN Specification v1.2.1</div>
+      <div class="tagline-badge" id="hero-badge">EGN Specification v1.2</div>
       <h1 class="hero-title" id="hero-title">
         The Open Standard for <br>
         <span class="gradient-text">Euchre Game Data</span>
@@ -75,7 +80,7 @@
         </div>
         <pre><code>{
   <span class="json-key">"fileType"</span>: <span class="json-string">"Euchre Game Notation"</span>,
-  <span class="json-key">"version"</span>: <span class="json-string">"1.2.1"</span>,
+  <span class="json-key">"version"</span>: <span class="json-string">"1.2"</span>,
   <span class="json-key">"metadata"</span>: {
     <span class="json-key">"title"</span>: <span class="json-string">"WEC Finals"</span>,
     <span class="json-key">"players"</span>: [<span class="json-string">"P1"</span>, <span class="json-string">"P2"</span>, <span class="json-string">"P3"</span>, <span class="json-string">"P4"</span>],
@@ -218,8 +223,9 @@
     <div class="container">
       <div class="section-header">
         <h2 id="spec-heading">Specification Reference</h2>
-        <p class="section-subheader">Quick guide to the EGN v1.2.1 vocabulary and standard card representations. View
+        <p class="section-subheader">Quick guide to the EGN v1.2 vocabulary and standard card representations. View
           the JSON schema on <a href="https://github.com/NextSuit-Labs/euchre-game-notation" target="_blank"
+            rel="noopener noreferrer"
             class="text-link">GitHub</a>.</p>
       </div>
 
@@ -433,7 +439,8 @@
             </svg>
           </div>
           <div class="app-info">
-            <h3><a href="https://nextsuitlabs.com/replayer.html" target="_blank" class="app-link">Interactive Replayer
+            <h3><a href="https://nextsuitlabs.com/replayer.html" target="_blank" rel="noopener noreferrer"
+              class="app-link">Interactive Replayer / Analyzer
                 &rarr;</a></h3>
             <p>A desktop-grade analysis web app. Allows users to load EGN files, scrub through plays step-by-step, view
               annotations, switch perspective focus to any player's seat, and analyze alternative branching gameplay
@@ -453,7 +460,8 @@
             </svg>
           </div>
           <div class="app-info">
-            <h3><a href="https://nextsuitlabs.com/logger.html" target="_blank" class="app-link">Step & Full Logger
+            <h3><a href="https://nextsuitlabs.com/logger.html" target="_blank" rel="noopener noreferrer"
+              class="app-link">EGN Game Logger
                 &rarr;</a></h3>
             <p>Manual game loggers built for real-time game logging. Provides button-based entry for live
               game recording, saving directly to clean EGN format without the need manual code formatting.</p>
@@ -470,7 +478,8 @@
             </svg>
           </div>
           <div class="app-info">
-            <h3><a href="https://nextsuitlabs.com/auto-logger.html" target="_blank" class="app-link">CV Auto-Logger
+            <h3><a href="https://nextsuitlabs.com/auto-logger.html" target="_blank" rel="noopener noreferrer"
+              class="app-link">CV Auto-Logger
                 (Coming soon!) &rarr;</a></h3>
             <p>Computer vision processing pipeline. Users upload game video files, and the automated pipeline detects
               dealers, card distributions, bidding calls, and tricks, outputting schema-compliant EGN records.</p>
@@ -488,7 +497,8 @@
             </svg>
           </div>
           <div class="app-info">
-            <h3><a href="https://nextsuitlabs.com/renderer.html" target="_blank" class="app-link">Broadcast Overlay
+            <h3><a href="https://nextsuitlabs.com/renderer.html" target="_blank" rel="noopener noreferrer"
+              class="app-link">Overlay
                 Renderer (Coming soon!) &rarr;</a></h3>
             <p>HTML5 Canvas-based graphic overlay system. Features timing controls and studio settings. Headless
               Puppeteer runner captures the canvas overlay dynamically, injecting real-time game cards into broadcast
@@ -505,9 +515,9 @@
     <div class="container">
       <div class="footer-bottom">
         <p>Copyright &copy; 2026 Write Words - Make Magic LLC. All rights reserved.</p>
-        <p>EGN is an open specification published under the <a href="LICENSE" target="_blank"
+        <p>EGN is an open specification published under the <a href="LICENSE" target="_blank" rel="noopener noreferrer"
             id="footer-license-link">Apache License 2.0</a> on <a
-            href="https://github.com/NextSuit-Labs/euchre-game-notation" target="_blank"
+          href="https://github.com/NextSuit-Labs/euchre-game-notation" target="_blank" rel="noopener noreferrer"
             id="footer-github-link">GitHub</a>.</p>
         <p class="brand-signature">NextSuit Labs</p>
       </div>

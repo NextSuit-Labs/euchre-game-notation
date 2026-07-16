@@ -1,6 +1,6 @@
 var vwec1 = {
   "fileType": "Euchre Game Notation",
-  "version": "1.2.1",
+  "version": "1.2",
   "metadata": {
     "title": "VWEC Finals - Hand 1",
     "description": "First deal of the Virtual World Euchre Championship Finals. Standard order-up.",
@@ -82,7 +82,7 @@ var vwec1 = {
 
 var vwec2 = {
   "fileType": "Euchre Game Notation",
-  "version": "1.2.1",
+  "version": "1.2",
   "metadata": {
     "title": "VWEC Finals - Hand 2",
     "description": "Second deal of the VWEC Finals. All pass on Round 1, called Clubs in Round 2.",
@@ -165,7 +165,7 @@ var vwec2 = {
 
 var vwec8 = {
   "fileType": "Euchre Game Notation",
-  "version": "1.2.1",
+  "version": "1.2",
   "metadata": {
     "title": "VWEC Finals - Hand 8",
     "description": "Eighth deal of the VWEC Finals. Llama goes alone on Spades.",
@@ -242,7 +242,7 @@ var vwec8 = {
 
 var meAndBears = {
   "fileType": "Euchre Game Notation",
-  "version": "1.2.1",
+  "version": "1.2",
   "metadata": {
     "title": "WWMM and Bears",
     "description": "",

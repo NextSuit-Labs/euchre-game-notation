@@ -215,11 +215,11 @@ egn.metadata.players.forEach((player, index) => {
 
 ## Backward Compatibility
 
-EGN v1.2.1 is fully backward compatible with v1.0.0 and v1.1.0:
+EGN v1.2 is fully backward compatible with v1.0.0 and v1.1.0:
 
 - Parsers reading Player Objects will gracefully handle simple strings
 - Upgrades from older formats automatically convert player names to simple strings (IDs are lost)
-- Use the `egn-upgrade` CLI tool to migrate files to v1.2.1, then manually add Player Object data as needed
+- Use the `egn-upgrade` CLI tool to migrate files to v1.2, then manually add Player Object data as needed
 
 ## Migration from Simple Names to Player Objects
 
@@ -233,7 +233,7 @@ To upgrade an existing EGN file with player names to include external IDs:
   }
 }
 
-// After (v1.2.1 with external IDs)
+// After (v1.2 with external IDs)
 {
   "metadata": {
     "players": [
@@ -256,4 +256,4 @@ To upgrade an existing EGN file with player names to include external IDs:
 
 ## Summary
 
-Player Objects in EGN v1.2.1 enable seamless cross-platform player tracking while maintaining backward compatibility with simple player names. This feature is essential for building robust tournament systems, competitive analytics, and unified game archives across the Euchre community.
+Player Objects in EGN v1.2 enable seamless cross-platform player tracking while maintaining backward compatibility with simple player names. This feature is essential for building robust tournament systems, competitive analytics, and unified game archives across the Euchre community.
