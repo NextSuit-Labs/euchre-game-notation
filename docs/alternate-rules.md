@@ -4,7 +4,7 @@ Euchre is a game famous for its local "house rules" and regional variations. To 
 
 By defining these toggles, parsing engines can accurately reconstruct the game state and correctly validate behaviors that would otherwise be illegal in standard play.
 
-Here are the alternate rules supported in EGN v1.1.0:
+Here are the alternate rules supported in EGN v1.2.0:
 
 ## `std` (boolean)
 **Default:** `true`
@@ -52,7 +52,7 @@ Also known as **"Call for Best"**. When a player calls a loner, this rule allows
 
 ## `go_under` (boolean)
 **Default:** `false`
-Also known as **"Defend the Left"** or **"Bottoms"**. If a player holds a remarkably poor hand (e.g., three 9s and 10s, or no face cards), they may swap three cards with the unrevealed cards in the kitty. This action is recorded in the `EUCHRE_BIDDING` phase using the `cardExchanges` array if known.
+Also known as **"Defend the Left"** or **"Bottoms"**. If a player holds a remarkably poor hand (e.g., three 9s and 10s, or no face cards), they may swap three cards with the kitty cards. This action is recorded in the `EUCHRE_BIDDING` phase using the `cardExchanges` array if known.
 
 ## `joker` (boolean)
 **Default:** `false`

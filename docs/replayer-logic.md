@@ -12,7 +12,7 @@ A reference implementation split into HTML, CSS, and JS is available at "src/bas
 
 ## 📋 The Core Algorithm
 
-At the start of each deal, the replayer initializes `leadSeat = deal.initialState.initialLead` (defaulting to `(dealer + 1) % 4` if not specified). 
+At the start of each deal, the replayer initializes `leadSeat = (dealer + 1) % 4`. 
 
 For each trick:
 1. **Seat Mapping**: Map the 4 cards played in sequence to player seats starting at `leadSeat` clockwise:
@@ -25,23 +25,23 @@ For each trick:
 
 ## 🧭 Trick 1 Initial Lead Resolution
 
-If the initial lead seat (`initialLead`) is not explicitly defined in the EGN play phase, it must be resolved dynamically by the engine using the dealer and bidding metadata:
+The initial lead seat is not explicitly stored in the EGN play phase. It must be resolved dynamically by the engine using the dealer and bidding metadata:
 
 ### 1. Standard Play (No Loner)
 If no player went alone (`isAlone === false`), the initial lead is always the seat to the left of the dealer:
-$$\text{InitialLead} = (\text{Dealer} + 1) \pmod 4$$
+$$\text{LeadSeat} = (\text{Dealer} + 1) \pmod 4$$
 
 ### 2. Loner Play (`isAlone === true`)
-If a player went alone, the partner of the loner sits out ($\text{SitOutSeat} = (\text{LonerSeat} + 2) \pmod 4$). The initial lead is determined by the `loner_lead` ruleset configuration:
+If a player went alone, the partner of the loner sits out ($\text{SitOutSeat} = (\text{LonerSeat} + 2) \pmod 4$). The initial lead seat is determined by the `loner_lead` ruleset configuration:
 
 * **`LEFT_OF_LONER`**: The lead starts with the active player immediately to the left of the lone caller:
-  $$\text{InitialLead} = (\text{LonerSeat} + 1) \pmod 4$$
+  $$\text{LeadSeat} = (\text{LonerSeat} + 1) \pmod 4$$
 * **`LEFT_OF_DEALER` (Standard)**: The lead starts with the player left of the dealer, **unless that player is the sitting-out partner**:
   - If the partner of the loner is the player left of the dealer ($(\text{LonerSeat} + 2) \equiv (\text{Dealer} + 1) \pmod 4$, which occurs when the player to the right of the dealer goes alone, e.g. Seat 3 goes alone when Seat 0 is dealer):
     - The partner sits out, so the lead shifts clockwise to the dealer's partner:
-      $$\text{InitialLead} = (\text{Dealer} + 2) \pmod 4$$
+      $$\text{LeadSeat} = (\text{Dealer} + 2) \pmod 4$$
   - Otherwise, the standard lead applies:
-    $$\text{InitialLead} = (\text{Dealer} + 1) \pmod 4$$
+    $$\text{LeadSeat} = (\text{Dealer} + 1) \pmod 4$$
 
 ---
 
@@ -60,6 +60,24 @@ Across the bidding phase and play phase, the upcard should be rendered dynamical
 2. **Bidding Round 1 (Call indices 0 to 3)**: Rendered **face up** (players are deciding whether to order/pickup the upcard).
 3. **Bidding Round 2 (Call indices 4 to 7)**: Rendered **face down** (the upcard has been turned down; players are calling a different suit).
 4. **Trick Play**: **Hidden/removed** from the table entirely, alongside the dealer indicator (as they are no longer relevant to active card-play mechanics), although showing this information somewhere else can be useful for analysis.
+
+---
+
+### 📍 Identifying the Trump Caller (Maker)
+
+The **maker** is the player who made the successful trump call. To identify the maker from the bidding phase:
+
+1. **Find the first non-"Pass" call**: Scan the `calls` array to find the index of the first call that is not `"Pass"`.
+2. **Calculate the maker's seat**: 
+   $$\text{MakerSeat} = (\text{Dealer} + 1 + \text{CallIndex}) \pmod 4$$
+   where `CallIndex` is the 0-based index of the first non-Pass call.
+3. **Determine the maker's team**: `CallingTeam = MakerSeat % 2` (Team 0 = seats 0,2; Team 1 = seats 1,3)
+
+The maker's partner is at `(MakerSeat + 2) % 4`. If `isAlone === true`, the partner sits out during trick play.
+
+**Example**: Dealer = 0, calls = `["Pass", "Pass", "Order"]`
+- First non-Pass at index 2 → MakerSeat = (0 + 1 + 2) % 4 = 3
+- Player in seat 3 is the maker, their team is 3 % 2 = 1
 
 ---
 

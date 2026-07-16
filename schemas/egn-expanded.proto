@@ -15,7 +15,6 @@ message AnnotationList {
 message InitialState {
   optional int32 dealer = 1;
   optional string up_card = 2;
-  repeated string kitty = 3;
   repeated CardList playerCards = 4;
 }
 
@@ -38,7 +37,6 @@ message BiddingPhase {
 
 message TrickPlayPhase {
   optional int32 phase_number = 1;
-  optional int32 initial_lead = 2;
 
   message Trick {
     repeated string cards = 1;

@@ -1,0 +1,60 @@
+{
+  "fileType": "Euchre Game Notation",
+  "version": "1.2.0",
+  "metadata": {
+    "gameId": "egn_m_20260529_01",
+    "title": "New Euchre Game",
+    "description": "",
+    "date": "2026-05-29T15:21",
+    "players": [
+      "Player0",
+      "Player1",
+      "Player2",
+      "Player3"
+    ],
+    "initialScore": [
+      0,
+      0
+    ],
+    "ruleset": {
+      "std": true,
+      "canadian": false,
+      "loner_lead": "LEFT_OF_DEALER"
+    }
+  },
+  "deals": [
+    {
+      "dealNumber": 0,
+      "initialState": {
+        "dealer": 0,
+        "upCard": "Jd"
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Pass",
+            "Pass",
+            "Order"
+          ],
+          "isAlone": false,
+          "discard": "9s"
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "tricks": [
+            [
+              "Ac",
+              "Tc",
+              "9c",
+              "Kc"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

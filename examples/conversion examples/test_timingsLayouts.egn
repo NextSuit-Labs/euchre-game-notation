@@ -1,0 +1,352 @@
+{
+  "fileType": "Euchre Game Notation",
+  "version": "1.0.0",
+  "metadata": {
+    "title": "Three Trump is a Must Go",
+    "description": "",
+    "date": "2026-06-29T13:55",
+    "players": [
+      "Trump. Trump.",
+      "sclowes",
+      "Brownsbacker07",
+      "Tryhard2506"
+    ],
+    "initialScore": [
+      0,
+      0
+    ],
+    "ruleset": {
+      "std": true,
+      "canadian": false,
+      "loner_lead": "LEFT_OF_DEALER"
+    }
+  },
+  "deals": [
+    {
+      "dealNumber": 0,
+      "initialState": {
+        "dealer": 1,
+        "upCard": "9h"
+      },
+      "phases": [
+        {
+          "phaseNumber": 1,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Pass",
+            "Pass",
+            "Pass",
+            "s"
+          ],
+          "isAlone": false
+        },
+        {
+          "phaseNumber": 2,
+          "type": "TRICK_PLAY",
+          "tricks": [
+            [
+              "9s",
+              "9d",
+              "9c",
+              "Ts"
+            ],
+            [
+              "Js",
+              "Qs",
+              "Td",
+              "Qc"
+            ],
+            [
+              "Jc",
+              "As",
+              "Kc",
+              "Jd"
+            ],
+            [
+              "Ac",
+              "Ks",
+              "Qh",
+              "Kd"
+            ],
+            [
+              "Ad",
+              "Ah",
+              "Kh",
+              "Tc"
+            ]
+          ],
+          "isAlone": false,
+          "initialLead": 2
+        }
+      ]
+    }
+  ],
+  "timings": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0,
+    "6": 0,
+    "7": 0,
+    "8": 0,
+    "9": 0,
+    "10": 0,
+    "11": 0,
+    "12": 0,
+    "13": 0,
+    "14": 0,
+    "15": 0,
+    "16": 0,
+    "17": 0,
+    "18": 0,
+    "19": 0,
+    "20": 0,
+    "21": 0,
+    "22": 0,
+    "23": 0,
+    "24": 0,
+    "25": 0,
+    "26": 0,
+    "27": 0,
+    "28": 0
+  },
+  "views": [
+    {
+      "id": "default-view",
+      "name": "Default View",
+      "layout": {
+        "width": 1920,
+        "height": 1080,
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "elements": [
+          {
+            "id": "ns-score",
+            "type": "ns-score",
+            "x": 1544,
+            "y": 87,
+            "scale": 1,
+            "visible": true,
+            "styleSettings": {
+              "backgroundColor": "rgba(20, 24, 33, 0.85)",
+              "textColor": "#ffffff",
+              "fontSize": 16,
+              "borderRadius": 12,
+              "padding": 16
+            }
+          },
+          {
+            "id": "ew-score",
+            "type": "ew-score",
+            "x": 60,
+            "y": 150,
+            "scale": 1,
+            "visible": true,
+            "styleSettings": {
+              "backgroundColor": "rgba(20, 24, 33, 0.85)",
+              "textColor": "#ffffff",
+              "fontSize": 16,
+              "borderRadius": 12,
+              "padding": 16
+            }
+          },
+          {
+            "id": "trick-tracker",
+            "type": "trick-tracker",
+            "x": 171,
+            "y": 577,
+            "scale": 1,
+            "visible": false,
+            "styleSettings": {
+              "backgroundColor": "rgba(20, 24, 33, 0.85)",
+              "textColor": "#ffffff",
+              "fontSize": 16,
+              "borderRadius": 12,
+              "padding": 16
+            }
+          },
+          {
+            "id": "play-area",
+            "type": "play-area",
+            "x": 738,
+            "y": 344,
+            "scale": 1,
+            "visible": true,
+            "styleSettings": {
+              "backgroundColor": "rgba(20, 24, 33, 0.4)",
+              "borderRadius": 16,
+              "padding": 20
+            }
+          },
+          {
+            "id": "kitty-tracker",
+            "type": "kitty-tracker",
+            "x": 1432,
+            "y": 680,
+            "scale": 1,
+            "visible": true,
+            "styleSettings": {
+              "backgroundColor": "rgba(20, 24, 33, 0.85)",
+              "textColor": "#ffffff",
+              "borderRadius": 12,
+              "padding": 14
+            }
+          },
+          {
+            "id": "suit-tracker",
+            "type": "suit-tracker",
+            "x": 189,
+            "y": 681,
+            "scale": 1.4,
+            "visible": true,
+            "styleSettings": {
+              "backgroundColor": "rgba(20, 24, 33, 0.85)",
+              "textColor": "#ffffff",
+              "borderRadius": 12,
+              "padding": 14
+            }
+          },
+          {
+            "id": "annotations",
+            "type": "annotations",
+            "x": 460,
+            "y": 930,
+            "scale": 1,
+            "visible": true,
+            "styleSettings": {
+              "backgroundColor": "rgba(10, 12, 18, 0.9)",
+              "textColor": "#ffd700",
+              "fontSize": 22,
+              "borderRadius": 8,
+              "padding": 12
+            }
+          },
+          {
+            "id": "hand-south",
+            "type": "hand-south",
+            "x": 737,
+            "y": 807,
+            "scale": 1,
+            "visible": true,
+            "styleSettings": {
+              "showPlayerNames": true,
+              "showCardOutlines": true
+            }
+          },
+          {
+            "id": "hand-west",
+            "type": "hand-west",
+            "x": 286,
+            "y": 470,
+            "scale": 1,
+            "visible": true,
+            "styleSettings": {
+              "showPlayerNames": true,
+              "showCardOutlines": true
+            }
+          },
+          {
+            "id": "hand-north",
+            "type": "hand-north",
+            "x": 763,
+            "y": 138,
+            "scale": 1,
+            "visible": true,
+            "styleSettings": {
+              "showPlayerNames": true,
+              "showCardOutlines": true
+            }
+          },
+          {
+            "id": "hand-east",
+            "type": "hand-east",
+            "x": 1280,
+            "y": 453,
+            "scale": 1,
+            "visible": true,
+            "styleSettings": {
+              "showPlayerNames": true,
+              "showCardOutlines": true
+            }
+          },
+          {
+            "id": "ns-trick-boxes",
+            "type": "ns-trick-boxes",
+            "x": 1640,
+            "y": 189,
+            "scale": 1,
+            "visible": true,
+            "styleSettings": {
+              "backgroundColor": "rgba(20, 24, 33, 0.85)",
+              "textColor": "#ffffff",
+              "borderRadius": 12,
+              "padding": 16
+            }
+          },
+          {
+            "id": "ew-trick-boxes",
+            "type": "ew-trick-boxes",
+            "x": 97,
+            "y": 278,
+            "scale": 1,
+            "visible": true,
+            "styleSettings": {
+              "backgroundColor": "rgba(20, 24, 33, 0.85)",
+              "textColor": "#ffffff",
+              "borderRadius": 12,
+              "padding": 16
+            }
+          },
+          {
+            "id": "trump-tracker",
+            "type": "trump-tracker",
+            "x": 453,
+            "y": 429,
+            "scale": 1,
+            "visible": false,
+            "styleSettings": {
+              "backgroundColor": "rgba(220, 224, 233, 1)",
+              "textColor": "#ffffff",
+              "borderRadius": 12,
+              "padding": 16
+            }
+          },
+          {
+            "id": "ns-trump-tracker",
+            "type": "ns-trump-tracker",
+            "x": 1665,
+            "y": 337,
+            "scale": 1,
+            "visible": true,
+            "styleSettings": {
+              "backgroundColor": "rgba(220, 224, 233, 1)",
+              "textColor": "#ffffff",
+              "borderRadius": 12,
+              "padding": 16
+            }
+          },
+          {
+            "id": "ew-trump-tracker",
+            "type": "ew-trump-tracker",
+            "x": 92,
+            "y": 397,
+            "scale": 1,
+            "visible": true,
+            "styleSettings": {
+              "backgroundColor": "rgba(220, 224, 233, 1)",
+              "textColor": "#ffffff",
+              "borderRadius": 12,
+              "padding": 16
+            }
+          }
+        ]
+      },
+      "handVisibility": "all",
+      "focusSeat": 2
+    }
+  ],
+  "viewSwitches": {},
+  "videoUrl": ""
+}

@@ -3,6 +3,10 @@ import * as path from "path";
 import protobuf from "protobufjs";
 import { packDeal, unpackDeal } from "./bitpacker";
 
+// Magic bytes to identify binary format
+const MAGIC_BYTE_EXPANDED = 0x00;
+const MAGIC_BYTE_CONDENSED = 0x01;
+
 let loadedCondensedRoot: protobuf.Root | null = null;
 let loadedExpandedRoot: protobuf.Root | null = null;
 
@@ -50,7 +54,6 @@ const protoToJsonKeyMap: Record<string, string> = {
   phase_number: "phaseNumber",
   is_alone: "isAlone",
   alone_defender: "aloneDefender",
-  initial_lead: "initialLead",
   branch_index: "branchIndex",
   alternative_lines: "alternativeLines",
 };
@@ -65,7 +68,6 @@ const jsonToProtoKeyMap: Record<string, string> = {
   phaseNumber: "phase_number",
   isAlone: "is_alone",
   aloneDefender: "alone_defender",
-  initialLead: "initial_lead",
   branchIndex: "branch_index",
   alternativeLines: "alternative_lines",
 };
@@ -86,6 +88,36 @@ function mapProtoToEgn(protoObj: any): any {
       // Convert card lists in playerCards (from array of CardList messages to array of string arrays)
       if (key === "playerCards" && Array.isArray(val)) {
         res["playerCards"] = val.map(item => item.cards || []);
+        continue;
+      }
+
+      // Convert metadata.players from protobuf oneof form into JSON schema form:
+      // - string player => "Name"
+      // - object player => { name, playerIds: [{ id, source }] }
+      if (key === "players" && Array.isArray(val)) {
+        res["players"] = val.map((player: any) => {
+          if (typeof player === "string") {
+            return player;
+          }
+
+          if (player && typeof player === "object" && typeof player.name === "string" && !player.player_with_id) {
+            return player.name;
+          }
+
+          const nested = player?.player_with_id ?? player;
+          if (!nested || typeof nested !== "object") {
+            return player;
+          }
+
+          const mapped: any = { name: nested.name ?? "" };
+          if (Array.isArray(nested.ids)) {
+            mapped.playerIds = nested.ids.map((idObj: any) => ({
+              id: idObj?.id ?? "",
+              source: idObj?.source ?? "",
+            }));
+          }
+          return mapped;
+        });
         continue;
       }
 
@@ -137,6 +169,26 @@ function mapProtoToEgn(protoObj: any): any {
   return protoObj;
 }
 
+/**
+ * Detects whether a binary file is in condensed or expanded format by reading the magic byte.
+ * @param binFilePath Path to the binary file
+ * @returns 'condensed' or 'expanded', or null if magic byte is not recognized
+ */
+export function detectBinaryFormat(binFilePath: string): "condensed" | "expanded" | null {
+  try {
+    const buffer = fs.readFileSync(binFilePath);
+    if (buffer.length === 0) return null;
+    
+    const magicByte = buffer[0];
+    if (magicByte === MAGIC_BYTE_CONDENSED) return "condensed";
+    if (magicByte === MAGIC_BYTE_EXPANDED) return "expanded";
+    
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 function mapEgnToProto(jsonObj: any, condensed: boolean): any {
   if (jsonObj === null || jsonObj === undefined) return jsonObj;
 
@@ -157,8 +209,34 @@ function mapEgnToProto(jsonObj: any, condensed: boolean): any {
         continue;
       }
 
+      // Convert metadata.players JSON schema forms into protobuf oneof form:
+      // - "Name" => { name: "Name" }
+      // - { name, playerIds } => { player_with_id: { name, ids } }
+      if (key === "players" && Array.isArray(val)) {
+        res["players"] = val.map((player: any) => {
+          if (typeof player === "string") {
+            return { name: player };
+          }
+
+          const ids = Array.isArray(player?.playerIds)
+            ? player.playerIds.map((idObj: any) => ({
+              id: idObj?.id ?? "",
+              source: idObj?.source ?? "",
+            }))
+            : [];
+
+          return {
+            player_with_id: {
+              name: player?.name ?? "",
+              ids,
+            },
+          };
+        });
+        continue;
+      }
+
       // Convert playerCards to CardList messages
-      if (key === "playerCards" || key === "playerCards") {
+      if (key === "playerCards") {
         res["playerCards"] = val.map((cards: string[]) => ({ cards }));
         continue;
       }
@@ -214,13 +292,36 @@ function mapEgnToProto(jsonObj: any, condensed: boolean): any {
  * @param binFilePath Path to the serialized Protobuf binary file.
  * @param condensed If true (default), decodes using condensed schema and unpacks base64 strings to full Deal objects.
  *                  If false, decodes using the expanded schema.
+ *                  If undefined, auto-detects from magic byte.
  * @returns The converted EGN JSON string.
  */
-export function convertBinToEgnJson(binFilePath: string, condensed = true): string {
+export function convertBinToEgnJson(binFilePath: string, condensed?: boolean): string {
+  const buffer = fs.readFileSync(binFilePath);
+  
+  // If condensed is not specified, auto-detect from magic byte
+  if (condensed === undefined) {
+    if (buffer.length === 0) {
+      throw new Error("Binary file is empty");
+    }
+    const detected = detectBinaryFormat(binFilePath);
+    if (detected !== null) {
+      condensed = detected === "condensed";
+    } else {
+      // Fall back to default if no magic byte found
+      condensed = true;
+    }
+  }
+  
   const root = getProtobufRoot(condensed);
   const EgnFileMessage = root.lookupType("egn.EgnFile");
-  const buffer = fs.readFileSync(binFilePath);
-  const message = EgnFileMessage.decode(buffer);
+  
+  // Skip the magic byte if present (check for magic byte markers)
+  let protoBuffer = buffer;
+  if (buffer.length > 1 && (buffer[0] === MAGIC_BYTE_CONDENSED || buffer[0] === MAGIC_BYTE_EXPANDED)) {
+    protoBuffer = buffer.slice(1);
+  }
+  
+  const message = EgnFileMessage.decode(protoBuffer);
   const rawObj = EgnFileMessage.toObject(message, {
     arrays: true,
     longs: String,
@@ -263,9 +364,17 @@ export function convertEgnJsonToBin(egnJsonStr: string, outBinFilePath: string, 
       jsonObj.deals = jsonObj.deals.map((d: any) => {
         if (typeof d === "object") {
           const hasDefendAlone = d.phases?.some((p: any) => p.type === "EUCHRE_BIDDING" && p.aloneDefender !== undefined && p.aloneDefender !== -1);
+          const hasDiscard =
+            d.phases?.some((p: any) => p.type === "EUCHRE_BIDDING" && p.discard !== undefined)
+            || d.alternativeLines?.some((line: any) =>
+              line?.phases?.some((p: any) => p.type === "EUCHRE_BIDDING" && p.discard !== undefined));
+          const hasPlayerCards =
+            Array.isArray(d.initialState?.playerCards)
+            && d.initialState.playerCards.some((cards: any) => Array.isArray(cards) && cards.length > 0);
           const dealer = d.initialState?.dealer ?? 0;
+          const needsV3 = hasDiscard || hasPlayerCards;
           const needsV2 = numPlayers !== 4 || minRank !== 9 || hasDefendAlone || dealer >= 4;
-          const version = needsV2 ? 2 : 1;
+          const version: 1 | 2 | 3 = needsV3 ? 3 : (needsV2 ? 2 : 1);
           return packDeal(d, { version, numPlayers, minRank });
         }
         return d;
@@ -286,6 +395,10 @@ export function convertEgnJsonToBin(egnJsonStr: string, outBinFilePath: string, 
   if (errMsg) throw new Error("Protobuf verification failed: " + errMsg);
 
   const message = EgnFileMessage.create(mappedObj);
-  const buffer = EgnFileMessage.encode(message).finish();
-  fs.writeFileSync(outBinFilePath, buffer);
+  const protoBuffer = EgnFileMessage.encode(message).finish();
+  
+  // Prepend magic byte to identify format
+  const magicByte = Buffer.from([condensed ? MAGIC_BYTE_CONDENSED : MAGIC_BYTE_EXPANDED]);
+  const finalBuffer = Buffer.concat([magicByte, protoBuffer]);
+  fs.writeFileSync(outBinFilePath, finalBuffer);
 }

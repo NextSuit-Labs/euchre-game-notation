@@ -29,8 +29,7 @@ function normalizeEgnObj(obj: any, isCondensed = false, isRuleset = false): any 
 
       // Ignore keys not preserved in condensed mode
       if (isCondensed && [
-        "kitty", "discard", "playerCards", "player_cards",
-        "cardExchanges", "initialLead", "initial_lead"
+         "cardExchanges"
       ].includes(key)) {
         continue;
       }

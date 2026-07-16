@@ -1,6 +1,6 @@
 {
   "fileType": "Euchre Game Notation",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "metadata": {
     "title": "Custom Scenario",
     "description": "Reshuffled Euchre Scenario",
@@ -27,11 +27,6 @@
       "initialState": {
         "dealer": 0,
         "upCard": "Jc",
-        "kitty": [
-          "Qh",
-          "Ks",
-          "Ts"
-        ],
         "playerCards": [
           [
             "Kh",
@@ -65,7 +60,7 @@
       },
       "phases": [
         {
-          "phaseNumber": 1,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -77,7 +72,7 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 2,
+          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -110,8 +105,7 @@
               "Kh",
               "Kc"
             ]
-          ],
-          "initialLead": 1
+          ]
         }
       ]
     }

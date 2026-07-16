@@ -27,6 +27,40 @@ function determineTrump(deal) {
   return null;
 }
 
+function determineLeadSeat(deal, lonerLead = "LEFT_OF_DEALER") {
+  const bidding = deal.phases ? deal.phases.find(p => p.type === "EUCHRE_BIDDING") : null;
+  if (!bidding) return 0;
+
+  const dealer = deal.initialState.dealer ?? 0;
+  const maker = determineMaker(deal);
+
+  if (bidding.isAlone) {
+    const callIndex = (dealer + bidding.calls.findIndex(c => c !== "Pass") + 1) % 4;
+    if (lonerLead === "LEFT_OF_LONER") {
+      return (maker + 1) % 4
+    } else if (maker === ((dealer + 3) % 4)) {
+      return (dealer + 2) % 4; // Seat 2 starts when seat 3 goes alone
+    }
+  }
+   return (dealer + 1) % 4;
+}
+
+function determineMaker(deal) {
+  const bidding = deal.phases ? deal.phases.find(p => p.type === "EUCHRE_BIDDING") : null;
+  if (!bidding) return null;
+
+  const dealer = deal.initialState.dealer ?? 0;
+  const callIndex = bidding.calls.findIndex(c => c !== "Pass");
+
+  return (dealer + callIndex + 1) % 4
+}
+
+function determineIsAlone(deal) {
+  const bidding = deal.phases ? deal.phases.find(p => p.type === "EUCHRE_BIDDING") : null;
+  if (!bidding) return null;
+
+  return bidding.isAlone;
+}
 /**
  * Returns the suit same-color same-color counterpart (Left Bower suit).
  */
@@ -105,7 +139,9 @@ function getPlayerIndexInTrick(leadSeat, cardIndex, sitOutSeat) {
 /**
  * Compiles a raw EGN Deal structure into a list of flat, chronological steps.
  */
-function compileDealSteps(deal, players = ["Player 1", "Player 2", "Player 3", "Player 4"]) {
+function compileDealSteps(deal, metadata) {
+  let players = metadata.players || ["Player 0", "Player 1", "Player 2", "Player 3"];
+  let ruleset = metadata.ruleset;
   // Determine alone seat and sit out seat
   let aloneSeat = null;
   let sitOutSeat = null;
@@ -137,7 +173,7 @@ function compileDealSteps(deal, players = ["Player 1", "Player 2", "Player 3", "
     if (playPhase) {
       initialHands = [[], [], [], []];
       const trump = determineTrump(deal);
-      let leadSeat = playPhase.initialLead ?? 0;
+      let leadSeat = determineLeadSeat(deal, ruleset?.loner_lead ?? "LEFT_OF_DEALER");
 
       playPhase.tricks.forEach((trickCards) => {
         trickCards.forEach((card, cardIndex) => {
@@ -203,10 +239,8 @@ function compileDealSteps(deal, players = ["Player 1", "Player 2", "Player 3", "
   const playPhase = deal.phases.find(p => p.type === "TRICK_PLAY");
   if (playPhase) {
     let activeHands = compiled[compiled.length - 1].hands.map(h => [...h]);
-    let initialLead = playPhase.initialLead ?? 0;
     const trump = determineTrump(deal);
-
-    let leadSeat = initialLead;
+    let leadSeat = determineLeadSeat(deal, ruleset?.loner_lead ?? "LEFT_OF_DEALER");
 
     playPhase.tricks.forEach((trickCards, trickIndex) => {
       let currentTrickPlayed = [null, null, null, null];

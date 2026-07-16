@@ -4,6 +4,10 @@ node_modules/
 # TypeScript compilation output
 dist/
 
+# internal files
+validation_report*
+verify-example-binaries*
+
 # Logs
 *.log
 npm-debug.log*
@@ -11,3 +15,5 @@ npm-debug.log*
 # OS Files
 .DS_Store
 Thumbs.db
+temp_debug/
+temp_debug_vwec/

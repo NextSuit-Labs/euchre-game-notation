@@ -2,10 +2,11 @@
 import { packDeal } from "./bitpacker";
 import * as path from "path";
 import * as fs from "fs";
+import { VERSION } from "./version";
 
 function showHelp() {
   console.log(`
-EGN Deal Bitpacker CLI (egn-bitpack-deal)
+EGN Deal Bitpacker CLI (egn-bitpack-deal) (v${VERSION})
 
 Converts specific deals in an EGN file into Base64URL-encoded condensed strings.
 
@@ -20,6 +21,7 @@ Options:
   --deals <list>  Comma-separated list of 0-based deal indices or deal numbers to bitpack (e.g. 0,2).
                   If not specified, all deals in the EGN file will be output.
   --help, -h      Show this help message
+  --version, -v   Show version information
 `);
 }
 
@@ -28,6 +30,11 @@ function main() {
 
   if (args.includes("--help") || args.includes("-h")) {
     showHelp();
+    process.exit(0);
+  }
+
+  if (args.includes("--version") || args.includes("-v")) {
+    console.log(`EGN Bitpacker v${VERSION}`);
     process.exit(0);
   }
 

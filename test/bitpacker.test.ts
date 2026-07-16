@@ -33,7 +33,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
       dealNumber: 0,
       initialState: {
         dealer: 0,
-        upCard: "Jd",
+        upCard: "Jd"
       },
       phases: [
         {
@@ -63,7 +63,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
       initialState: {
         dealer: 0,
         // Card that does not exist in standard deck
-        upCard: "Xz",
+        upCard: "Xz"
       },
       phases: []
     };
@@ -76,7 +76,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
       dealNumber: 5,
       initialState: {
         dealer: 1,
-        upCard: "Ah",
+        upCard: "Ah"
       },
       phases: []
     };
@@ -94,7 +94,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
       dealNumber: 5,
       initialState: {
         dealer: 1,
-        upCard: "Ah",
+        upCard: "Ah"
       },
       phases: []
     };
@@ -113,7 +113,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
       dealNumber: 5,
       initialState: {
         dealer: 1,
-        upCard: "Ah",
+        upCard: "Ah"
       },
       phases: []
     };
@@ -131,7 +131,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
       dealNumber: 2,
       initialState: {
         dealer: 2,
-        upCard: "Ts",
+        upCard: "Ts"
       },
       phases: [
         {
@@ -159,7 +159,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
       dealNumber: 1,
       initialState: {
         dealer: 0,
-        upCard: "As", // spade upCard -> second round cannot choose spade (s)
+        upCard: "As" // spade upCard -> second round cannot choose spade (s)
       },
       phases: [
         {
@@ -189,7 +189,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
       dealNumber: 3,
       initialState: {
         dealer: 3,
-        upCard: "Jd",
+        upCard: "Jd"
       },
       phases: [
         {
@@ -228,7 +228,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
       dealNumber: 0,
       initialState: {
         dealer: 0,
-        upCard: "Jd",
+        upCard: "Jd"
       },
       phases: [
         {
@@ -259,7 +259,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
       dealNumber: 4,
       initialState: {
         dealer: 1,
-        upCard: "Th",
+        upCard: "Th"
       },
       phases: [
         {
@@ -327,7 +327,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
       dealNumber: 10,
       initialState: {
         dealer: 0,
-        upCard: "Jd",
+        upCard: "Jd"
       },
       phases: [
         {
@@ -413,7 +413,7 @@ describe("packDeal and unpackDeal edge/error cases", () => {
       dealNumber: 4,
       initialState: {
         dealer: 2,
-        upCard: "Th",
+        upCard: "Th"
       },
       phases: [
         {
@@ -1176,7 +1176,7 @@ describe("V2 Bitpacker — backward compatibility", () => {
       dealNumber: 0,
       initialState: {
         dealer: 0,
-        upCard: "Ad",
+        upCard: "Ad"
       },
       phases: [
         {

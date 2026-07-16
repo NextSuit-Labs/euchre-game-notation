@@ -2,10 +2,11 @@ import { describe, it, expect } from "@jest/globals";
 import { convertBinToEgnJson, convertEgnJsonToBin } from "../src/converter";
 import * as fs from "fs";
 import * as path from "path";
+import { VERSION } from "../src/version";
 
 const validMockData = {
   "fileType": "Euchre Game Notation",
-  "version": "1.0.0",
+  "version": VERSION,
   "metadata": {
     "players": ["Player0", "Player1", "Player2", "Player3"],
     "initialScore": [0, 0]
@@ -15,7 +16,7 @@ const validMockData = {
       "dealNumber": 0,
       "initialState": {
         "dealer": 3,
-        "upCard": "Jd",
+        "upCard": "Jd"
       },
       "phases": [
         {
@@ -33,10 +34,99 @@ const validMockData = {
 };
 
 describe("EGN Protobuf Converter Core", () => {
+  it("should roundtrip metadata.players object entries in expanded mode", () => {
+    const tempDir = path.resolve(__dirname, "../temp_test_dir_players_expanded");
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
+    }
+    const tempBinFilePath = path.join(tempDir, "players-expanded.bin");
+
+    const playersData = {
+      fileType: "Euchre Game Notation",
+      version: VERSION,
+      metadata: {
+        players: [
+          "P0",
+          {
+            name: "P1",
+            playerIds: [
+              { id: "abc123", source: "euchre-site" },
+              { id: "p1-alt", source: "euchre-community" }
+            ]
+          },
+          "P2",
+          {
+            name: "P3",
+            playerIds: []
+          }
+        ],
+        initialScore: [0, 0]
+      },
+      deals: []
+    };
+
+    try {
+      convertEgnJsonToBin(JSON.stringify(playersData), tempBinFilePath, false);
+      const decodedObj = JSON.parse(convertBinToEgnJson(tempBinFilePath, false));
+      expect(decodedObj.metadata.players).toEqual(playersData.metadata.players);
+    } finally {
+      if (fs.existsSync(tempBinFilePath)) {
+        fs.unlinkSync(tempBinFilePath);
+      }
+      if (fs.existsSync(tempDir)) {
+        fs.rmdirSync(tempDir);
+      }
+    }
+  });
+
+  it("should roundtrip metadata.players object entries in condensed mode", () => {
+    const tempDir = path.resolve(__dirname, "../temp_test_dir_players_condensed");
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
+    }
+    const tempBinFilePath = path.join(tempDir, "players-condensed.bin");
+
+    const playersData = {
+      fileType: "Euchre Game Notation",
+      version: VERSION,
+      metadata: {
+        players: [
+          "P0",
+          {
+            name: "P1",
+            playerIds: [
+              { id: "abc123", source: "euchre-site" }
+            ]
+          },
+          "P2",
+          {
+            name: "P3",
+            playerIds: []
+          }
+        ],
+        initialScore: [0, 0]
+      },
+      deals: []
+    };
+
+    try {
+      convertEgnJsonToBin(JSON.stringify(playersData), tempBinFilePath, true);
+      const decodedObj = JSON.parse(convertBinToEgnJson(tempBinFilePath, true));
+      expect(decodedObj.metadata.players).toEqual(playersData.metadata.players);
+    } finally {
+      if (fs.existsSync(tempBinFilePath)) {
+        fs.unlinkSync(tempBinFilePath);
+      }
+      if (fs.existsSync(tempDir)) {
+        fs.rmdirSync(tempDir);
+      }
+    }
+  });
+
   it("should fail when converting invalid JSON to binary (protobuf verification)", () => {
     const invalidJsonStr = JSON.stringify({
       fileType: "Euchre Game Notation",
-      version: "1.0.0",
+      version: VERSION,
       metadata: {
         players: "not-an-array", // Violates repeated string (array) expectation
         initialScore: [0, 0]
@@ -127,7 +217,7 @@ describe("EGN Protobuf Converter Core", () => {
 
     const rulesData = {
       fileType: "Euchre Game Notation",
-      version: "1.0.0",
+      version: VERSION,
       metadata: {
         players: ["P0", "P1", "P2", "P3"],
         initialScore: [4, 5],
@@ -178,7 +268,7 @@ describe("EGN Protobuf Converter Core", () => {
 
     const testData = {
       fileType: "Euchre Game Notation",
-      version: "1.0.0",
+      version: VERSION,
       metadata: {
         players: ["P0", "P1", "P2", "P3"],
         initialScore: [0, 0]
@@ -188,7 +278,7 @@ describe("EGN Protobuf Converter Core", () => {
           dealNumber: 0,
           initialState: {
             dealer: 3,
-            upCard: "Jd",
+            upCard: "Jd"
           },
           phases: [
             {
@@ -247,6 +337,61 @@ describe("EGN Protobuf Converter Core", () => {
     }
   });
 
+  it("should preserve discard and playerCards in condensed mode", () => {
+    const tempDir = path.resolve(__dirname, "../temp_test_dir_condensed_discard_playercards");
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
+    }
+    const tempBinFilePath = path.join(tempDir, "condensed-discard-playercards.bin");
+
+    const testData = {
+      fileType: "Euchre Game Notation",
+      version: VERSION,
+      metadata: {
+        players: ["P0", "P1", "P2", "P3"],
+        initialScore: [0, 0]
+      },
+      deals: [
+        {
+          dealNumber: 0,
+          initialState: {
+            dealer: 3,
+            upCard: "Jd",
+            playerCards: [
+              ["Ac", "Kc", "Qc", "Tc", "9c"],
+              ["As", "Ks", "Qs", "Ts", "9s"],
+              ["Ah", "Kh", "Qh", "Th", "9h"],
+              ["Ad", "Kd", "Qd", "Td", "9d"]
+            ]
+          },
+          phases: [
+            {
+              phaseNumber: 0,
+              type: "EUCHRE_BIDDING",
+              calls: ["Pass", "Pass", "Pass", "Order"],
+              isAlone: false,
+              discard: "9s"
+            }
+          ]
+        }
+      ]
+    };
+
+    try {
+      convertEgnJsonToBin(JSON.stringify(testData), tempBinFilePath, true);
+      const backObj = JSON.parse(convertBinToEgnJson(tempBinFilePath, true));
+      expect(backObj.deals[0].phases[0].discard).toBe("9s");
+      expect(backObj.deals[0].initialState.playerCards).toEqual(testData.deals[0].initialState.playerCards);
+    } finally {
+      if (fs.existsSync(tempBinFilePath)) {
+        fs.unlinkSync(tempBinFilePath);
+      }
+      if (fs.existsSync(tempDir)) {
+        fs.rmdirSync(tempDir);
+      }
+    }
+  });
+
   it("should preserve aloneDefender in both condensed and expanded modes", () => {
     const tempDir = path.resolve(__dirname, "../temp_test_dir_alonedefer");
     if (!fs.existsSync(tempDir)) {
@@ -256,7 +401,7 @@ describe("EGN Protobuf Converter Core", () => {
 
     const testData = {
       fileType: "Euchre Game Notation",
-      version: "1.0.0",
+      version: VERSION,
       metadata: {
         players: ["P0", "P1", "P2", "P3"],
         initialScore: [0, 0],
@@ -269,7 +414,7 @@ describe("EGN Protobuf Converter Core", () => {
           dealNumber: 0,
           initialState: {
             dealer: 3,
-            upCard: "Jd",
+            upCard: "Jd"
           },
           phases: [
             {

@@ -1,6 +1,6 @@
 {
   "fileType": "Euchre Game Notation",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "metadata": {
     "title": "VWEC Finals",
     "description": "Finals of the Virtual World Euchre Championship on Euchre.com",
@@ -30,7 +30,7 @@
       },
       "phases": [
         {
-          "phaseNumber": 1,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -41,7 +41,7 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 2,
+          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -74,8 +74,7 @@
               "Jd",
               "Jh"
             ]
-          ],
-          "initialLead": 3
+          ]
         }
       ],
       "alternativeLines": [
@@ -111,7 +110,6 @@
                   "Kh"
                 ]
               ],
-              "initialLead": 2,
               "playAnnotations": {
                 "0": [
                   "This line leads to a march, but I don't think it's possible to play it this way without knowing what your partner and opponents have."
@@ -130,7 +128,7 @@
       },
       "phases": [
         {
-          "phaseNumber": 1,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -147,7 +145,7 @@
           }
         },
         {
-          "phaseNumber": 2,
+          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -181,7 +179,6 @@
               "Qc"
             ]
           ],
-          "initialLead": 0,
           "playAnnotations": {
             "10": [
               "Even if dealer trumps here we get the last two tricks."
@@ -198,7 +195,7 @@
       },
       "phases": [
         {
-          "phaseNumber": 1,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -209,7 +206,7 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 2,
+          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -243,7 +240,6 @@
               "Ts"
             ]
           ],
-          "initialLead": 1,
           "playAnnotations": {
             "7": [
               "Nothing I could do here to prevent the euchre. Even if I trumped high. I'm not sure which is correct."
@@ -260,7 +256,7 @@
       },
       "phases": [
         {
-          "phaseNumber": 1,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -271,7 +267,7 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 2,
+          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -305,7 +301,6 @@
               "Ad"
             ]
           ],
-          "initialLead": 2,
           "playAnnotations": {
             "4": [
               "Double led spades here hoping dealer had KQs to allow partner to trump in on it. Saving the Ad for later."
@@ -328,7 +323,7 @@
       },
       "phases": [
         {
-          "phaseNumber": 1,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -349,7 +344,7 @@
           }
         },
         {
-          "phaseNumber": 2,
+          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -383,7 +378,6 @@
               "9s"
             ]
           ],
-          "initialLead": 3,
           "playAnnotations": {
             "1": [
               "Probably better to trump high here and lead low. My partner is supposed to have the right more often here given they passed on red in R1. Prevents getting overtrumped like this."
@@ -429,7 +423,6 @@
                   "Js"
                 ]
               ],
-              "initialLead": 0,
               "playAnnotations": {
                 "0": [
                   "Turns out trumping high and leading low is a disaster here. S3 gets to duck their spade."
@@ -475,7 +468,6 @@
                   "Kd"
                 ]
               ],
-              "initialLead": 0,
               "playAnnotations": {
                 "0": [
                   "Turns out trumping high and leading low is a disaster here. S3 gets to duck their spade."
@@ -497,7 +489,7 @@
       },
       "phases": [
         {
-          "phaseNumber": 1,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -513,7 +505,7 @@
           }
         },
         {
-          "phaseNumber": 2,
+          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -546,8 +538,7 @@
               "Ah",
               "9c"
             ]
-          ],
-          "initialLead": 0
+          ]
         }
       ]
     },
@@ -559,7 +550,7 @@
       },
       "phases": [
         {
-          "phaseNumber": 1,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -575,7 +566,7 @@
           }
         },
         {
-          "phaseNumber": 2,
+          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -608,8 +599,7 @@
               "Kh",
               "Tc"
             ]
-          ],
-          "initialLead": 1
+          ]
         }
       ]
     },
@@ -621,7 +611,7 @@
       },
       "phases": [
         {
-          "phaseNumber": 1,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -632,7 +622,7 @@
           "isAlone": true
         },
         {
-          "phaseNumber": 2,
+          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -661,7 +651,6 @@
               "Jh"
             ]
           ],
-          "initialLead": 2,
           "playAnnotations": {
             "8": [
               "If S1 had two diamonds instead of two clubs we would get the euchre here."
@@ -678,7 +667,7 @@
       },
       "phases": [
         {
-          "phaseNumber": 1,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -689,7 +678,7 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 2,
+          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -722,8 +711,7 @@
               "Ah",
               "9s"
             ]
-          ],
-          "initialLead": 3
+          ]
         }
       ],
       "alternativeLines": [
@@ -753,7 +741,6 @@
                   "Ad"
                 ]
               ],
-              "initialLead": 2,
               "playAnnotations": {
                 "0": [
                   "Partner has shown void in trump by trumping in with the left and then leading offsuit. It's safe to lead trump again as we have a guaranteed trick even if opponents have the right."
@@ -772,7 +759,7 @@
       },
       "phases": [
         {
-          "phaseNumber": 1,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Order"
@@ -785,7 +772,7 @@
           }
         },
         {
-          "phaseNumber": 2,
+          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -818,8 +805,7 @@
               "9d",
               "Ah"
             ]
-          ],
-          "initialLead": 0
+          ]
         }
       ]
     },
@@ -831,7 +817,7 @@
       },
       "phases": [
         {
-          "phaseNumber": 1,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -847,7 +833,7 @@
           }
         },
         {
-          "phaseNumber": 2,
+          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -881,7 +867,6 @@
               "Ah"
             ]
           ],
-          "initialLead": 1,
           "playAnnotations": {
             "4": [
               "playing this to allow partner to help, but it actually made things dicier."
@@ -912,8 +897,7 @@
                   "Jd",
                   "Jh"
                 ]
-              ],
-              "initialLead": 3
+              ]
             }
           ]
         }
@@ -927,7 +911,7 @@
       },
       "phases": [
         {
-          "phaseNumber": 1,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Order"
@@ -940,7 +924,7 @@
           }
         },
         {
-          "phaseNumber": 2,
+          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -973,8 +957,7 @@
               "9d",
               "Ah"
             ]
-          ],
-          "initialLead": 2
+          ]
         }
       ],
       "alternativeLines": [
@@ -982,7 +965,7 @@
           "branchIndex": 0,
           "phases": [
             {
-              "phaseNumber": 1,
+              "phaseNumber": 0,
               "type": "EUCHRE_BIDDING",
               "calls": [
                 "Pass",
@@ -993,7 +976,7 @@
               "isAlone": false
             },
             {
-              "phaseNumber": 2,
+              "phaseNumber": 1,
               "type": "TRICK_PLAY",
               "tricks": [
                 [
@@ -1027,7 +1010,6 @@
                   "Qd"
                 ]
               ],
-              "initialLead": 2,
               "playAnnotations": {
                 "2": [
                   "The euchre depends on playing high here as S3 so my Jh doesn't win a trick later on. Very unintuitive."
@@ -1046,7 +1028,7 @@
       },
       "phases": [
         {
-          "phaseNumber": 1,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -1062,7 +1044,7 @@
           }
         },
         {
-          "phaseNumber": 2,
+          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -1096,7 +1078,6 @@
               "Qd"
             ]
           ],
-          "initialLead": 3,
           "playAnnotations": {
             "2": [
               "If S3 plays the R on S1's false lead, they would have missed the euchre."
@@ -1137,7 +1118,6 @@
                   "Ts"
                 ]
               ],
-              "initialLead": 2,
               "playAnnotations": {
                 "1": [
                   "If S1 trumps high here, they would miss the euchre. Trumping low would get the euchre."

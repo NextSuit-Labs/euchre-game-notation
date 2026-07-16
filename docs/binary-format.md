@@ -1,8 +1,39 @@
-# EGN Condensed Binary Format Specification (v0, v1, & v2)
+# EGN Condensed Binary Format Specification (v0, v1, v2, & v3)
 
 This document describes the binary representation of Euchre Game Notation (EGN) files in **Condensed Mode**. 
 
-Condensed mode encodes the full bidding and card play history of individual deals into compact, Base64URL-encoded bitstreams. This document details the bit-level structure, encoding rules, and deck tracking requirements for **Version 0** (legacy), **Version 1** (current standard), and **Version 2** (extended alternate rules).
+Condensed mode encodes the full bidding and card play history of individual deals into compact, Base64URL-encoded bitstreams. This document details the bit-level structure, encoding rules, and deck tracking requirements for **Version 0** (legacy), **Version 1** (standard), **Version 2** (extended alternate rules), and **Version 3** (discard/playerCards preservation).
+
+---
+
+## 🔍 0. Magic Byte Header & Format Detection
+
+All EGN binary files begin with a single-byte **magic byte** header that identifies the serialization format. This header enables automatic detection without requiring external metadata.
+
+| Byte | Format | Description |
+| :--- | :--- | :--- |
+| `0x00` | **Expanded** | Full EGN JSON structure serialized using Protobuf |
+| `0x01` | **Condensed** | Base64URL-encoded bitpacked deals (this document) |
+
+### Encoding & Decoding
+
+* **Encoding**: When creating a binary file, prepend the magic byte to the serialized payload.
+  * Condensed: `[0x01] + [protobuf-encoded condensed message]`
+  * Expanded: `[0x00] + [protobuf-encoded expanded message]`
+
+* **Decoding**: Read the first byte to determine format, then skip it before deserializing the remaining Protobuf payload.
+  * If the first byte is `0x00` or `0x01`, skip it and proceed with Protobuf decoding.
+  * If the first byte is neither, the file is legacy (pre-magic byte format) and should default to condensed format.
+
+### CLI Usage
+
+The EGN CLI automatically detects the format from the magic byte:
+
+```bash
+egn-convert game.bin game.json
+# Automatically detects "condensed" or "expanded" from magic byte
+# Displays: "Format auto-detected: condensed"
+```
 
 ---
 
@@ -133,7 +164,55 @@ Version 2 extends the header to support variable player counts (1–8), alternat
 
 ---
 
-## 🕰️ 4. Version 0 Bitstream Structure (Legacy)
+## 🏗️ 4. Version 3 Bitstream Structure (Optional State Preservation)
+
+Version 3 extends Version 2 to optionally preserve game state details that can be recalculated from other data but are valuable to preserve exactly as they occurred:
+- **Discard**: The card discarded by the picker when picking up the up-card.
+- **Player Cards**: The initial hands dealt to each player before any cards are played.
+
+The header is identical to Version 2, but **Bidding Phase Payload** and **Initial State** encoding are extended.
+
+| Field Name | Bit Width | Description |
+| :--- | :--- | :--- |
+| **Version Header** | 4 bits | Always `0011` (denoting Version 3). |
+| **Dealer Seat** | 3 bits | Dealer index (`0-7` to support up to 8 players). |
+| **Num Players** | 3 bits | Value encoded is `numPlayers - 1` (covers range of 1–8 players). |
+| **Min Rank Code** | 2 bits | Determines the lowest rank in the deck (same as Version 2). |
+| **Up-Card** | Variable | Index of the up-card in the initial dynamic remaining deck. |
+| **Initial Player Cards** | Variable | Optional preserved initial hands (see Section 4.1). |
+| **Num Phases** | 3 bits | Total number of bidding and play phases. |
+| **Phases** | Variable | Sequence of phase payloads with extended bidding (see Section 4.2). |
+| **Has Alt Lines** | 1 bit | `1` if the deal has alternative branching lines, `0` otherwise. |
+| **Alt Lines Payload** | Variable | List of alternative lines (only if `Has Alt Lines == 1`). |
+| **End Marker** | 4 bits | Always `1010`. |
+
+### 🎯 4.1. Initial Player Cards (Optional State Preservation)
+
+Immediately after the **Up-Card** field:
+
+1. **Has Player Cards**: 1 bit (`1` if initial hands are preserved, `0` otherwise).
+2. **Player Cards Payload** (only if Has Player Cards is `1`):
+   * **Num Players with Cards**: 3 bits (number of players whose initial cards are recorded).
+   * **Player Cards Loop**:
+     For each player:
+     * **Num Cards**: 4 bits (number of cards in this player's initial hand, typically 5 for a standard game, up to 8 for variants).
+     * **Cards Loop**:
+       For each card:
+       * Read card index from the initial full deck (using $\lceil \log_2(\text{deckSize}) \rceil$ bits).
+       * Note: Cards in player hands are **not** removed from the dynamic `cardsRemaining` deck used during play encoding. The player cards are purely informational for reconstruction purposes.
+
+### 📥 4.2. Extended Bidding Phase Payload (Version 3)
+
+After the standard Version 2 bidding decisions and `Go Alone` flag:
+
+4. **Discard** (only after successful pickup in bidding phase):
+   * **Has Discard**: 1 bit (`1` if a discard is recorded, `0` otherwise).
+   * **Discard Card**: Variable bits (only if Has Discard is `1`). Card index in the initial full deck.
+5. **Annotations**: Optional bidding comments (see Section 6).
+
+---
+
+## 🕰️ 5. Version 0 Bitstream Structure (Legacy)
 
 Version 0 was used in initial EGN implementations. It has no version header, no annotations, and no alternative lines.
 
@@ -149,7 +228,7 @@ Version 0 was used in initial EGN implementations. It has no version header, no 
 
 ---
 
-## 🎴 5. Dynamic Deck Tracking (`cardsRemaining`)
+## 🎴 6. Dynamic Deck Tracking (`cardsRemaining`)
 
 To achieve maximum compression, EGN does not write static card bytes. Instead, cards are index-compressed against a dynamic array of remaining cards in the deck (`cardsRemaining`).
 
@@ -181,7 +260,7 @@ To achieve maximum compression, EGN does not write static card bytes. Instead, c
 
 ---
 
-## 💬 6. Annotations Bit-Packing Layout
+## 💬 7. Annotations Bit-Packing Layout
 
 Annotations map an action index (call index or play index) to a list of commentary strings.
 

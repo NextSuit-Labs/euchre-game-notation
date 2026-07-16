@@ -31,8 +31,25 @@ message Metadata {
   optional string game_id = 1;
   optional string title = 2;
   optional string description = 3;
-  repeated string players = 4;
+  repeated Player players = 4;
   repeated int32 initial_score = 5;
   optional string date = 6; // ISO 8601 formatted date-time string
   Ruleset ruleset = 7;
+}
+
+message Player {
+  oneof player {
+    string name = 1;
+    PlayerWithId player_with_id = 2;
+  }
+}
+
+message PlayerWithId {
+  string name = 1;
+  repeated Id ids = 2;
+}
+
+message Id {
+  string id = 1;
+  string source = 2;
 }

@@ -18,14 +18,14 @@ An `.egn` file purposefully strips out easily calculated metrics—such as trick
 
 ---
 
-## 🛠️ File Structure Example (EGN v1.1.0)
+## 🛠️ File Structure Example (EGN v1.2.0)
 
 Under the hood, an `.egn` file utilizes human-readable, web-native JSON structural primitives:
 
 ```json
 {
   "fileType": "Euchre Game Notation",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "metadata": {
     "gameId": "egn_m_20260528_01",
     "title": "WEC Finals",
@@ -44,8 +44,7 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
       "dealNumber": 0,
       "initialState": {
         "dealer": 3,
-        "upCard": "Jd",
-        "kitty": ["9h", "Qh", "As"]
+        "upCard": "Jd"
       },
       "phases": [
         {
@@ -61,7 +60,6 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
         {
           "phaseNumber": 1,
           "type": "TRICK_PLAY",
-          "initialLead": 0,
           "tricks": [
             ["Ac", "Tc", "9c", "Kc"],
             ["Ah", "Kh", "Th", "Qd"],
@@ -93,8 +91,7 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
       "dealNumber": 1,
       "initialState": {
         "dealer": 0,
-        "upCard": "Ah",
-        "kitty": ["9d", "Ks", "Ts"]
+        "upCard": "Ah"
       },
       "phases": [
         {
@@ -107,7 +104,6 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
         {
           "phaseNumber": 1,
           "type": "TRICK_PLAY",
-          "initialLead": 2,
           "tricks": [
             ["9d", "Ad", "Ah"],
             ["Qc", "Ac", "9h"],
@@ -122,8 +118,7 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
       "dealNumber": 2,
       "initialState": {
         "dealer": 1,
-        "upCard": "9s",
-        "kitty": ["As", "Jc", "Js"]
+        "upCard": "9s"
       },
       "phases": [
         {
@@ -135,7 +130,6 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
         {
           "phaseNumber": 1,
           "type": "TRICK_PLAY",
-          "initialLead": 2,
           "tricks": [
             ["Ac", "Tc", "9c", "Kc"],
             ["Qc", "Qd", "Ad", "Ts"],
@@ -168,8 +162,10 @@ In EGN, cards are primarily represented by a two-character string indicating the
 
 When implementing or parsing EGN, keep the following details in mind:
 
-1. **Unknown/Hidden Information (`discard` and `kitty`)**: Depending on how the game data was recorded (e.g., manually transcribed from a live stream vs. exported from a fully observable digital game engine), the dealer's `discard` and the unplayed `kitty` cards might not be known. These properties are optional in the specification and can be omitted if the data is unavailable.
-2. **Trick Order and Lead Determination**: The `tricks` array records cards strictly in the chronological order they were dropped on the table. It does not explicitly state which player led each trick. Instead, the lead for the very first trick can be defaulted to the player to the left of the dealer or can be indicated by the `initialLead` property. For all subsequent tricks, the lead is implicitly determined by calculating the winner of the prior trick using standard Euchre rules. This aligns with EGN's philosophy of deterministic minimalism.
+1. **Unknown/Hidden Information (`discard`)**: Depending on how the game data was recorded (e.g., manually transcribed from a live stream vs. exported from a fully observable digital game engine), the dealer's `discard` might not be known. This properties are optional in the specification and can be omitted if the data is unavailable.
+
+2. **Trick Order and Lead Determination**: The `tricks` array records cards strictly in the chronological order they were dropped on the table. It does not explicitly state which player led each trick. Instead, the lead for the very first trick can be defaulted to the active player to the left of the dealer (except on loners when loner_lead is set to LEFT_OF_LONER). For all subsequent tricks, the lead is implicitly determined by calculating the winner of the prior trick using standard Euchre rules. This aligns with EGN's philosophy of deterministic minimalism.
+
 3. **Annotations**: Optional commentary infrastructure for bidding or trick play. Annotations are defined under `callAnnotations` (for bidding phases) and `playAnnotations` (for trick play phases) as a map from a decision/trick index to an array of strings (e.g., `{"3": ["Order Up on Jacks", "Maker went alone"]}`). Annotation strings may optionally begin with a **label tag** to classify the quality of a decision:
 
    | Label  | Meaning                                    |
@@ -182,31 +178,90 @@ When implementing or parsing EGN, keep the following details in mind:
    | `[!!]` | Brilliant play — an excellent decision     |
 
    For example: `"[??]Throwing trump here lost the hand."` or `"[!!]Perfect lone call."`. See [docs/annotations.md](docs/annotations.md) for full details.
-4. **Alternative Lines (Branching)**: Analysis networks or theoretical branching plays can be specified via the optional `alternativeLines` array on any deal. Each alternative line contains a `branchIndex` (a 0-based decision index representing the point of deviation from the main game flow) and a `phases` list containing alternative Bidding or TrickPlay phases representing the sequence of alternate actions.
+
+4. **Alternative Lines (Branching)**: Analysis networks or theoretical branching plays can be specified via the optional `alternativeLines` array on any deal. Each alternative line contains a `branchIndex` (a 0-based decision index representing the point of deviation from the main game flow) and a `phases` list containing alternative Bidding or TrickPlay phases representing the sequence of alternate actions. For replayer implementation details, see [docs/replayer-logic.md](docs/replayer-logic.md).
+
 5. **Flexible Metadata Fields**:
    * **Player Count**: The `players` array supports any number of player names (instead of being strictly restricted to a size of 4) to accommodate different gameplay variants or incomplete logs.
+   * **Player Objects with External ID Tracking**: Players can be specified as simple strings or as rich player objects containing name and external ID mappings. This enables tracking the same player across multiple platforms and systems:
+     ```json
+     {
+       "players": [
+         "Simple Player Name",
+         {
+           "name": "Player Name",
+           "playerIds": [
+             { "id": "player-123", "source": "euchre-site" },
+             { "id": "tournament-2026-P5", "source": "tournament-registry" }
+           ]
+         }
+       ]
+     }
+     ```
+     This format supports any number of external ID systems, allowing for unified player identification across Euchre websites, tournament registrations, chat community IDs, or custom platform identifiers. See [docs/player-tracking.md](docs/player-tracking.md) for implementation details.
    * **Flexible Date Formats**: The `date` property supports ISO-8601 date-time strings either with a timezone offset (e.g., `2026-05-17T19:00:00Z` or `+05:30`) or in local timezone-less formats (e.g., `2026-05-30T03:51` or `2026-06-02 19:02`).
+
+6. **Variant Rulesets**: For extensive documentation on alternate rules and regional variations supported in EGN, see [docs/alternate-rules.md](docs/alternate-rules.md).
 
 ---
 
 ## 💾 Binary Serialization (Condensed vs. Expanded)
 
-EGN supports two binary serialization modes for storage optimization. For detailed layout details, see the [Condensed Binary Format Specification](docs/binary-format.md).
+EGN supports two binary serialization modes for storage optimization. Binary files include a **magic byte** header that enables automatic format detection without external metadata. For complete technical specifications including all version details, see the [Condensed Binary Format Specification](docs/binary-format.md).
+
+### 🔍 Automatic Format Detection
+
+All EGN binary files begin with a single-byte **magic byte** that identifies the format:
+
+* **`0x00`** — Expanded format (Protobuf)
+* **`0x01`** — Condensed format (Base64URL bitpacked deals)
+
+When converting binary files to JSON, the CLI automatically detects the format from this header:
+
+```bash
+# Format auto-detected from magic byte
+egn-convert game.bin game.json
+# Output: "Format auto-detected: condensed" (or "expanded")
+```
+
+This allows seamless round-trip conversion without requiring the user to specify the format. Legacy binary files without a magic byte will default to condensed format.
 
 ### ⚡ Condensed Mode (Default)
-In condensed mode, the `deals` list is replaced by an array of Base64URL-encoded bitpacked strings. 
-* **Version 1 (`0001`)**: The bitstream starts with a 4-bit version header (`0001`). It packs the dealer index (2 bits), up-card, bidding calls, played cards, and directly encodes both **commentary annotations** and **alternative branching lines** into the bitstream, concluding with an explicit ending marker (`1010`) to separate the payload from padding zeros.
-* **Backward Compatibility**: Fully compatible with legacy Version 0 bitpacked streams (which lack the version header, annotations, and alternative lines). The parser automatically falls back to Version 0 decoding if the `0001` header is not present.
+In condensed mode, the `deals` list is replaced by an array of Base64URL-encoded bitpacked strings. The format is highly optimized and supports multiple versions:
+
+* **Version 1 (`0001`)**: The standard format featuring a 4-bit version header, dealer index, up-card, bidding calls, played cards, and encodes **commentary annotations** and **alternative branching lines** directly into the bitstream.
+* **Version 2 (`0010`)**: Extended format supporting variant rulesets with variable player counts (1-8 players), alternate deck sizes (24, 28, 32, or 36 cards), and the `aloneDefender` feature for defending-alone scenarios.
+* **Version 3 (`0011`)**: Premium format extending V2 with optional preservation of game state details like the `discard` (card discarded when picking up the up-card) and `playerCards` (initial hands dealt to each player).
+* **Version 0 (Legacy)**: Fully compatible with legacy Version 0 bitpacked streams (which lack the version header, annotations, and alternative lines). The parser automatically falls back to Version 0 decoding if none of the modern headers are detected.
+* **Automatic Version Selection**: The converter automatically selects the optimal version (V1, V2, or V3) based on the features present in your EGN data, ensuring compact encoding while preserving all necessary information.
+
+For detailed bit-level specifications, version detection logic, and encoding examples, see [docs/binary-format.md](docs/binary-format.md).
 
 ### 🔍 Expanded Mode
-In expanded mode, the entire EGN JSON structure (including metadata, annotations, and alternative lines) is serialized directly into binary using Protobuf.
+In expanded mode, the entire EGN JSON structure (including metadata, annotations, and alternative lines) is serialized directly into binary using Protobuf for maximum compatibility and ease of integration with other systems.
 
 ---
 
 ## ⏱️ Partial Games
 
 This format can be used to denote partial games by indicating the initial score in the metadata section and only including the actions up to the point you want to highlight in the game.
+---
 
+## 🔐 Baseline EGNs
+
+A **baseline EGN** is a deterministic, analysis-free version of a game record. It contains only the essential game flow information by stripping all optional metadata:
+- Removes `callAnnotations` (bidding comments)
+- Removes `playAnnotations` (trick play comments)
+- Removes `alternativeLines` (branching analysis)
+- Preserves all game-critical data (bidding, play, ruleset, player info)
+
+Baseline EGNs are useful for:
+- **Deduplication**: Identify duplicate game records across systems by comparing baseline hashes
+- **Fair Comparison**: Compare game records without being influenced by subjective annotations
+- **Validation**: Create canonical hashes of game records for verification and auditing
+- **Archival**: Store lightweight versions for long-term record keeping
+
+Each baseline EGN has a deterministic SHA256 hash that remains identical regardless of the source format (condensed or expanded binary). Use the `egn-baseline` CLI tool to generate baseline versions and hashes. For more details, see [docs/determinism-of-egn.md](docs/determinism-of-egn.md).
 ---
 
 ## 🚀 Applications & Ecosystem
@@ -219,9 +274,9 @@ EGN is developed under the **NextSuit Labs** brand (copyrighted by **Write Words
 
 ---
 
-## 🛠️ CLI Utility (`egn-convert`)
+## 🛠️ Command-Line Tools
 
-The package includes a command-line tool `egn-convert` to convert between human-readable JSON (`.egn`) files and optimized binary Protobuf (`.bin`) representations.
+The package includes several command-line utilities for working with EGN files:
 
 ### Installation
 
@@ -231,30 +286,61 @@ Install the package globally using npm:
 npm install -g euchre-game-notation
 ```
 
-Or run it directly using `npx`:
+Or run tools directly using `npx`:
 
 ```bash
 npx egn-convert --help
 ```
 
-### Usage
+### Available Tools
 
-Convert a JSON EGN file to an optimized condensed binary file:
+#### `egn-convert` — Format Conversion
+Converts between human-readable JSON (`.egn`) files and optimized binary representations.
 
 ```bash
+# JSON to condensed binary (default, most compact)
 egn-convert game.egn game.condensed.bin
-```
 
-Convert a JSON EGN file to an expanded binary file:
-
-```bash
+# JSON to expanded binary (Protobuf)
 egn-convert game.egn game.expanded.bin --expanded
+
+# Binary back to JSON
+egn-convert game.condensed.bin game.egn
 ```
 
-Convert a binary file back to a JSON EGN file:
+#### `egn-bitpack-deal` — Deal Bitpacking
+Compresses specific deals from an EGN file into Base64URL-encoded bitstream strings for analysis or storage.
 
 ```bash
-egn-convert game.condensed.bin game.egn
+# Bitpack all deals
+egn-bitpack-deal game.egn
+
+# Bitpack specific deals (comma-separated indices)
+egn-bitpack-deal game.egn --deals 0,2,5
+```
+
+#### `egn-baseline` — Baseline Generation & Hashing
+Extracts "baseline" EGN files by removing all analysis-only properties (`callAnnotations`, `playAnnotations`, `alternativeLines`) and generates deterministic SHA256 hashes. Useful for deduplication, validation, and comparing game records without analysis metadata.
+
+```bash
+# Extract baseline and hash a game
+egn-baseline game.egn
+
+# Hash only (without output file)
+egn-baseline game.egn --hash
+```
+
+For details on baseline EGNs and their use cases, see [docs/determinism-of-egn.md](docs/determinism-of-egn.md).
+
+#### `egn-upgrade` — Version Migration
+Upgrades older EGN files (v1.0.0, v1.1.0) to the v1.2.0 format by automatically renaming snake_case properties to camelCase, removing redundant fields, and updating the version string.
+
+```bash
+# Upgrade in-place
+egn-upgrade old-game.egn
+
+# Upgrade to new file
+egn-upgrade old-game.egn new-game.egn
 ```
 
 ---

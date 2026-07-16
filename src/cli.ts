@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-import { convertBinToEgnJson, convertEgnJsonToBin } from "./converter";
+import { convertBinToEgnJson, convertEgnJsonToBin, detectBinaryFormat } from "./converter";
 import * as path from "path";
 import * as fs from "fs";
+import { VERSION } from "./version";
 
 function showHelp() {
   console.log(`
-Euchre Game Notation (EGN) Converter CLI
+Euchre Game Notation (EGN) Converter CLI (v${VERSION})
 
 Usage:
   egn-convert <input-file> <output-file> [options]
@@ -16,13 +17,20 @@ Examples:
   egn-convert game.condensed.bin game.egn
 
 Options:
-  --expanded      Use expanded Protobuf schema instead of the default condensed mode
+  --expanded      Use expanded Protobuf schema when encoding to binary (default: condensed)
+                  When decoding binary, this is auto-detected from the file's magic byte
   --help, -h      Show this help message
+  --version, -v   Show version information
 `);
 }
 
 function main() {
   const args = process.argv.slice(2);
+
+  if (args.includes("--version") || args.includes("-v")) {
+    console.log(`EGN Converter v${VERSION}`);
+    process.exit(0);
+  }
 
   if (args.includes("--help") || args.includes("-h") || args.length < 2) {
     showHelp();
@@ -41,7 +49,7 @@ function main() {
 
   const inputPath = path.resolve(positionals[0]);
   const outputPath = path.resolve(positionals[1]);
-  const condensed = !flags.includes("--expanded");
+  const useExpanded = flags.includes("--expanded");
 
   if (!fs.existsSync(inputPath)) {
     console.error(`Error: Input file not found at "${inputPath}"`);
@@ -52,13 +60,19 @@ function main() {
     const isBinInput = inputPath.endsWith(".bin");
 
     if (isBinInput) {
-      console.log(`Converting binary "${inputPath}" to JSON "${outputPath}" (condensed: ${condensed})...`);
-      const json = convertBinToEgnJson(inputPath, condensed);
+      console.log(`Converting binary "${inputPath}" to JSON "${outputPath}"...`);
+      // Auto-detect format from magic byte
+      const detected = detectBinaryFormat(inputPath);
+      if (detected) {
+        console.log(`  (Format auto-detected: ${detected})`);
+      }
+      const json = convertBinToEgnJson(inputPath); // undefined = auto-detect
       fs.writeFileSync(outputPath, json, "utf8");
     } else {
-      console.log(`Converting JSON "${inputPath}" to binary "${outputPath}" (condensed: ${condensed})...`);
+      const outputFormat = useExpanded ? "expanded" : "condensed";
+      console.log(`Converting JSON "${inputPath}" to binary "${outputPath}" (${outputFormat})...`);
       const jsonStr = fs.readFileSync(inputPath, "utf8");
-      convertEgnJsonToBin(jsonStr, outputPath, condensed);
+      convertEgnJsonToBin(jsonStr, outputPath, !useExpanded);
     }
     console.log("Conversion completed successfully!");
   } catch (err: any) {

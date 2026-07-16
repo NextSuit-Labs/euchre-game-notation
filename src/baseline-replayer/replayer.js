@@ -95,8 +95,17 @@ function renderStep() {
   }
 
   for (let i = 0; i < 4; i++) {
-    document.getElementById(`name-${i}`).textContent = `${players[i]}${deal.initialState.dealer === i ? " (D)" : ""}`;
+    const nameEl = document.getElementById(`name-${i}`);
+    const dealer = deal.initialState.dealer ?? 0;
+    nameEl.textContent = `${players[i]}${dealer === i ? " (D)" : ""}`;
 
+    const makerSeat = determineMaker(deal);
+    if (step.type === 'PLAY' && makerSeat === i) {
+      nameEl.classList.add("maker-highlight");
+    } else {
+      nameEl.classList.remove("maker-highlight");
+    }
+    
     const cardsEl = document.getElementById(`cards-${i}`);
     cardsEl.textContent = "";
 
@@ -151,7 +160,7 @@ function renderStep() {
     span.style.padding = "2px 8px";
     span.style.borderRadius = "4px";
     span.style.fontWeight = "bold";
-    span.textContent = `Called: ${bidValue}`;
+    span.textContent = `${formatCall(bidValue, determineIsAlone(deal))}`;
     targetSeatEl.appendChild(span);
   }
 
@@ -185,6 +194,18 @@ function renderStep() {
   document.getElementById("game-score-val").textContent = gameScoreText;
 }
 
+function formatCall(call, isAlone) {
+  const isAloneSuffix = isAlone ? " (Alone)" : "";
+  switch (call) {
+    case "Order": return call + isAloneSuffix
+    case "s": return "Spades" + isAloneSuffix;
+    case "h": return "Hearts" + isAloneSuffix;
+    case "c": return "Clubs" + isAloneSuffix;
+    case "d": return "Diamonds" + isAloneSuffix;
+  }
+  return call;
+}
+
 // 4. Initialize EGN File
 function initializeEGN(data = null) {
   try {
@@ -206,7 +227,7 @@ function initializeEGN(data = null) {
       let runningScore = [...(egnData.metadata.initialScore || [0, 0])];
       egnData.deals.forEach((deal) => {
         dealStartingScores.push([...runningScore]);
-        const dSteps = compileDealSteps(deal, egnData.metadata.players);
+        const dSteps = compileDealSteps(deal, egnData.metadata);
         if (dSteps.length > 0) {
           const finalStep = dSteps[dSteps.length - 1];
           runningScore[0] += finalStep.scoreChange[0];
@@ -220,7 +241,7 @@ function initializeEGN(data = null) {
 
     const firstDeal = egnData.deals[currentDealIndex];
     if (firstDeal) {
-      steps = compileDealSteps(firstDeal, egnData.metadata.players);
+      steps = compileDealSteps(firstDeal, egnData.metadata);
       renderStep();
     } else {
       alert("No deals found in this EGN file.");
@@ -245,7 +266,7 @@ document.getElementById("next-btn").addEventListener("click", () => {
     if (currentDealIndex < egnData.deals.length - 1) {
       currentDealIndex++;
       currentStepIndex = 0;
-      steps = compileDealSteps(egnData.deals[currentDealIndex], egnData.metadata.players);
+      steps = compileDealSteps(egnData.deals[currentDealIndex], egnData.metadata);
       renderStep();
     }
   }
@@ -258,7 +279,7 @@ document.getElementById("prev-btn").addEventListener("click", () => {
   } else {
     if (currentDealIndex > 0) {
       currentDealIndex--;
-      steps = compileDealSteps(egnData.deals[currentDealIndex], egnData.metadata.players);
+      steps = compileDealSteps(egnData.deals[currentDealIndex], egnData.metadata);
       currentStepIndex = steps.length - 1;
       renderStep();
     }
@@ -269,7 +290,7 @@ document.getElementById("next-hand-btn").addEventListener("click", () => {
   if (currentDealIndex < egnData.deals.length - 1) {
     currentDealIndex++;
     currentStepIndex = 0;
-    steps = compileDealSteps(egnData.deals[currentDealIndex], egnData.metadata.players);
+    steps = compileDealSteps(egnData.deals[currentDealIndex], egnData.metadata);
     renderStep();
   }
 });
@@ -278,7 +299,7 @@ document.getElementById("prev-hand-btn").addEventListener("click", () => {
   if (currentDealIndex > 0) {
     currentDealIndex--;
     currentStepIndex = 0;
-    steps = compileDealSteps(egnData.deals[currentDealIndex], egnData.metadata.players);
+    steps = compileDealSteps(egnData.deals[currentDealIndex], egnData.metadata);
     renderStep();
   }
 });

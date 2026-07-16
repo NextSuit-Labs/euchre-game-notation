@@ -1,6 +1,6 @@
 {
   "fileType": "Euchre Game Notation",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "metadata": {
     "title": "Six Points in Two Hands",
     "description": "",
@@ -26,8 +26,7 @@
       "dealNumber": 0,
       "initialState": {
         "dealer": 0,
-        "upCard": "Ks",
-        "kitty": []
+        "upCard": "Ks"
       },
       "phases": [
         {
@@ -46,7 +45,6 @@
         {
           "phaseNumber": 1,
           "type": "TRICK_PLAY",
-          "initialLead": 1,
           "tricks": [
             [
               "9s",
@@ -81,8 +79,7 @@
       "dealNumber": 1,
       "initialState": {
         "dealer": 1,
-        "upCard": "Qd",
-        "kitty": []
+        "upCard": "Qd"
       },
       "phases": [
         {
@@ -96,7 +93,6 @@
         {
           "phaseNumber": 1,
           "type": "TRICK_PLAY",
-          "initialLead": 2,
           "tricks": [
             [
               "Jd",

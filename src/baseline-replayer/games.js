@@ -1,6 +1,6 @@
 var vwec1 = {
   "fileType": "Euchre Game Notation",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "metadata": {
     "title": "VWEC Finals - Hand 1",
     "description": "First deal of the Virtual World Euchre Championship Finals. Standard order-up.",
@@ -42,7 +42,6 @@ var vwec1 = {
         {
           "phaseNumber": 1,
           "type": "TRICK_PLAY",
-          "initialLead": 3,
           "tricks": [
             [
               "Ad",
@@ -83,7 +82,7 @@ var vwec1 = {
 
 var vwec2 = {
   "fileType": "Euchre Game Notation",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "metadata": {
     "title": "VWEC Finals - Hand 2",
     "description": "Second deal of the VWEC Finals. All pass on Round 1, called Clubs in Round 2.",
@@ -126,7 +125,6 @@ var vwec2 = {
         {
           "phaseNumber": 1,
           "type": "TRICK_PLAY",
-          "initialLead": 0,
           "tricks": [
             [
               "Tc",
@@ -167,7 +165,7 @@ var vwec2 = {
 
 var vwec8 = {
   "fileType": "Euchre Game Notation",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "metadata": {
     "title": "VWEC Finals - Hand 8",
     "description": "Eighth deal of the VWEC Finals. Llama goes alone on Spades.",
@@ -209,7 +207,6 @@ var vwec8 = {
         {
           "phaseNumber": 1,
           "type": "TRICK_PLAY",
-          "initialLead": 2,
           "tricks": [
             [
               "9d",
@@ -245,7 +242,7 @@ var vwec8 = {
 
 var meAndBears = {
   "fileType": "Euchre Game Notation",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "metadata": {
     "title": "WWMM and Bears",
     "description": "",
@@ -271,13 +268,7 @@ var meAndBears = {
       "dealNumber": 0,
       "initialState": {
         "dealer": 1,
-        "upCard": "Js",
-        "playerCards": [
-          [],
-          [],
-          [],
-          []
-        ]
+        "upCard": "Js"
       },
       "phases": [
         {
@@ -327,7 +318,6 @@ var meAndBears = {
             ]
           ],
           "isAlone": false,
-          "initialLead": 2
         }
       ]
     },
@@ -335,13 +325,7 @@ var meAndBears = {
       "dealNumber": 1,
       "initialState": {
         "dealer": 2,
-        "upCard": "Jh",
-        "playerCards": [
-          [],
-          [],
-          [],
-          []
-        ]
+        "upCard": "Jh"
       },
       "phases": [
         {
@@ -392,7 +376,6 @@ var meAndBears = {
             ]
           ],
           "isAlone": false,
-          "initialLead": 3
         }
       ]
     },
@@ -400,13 +383,7 @@ var meAndBears = {
       "dealNumber": 2,
       "initialState": {
         "dealer": 3,
-        "upCard": "Ah",
-        "playerCards": [
-          [],
-          [],
-          [],
-          []
-        ]
+        "upCard": "Ah"
       },
       "phases": [
         {
@@ -455,7 +432,6 @@ var meAndBears = {
             ]
           ],
           "isAlone": false,
-          "initialLead": 0
         }
       ]
     },
@@ -463,13 +439,7 @@ var meAndBears = {
       "dealNumber": 3,
       "initialState": {
         "dealer": 0,
-        "upCard": "Tc",
-        "playerCards": [
-          [],
-          [],
-          [],
-          []
-        ]
+        "upCard": "Tc"
       },
       "phases": [
         {
@@ -517,7 +487,6 @@ var meAndBears = {
             ]
           ],
           "isAlone": false,
-          "initialLead": 1
         }
       ]
     },
@@ -525,13 +494,7 @@ var meAndBears = {
       "dealNumber": 4,
       "initialState": {
         "dealer": 1,
-        "upCard": "Qd",
-        "playerCards": [
-          [],
-          [],
-          [],
-          []
-        ]
+        "upCard": "Qd"
       },
       "phases": [
         {
@@ -573,7 +536,6 @@ var meAndBears = {
             ]
           ],
           "isAlone": true,
-          "initialLead": 2
         }
       ],
       "alternativeLines": [
@@ -623,7 +585,6 @@ var meAndBears = {
                 ]
               ],
               "isAlone": true,
-              "initialLead": 2
             }
           ]
         }
@@ -633,13 +594,7 @@ var meAndBears = {
       "dealNumber": 5,
       "initialState": {
         "dealer": 2,
-        "upCard": "9d",
-        "playerCards": [
-          [],
-          [],
-          [],
-          []
-        ]
+        "upCard": "9d"
       },
       "phases": [
         {
@@ -690,7 +645,6 @@ var meAndBears = {
             ]
           ],
           "isAlone": false,
-          "initialLead": 3
         }
       ],
       "alternativeLines": [
@@ -742,7 +696,6 @@ var meAndBears = {
                 ]
               ],
               "isAlone": false,
-              "initialLead": 3
             }
           ]
         },
@@ -785,7 +738,6 @@ var meAndBears = {
                 ]
               ],
               "isAlone": false,
-              "initialLead": 3
             }
           ]
         }
@@ -795,13 +747,7 @@ var meAndBears = {
       "dealNumber": 6,
       "initialState": {
         "dealer": 3,
-        "upCard": "Th",
-        "playerCards": [
-          [],
-          [],
-          [],
-          []
-        ]
+        "upCard": "Th"
       },
       "phases": [
         {
@@ -848,7 +794,6 @@ var meAndBears = {
             ]
           ],
           "isAlone": false,
-          "initialLead": 0
         }
       ]
     },
@@ -856,13 +801,7 @@ var meAndBears = {
       "dealNumber": 7,
       "initialState": {
         "dealer": 0,
-        "upCard": "Ac",
-        "playerCards": [
-          [],
-          [],
-          [],
-          []
-        ]
+        "upCard": "Ac"
       },
       "phases": [
         {
@@ -910,7 +849,6 @@ var meAndBears = {
             ]
           ],
           "isAlone": false,
-          "initialLead": 1
         }
       ],
       "alternativeLines": [
@@ -951,7 +889,6 @@ var meAndBears = {
                 ]
               ],
               "isAlone": false,
-              "initialLead": 3
             }
           ]
         }
@@ -961,13 +898,7 @@ var meAndBears = {
       "dealNumber": 8,
       "initialState": {
         "dealer": 1,
-        "upCard": "9d",
-        "playerCards": [
-          [],
-          [],
-          [],
-          []
-        ]
+        "upCard": "9d"
       },
       "phases": [
         {
@@ -1017,7 +948,6 @@ var meAndBears = {
             ]
           ],
           "isAlone": false,
-          "initialLead": 2
         }
       ]
     },
@@ -1025,13 +955,7 @@ var meAndBears = {
       "dealNumber": 9,
       "initialState": {
         "dealer": 2,
-        "upCard": "9d",
-        "playerCards": [
-          [],
-          [],
-          [],
-          []
-        ]
+        "upCard": "9d"
       },
       "phases": [
         {
@@ -1082,7 +1006,6 @@ var meAndBears = {
             ]
           ],
           "isAlone": false,
-          "initialLead": 3
         }
       ],
       "alternativeLines": [
@@ -1134,7 +1057,6 @@ var meAndBears = {
                 ]
               ],
               "isAlone": false,
-              "initialLead": 3
             }
           ]
         }
@@ -1144,13 +1066,7 @@ var meAndBears = {
       "dealNumber": 10,
       "initialState": {
         "dealer": 3,
-        "upCard": "Qc",
-        "playerCards": [
-          [],
-          [],
-          [],
-          []
-        ]
+        "upCard": "Qc"
       },
       "phases": [
         {
@@ -1195,7 +1111,6 @@ var meAndBears = {
             ]
           ],
           "isAlone": true,
-          "initialLead": 0
         }
       ]
     },
@@ -1203,13 +1118,7 @@ var meAndBears = {
       "dealNumber": 11,
       "initialState": {
         "dealer": 0,
-        "upCard": "Jd",
-        "playerCards": [
-          [],
-          [],
-          [],
-          []
-        ]
+        "upCard": "Jd"
       },
       "phases": [
         {
@@ -1259,7 +1168,6 @@ var meAndBears = {
             ]
           ],
           "isAlone": false,
-          "initialLead": 1
         }
       ]
     }

@@ -35,9 +35,16 @@
         "players": {
           "type": "array",
           "items": {
-            "type": "string",
-            "pattern": "^[^<>]*$",
-            "maxLength": 64
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^[^<>]*$",
+                "maxLength": 64
+              },
+              {
+                "$ref": "#/definitions/player"
+              }
+            ]
           },
           "maxItems": 10,
           "description": "Array of player names, starting with Player 0 and proceeding clockwise."
@@ -168,9 +175,6 @@
                   "upCard": {
                     "$ref": "#/definitions/card"
                   },
-                  "kitty": {
-                    "$ref": "#/definitions/cardList"
-                  },
                   "playerCards": {
                     "type": "array",
                     "maxItems": 10,
@@ -186,7 +190,7 @@
               },
               "phases": {
                 "type": "array",
-                "minItems": 1,
+                "minItems": 0,
                 "maxItems": 2,
                 "items": {
                   "oneOf": [
@@ -204,7 +208,8 @@
                 "maxItems": 50,
                 "items": {
                   "$ref": "#/definitions/alternativeLine"
-                }
+                },
+                "description": "Analysis-only content that should be stripped for baseline hashing."
               }
             },
             "required": [
@@ -310,7 +315,8 @@
           }
         },
         "callAnnotations": {
-          "$ref": "#/definitions/annotations"
+          "$ref": "#/definitions/annotations",
+          "description": "Analysis-only content that should be stripped for baseline hashing."
         }
       }
     },
@@ -329,11 +335,6 @@
         "type": {
           "const": "TRICK_PLAY"
         },
-        "initialLead": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9
-        },
         "tricks": {
           "type": "array",
           "maxItems": 10,
@@ -346,7 +347,8 @@
           "default": false
         },
         "playAnnotations": {
-          "$ref": "#/definitions/annotations"
+          "$ref": "#/definitions/annotations",
+          "description": "Analysis-only content that should be stripped for baseline hashing."
         }
       }
     },
@@ -392,6 +394,45 @@
       "propertyNames": {
         "pattern": "^[0-9]+$"
       }
+    },
+    "player": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[^<>]*$",
+          "maxLength": 64
+        },
+        "playerIds": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[^<>]*$",
+                "maxLength": 64
+              },
+              "source": {
+                "type": "string",
+                "pattern": "^[^<>]*$",
+                "maxLength": 64
+              }
+            },
+            "required": [
+              "id",
+              "source"
+            ]
+          }
+        }
+      },
+      "required": [
+        "name"
+      ]
     }
   }
 }

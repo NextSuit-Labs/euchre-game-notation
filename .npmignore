@@ -1,0 +1,46 @@
+# Development files
+src/
+test/
+*.test.ts
+*.spec.ts
+
+# Build configuration
+tsconfig.json
+jest.config.js
+
+# Development tools
+.gitignore
+.git/
+.github/
+
+# Documentation (included in published package)
+# docs/
+# README.md
+# LICENSE
+# CONTRIBUTING.md
+# changelog.md
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+temp_debug/
+temp_debug_vwec/

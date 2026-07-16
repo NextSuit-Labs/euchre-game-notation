@@ -1,19 +1,19 @@
 {
   "fileType": "Euchre Game Notation",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "metadata": {
-    "title": "Hand from Euchre.ai",
+    "title": "Another fun euchre!",
     "description": "",
-    "date": "2026-06-02T16:42",
+    "date": "2026-06-13T16:54",
     "players": [
-      "Player1",
-      "Player2",
-      "Player3",
-      "Player4"
+      "SparkJR",
+      "Dante",
+      "I75North",
+      "NightLX"
     ],
     "initialScore": [
-      3,
-      8
+      0,
+      1
     ],
     "ruleset": {
       "std": true,
@@ -25,15 +25,17 @@
     {
       "dealNumber": 0,
       "initialState": {
-        "dealer": 3,
-        "upCard": "Ac",
-        "kitty": []
+        "dealer": 1,
+        "upCard": "Qs"
       },
       "phases": [
         {
           "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
+            "Pass",
+            "Pass",
+            "Pass",
             "Order"
           ],
           "isAlone": false
@@ -41,37 +43,36 @@
         {
           "phaseNumber": 1,
           "type": "TRICK_PLAY",
-          "initialLead": 0,
           "tricks": [
             [
-              "9h",
-              "Jh",
-              "Ah",
-              "Qh"
-            ],
-            [
-              "As",
-              "Qs",
-              "Kh",
-              "Ts"
-            ],
-            [
-              "Ks",
-              "Qc",
-              "9c",
-              "Th"
-            ],
-            [
-              "Kc",
-              "Tc",
               "Jc",
+              "9d",
+              "Ts",
               "9s"
             ],
             [
               "Ad",
+              "Jd",
+              "9h",
+              "Qs"
+            ],
+            [
+              "Js",
               "Qd",
               "Ac",
-              "Js"
+              "As"
+            ],
+            [
+              "Jh",
+              "Ah",
+              "Kd",
+              "9c"
+            ],
+            [
+              "Qh",
+              "Kc",
+              "Qc",
+              "Kh"
             ]
           ]
         }

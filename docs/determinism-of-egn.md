@@ -12,7 +12,7 @@ Trump is determined by the `calls` array in the `EUCHRE_BIDDING` phase.
 
 ## 2. Trick Leading
 The lead for each trick dictates the base suit that other players must follow if able.
-* **First Trick:** The `initialLead` defaults to the player to the left of the dealer (e.g., `(dealer + 1) % 4`). If the `loner_lead` rule is active and a player called a Loner, the lead might shift depending on the specific ruleset.
+* **First Trick:** The initial lead defaults to the player to the left of the dealer (e.g., `(dealer + 1) % 4`). If the `loner_lead` rule is active and a player called a Loner, the lead might shift depending on the specific ruleset.
 * **Subsequent Tricks:** The winner of trick *N* is always the lead for trick *N+1*.
 
 ## 3. Trick Evaluation (Winning a Trick)

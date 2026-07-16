@@ -1,0 +1,116 @@
+{
+  "fileType": "Euchre Game Notation",
+  "version": "1.2.0",
+  "metadata": {
+    "gameId": "egn_m_20260529_01",
+    "title": "New Euchre Game",
+    "description": "",
+    "date": "2026-06-03T03:19",
+    "players": [
+      "Player0",
+      "Player1",
+      "Player2",
+      "Player3"
+    ],
+    "initialScore": [
+      0,
+      0
+    ],
+    "ruleset": {
+      "std": true,
+      "canadian": false,
+      "loner_lead": "LEFT_OF_DEALER"
+    }
+  },
+  "deals": [
+    {
+      "dealNumber": 0,
+      "initialState": {
+        "dealer": 0,
+        "upCard": "Ah"
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Pass",
+            "Pass",
+            "Order"
+          ],
+          "isAlone": false
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "tricks": [
+            [
+              "Qc",
+              "Qd",
+              "Jc",
+              "Jh"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "dealNumber": 0,
+      "initialState": {
+        "dealer": 0,
+        "upCard": "Ah"
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Pass",
+            "Pass",
+            "Pass",
+            "d"
+          ],
+          "isAlone": false
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "tricks": [
+            [
+              "Jc",
+              "Th",
+              "9c",
+              "Td"
+            ],
+            [
+              "Jd",
+              "Qc",
+              "Qd",
+              "Kd"
+            ],
+            [
+              "Jh",
+              "Qh",
+              "Kh",
+              "9h"
+            ],
+            [
+              "9d",
+              "Tc",
+              "Js",
+              "Ks"
+            ],
+            [
+              "Kc",
+              "Qs",
+              "Ts",
+              "9s"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

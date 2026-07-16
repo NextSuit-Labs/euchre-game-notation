@@ -3,10 +3,11 @@ import { validateEGN, isEGNFile } from "../src/validator";
 import { convertBinToEgnJson, convertEgnJsonToBin } from "../src/converter";
 import { packDeal, unpackDeal } from "../src/bitpacker";
 import { BiddingPhase, TrickPlayPhase } from "../src/types";
+import { VERSION } from "../src/version";
 
 const validMockData = {
   "fileType": "Euchre Game Notation",
-  "version": "1.0.0",
+  "version": VERSION,
   "metadata": {
     "gameId": "egn_m_20260528_01",
     "title": "WEC Finals",
@@ -25,8 +26,7 @@ const validMockData = {
       "dealNumber": 0,
       "initialState": {
         "dealer": 3,
-        "upCard": "Jd",
-        "kitty": ["9h", "Qh", "As"]
+        "upCard": "Jd"
       },
       "phases": [
         {
@@ -42,7 +42,6 @@ const validMockData = {
         {
           "phaseNumber": 1,
           "type": "TRICK_PLAY",
-          "initialLead": 0,
           "tricks": [
             ["Ac", "Tc", "9c", "Kc"],
             ["Ah", "Kh", "Th", "Qd"],
@@ -74,7 +73,6 @@ const validMockData = {
             {
               "phaseNumber": 1,
               "type": "TRICK_PLAY",
-              "initialLead": 1,
               "tricks": [
                 ["Tc", "9c", "Kc", "Ac"]
               ]
@@ -102,7 +100,7 @@ describe("EGN Validator", () => {
   it("should successfully validate alternate rules and card exchanges", () => {
     const alternateData = {
       "fileType": "Euchre Game Notation",
-      "version": "1.0.0",
+      "version": VERSION,
       "metadata": {
         "players": ["Player0", "Player1", "Player2", "Player3"],
         "initialScore": [0, 0]
@@ -135,7 +133,7 @@ describe("EGN Validator", () => {
   it("should reject an invalid EGN file", () => {
     const invalidData = {
       fileType: "Not Euchre",
-      version: "1.0.0"
+      version: VERSION
       // Missing required metadata and deals
     };
     const result = validateEGN(invalidData);
@@ -146,7 +144,7 @@ describe("EGN Validator", () => {
   it("should successfully validate an EGN file where deals is an array of base64 strings", () => {
     const base64DealsData = {
       "fileType": "Euchre Game Notation",
-      "version": "1.0.0",
+      "version": VERSION,
       "metadata": {
         "players": ["Player0", "Player1", "Player2", "Player3"],
         "initialScore": [0, 0]
@@ -182,6 +180,26 @@ describe("EGN Validator", () => {
     const dataBad = cloneMock();
     dataBad.metadata.players = ["P0", 123];
     expect(validateEGN(dataBad).isValid).toBe(false);
+  });
+
+  it("should validate players as objects with playerIds", () => {
+    const data = cloneMock();
+    data.metadata.players = [
+      "P0",
+      {
+        name: "P1",
+        playerIds: [
+          { id: "abc123", source: "euchre-site" },
+          { id: "p1-alt", source: "game-community" },
+        ],
+      },
+      {
+        name: "P2",
+      },
+      "P3",
+    ];
+
+    expect(validateEGN(data).isValid).toBe(true);
   });
 
   it("should validate root-level properties", () => {
@@ -338,8 +356,6 @@ describe("EGN Validator", () => {
     const m6 = cloneMock();
     m6.deals[0].phases[1].tricks[0] = ["Ac", "Tc", "9z", "Kc"];
     expect(validateEGN(m6).isValid).toBe(false);
-
-    // initialLead has no max constraint — supports variable player counts (validated by ruleset/num_players)
   });
 
   it("should validate alternative lines and annotations", () => {
@@ -381,6 +397,14 @@ describe("EGN Validator", () => {
     expect(validateEGN(badAnnot).isValid).toBe(false);
   });
 
+  it("should reject card strings that are blank", () => {
+    const dataWithBlankCards = cloneMock();
+    dataWithBlankCards.deals[0].initialState.upCard = "";
+
+    const result = validateEGN(dataWithBlankCards);
+    expect(result.isValid).toBe(false);
+  });
+
   it("isEGNFile should work correctly as a type guard", () => {
     expect(isEGNFile(validMockData)).toBe(true);
     expect(isEGNFile({})).toBe(false);
@@ -398,7 +422,7 @@ describe("EGN Protobuf Converter", () => {
       for (const key of Object.keys(obj)) {
         const val = obj[key];
         // Skip empty arrays for optional fields that might be defaulted by protobuf arrays option
-        if (Array.isArray(val) && val.length === 0 && (key === "kitty" || key === "playerCards" || key === "cardExchanges" || key === "alternativeLines")) {
+        if (Array.isArray(val) && val.length === 0 && (key === "playerCards" || key === "cardExchanges" || key === "alternativeLines")) {
           continue;
         }
         res[key] = normalizeEgn(val);
@@ -417,9 +441,7 @@ describe("EGN Protobuf Converter", () => {
       const res: any = {};
       for (const key of Object.keys(obj)) {
         // Skip fields that the bitpacker drops:
-        if (key === "kitty" || key === "discard" || key === "initialLead" ||
-          key === "cardExchanges" || key === "callAnnotations" || key === "playAnnotations" ||
-          key === "alternativeLines") {
+        if (key === "cardExchanges") {
           continue;
         }
         res[key] = normalizeCondensedEgn(obj[key]);
