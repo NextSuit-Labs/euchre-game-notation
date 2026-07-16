@@ -4,6 +4,10 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-07-16
+
+This release exported the upgradeEgn function and renamed the functions: stripAnalysisItems -> convertToBaselineEgn and hashStrippedEgn -> hashBaselineEgn
+
 ## [1.2.0] - 2026-07-15
 
 This release improves schema flexibility and validation robustness to accommodate real-world game scenarios and future variations.

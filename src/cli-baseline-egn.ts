@@ -29,7 +29,7 @@ Options:
 `);
 }
 
-function collectAnalysisPropertyNames(schema: unknown = egnSchema, propertyName?: string): string[] {
+export function collectAnalysisPropertyNames(schema: unknown = egnSchema, propertyName?: string): string[] {
   const names = new Set<string>();
 
   function visit(node: unknown, currentPropertyName?: string) {
@@ -79,10 +79,10 @@ function shouldStripProperty(key: string): boolean {
   return analysisPropertyNames.has(key);
 }
 
-function stripAnalysisItems(value: unknown): unknown {
+function convertToBaselineEgn(value: unknown): unknown {
   if (Array.isArray(value)) {
     return value
-      .map((item) => stripAnalysisItems(item))
+      .map((item) => convertToBaselineEgn(item))
       .filter((item) => item !== undefined)
       .filter((item) => {
         if (Array.isArray(item) && item.length === 0) return false;
@@ -98,7 +98,7 @@ function stripAnalysisItems(value: unknown): unknown {
         continue;
       }
 
-      const strippedChild = stripAnalysisItems(child);
+      const strippedChild = convertToBaselineEgn(child);
       if (strippedChild === undefined) {
         continue;
       }
@@ -134,8 +134,8 @@ function stableStringify(value: unknown): string {
   return JSON.stringify(value);
 }
 
-function hashStrippedEgn(egn: EGNFile): string {
-  const stripped = stripAnalysisItems(egn) as Record<string, unknown>;
+function hashBaselineEgn(egn: EGNFile): string {
+  const stripped = convertToBaselineEgn(egn) as Record<string, unknown>;
   const canonical = stableStringify(stripped);
   return crypto.createHash("sha256").update(canonical).digest("hex");
 }
@@ -164,10 +164,10 @@ function loadEgnFromInput(inputPath: string, condensed: boolean): EGNFile {
 
 function writeStrippedEgn(inputPath: string, outputPath: string | undefined, condensed: boolean, asHash: boolean): string {
   const egn = loadEgnFromInput(inputPath, condensed);
-  const stripped = stripAnalysisItems(egn) as EGNFile;
+  const stripped = convertToBaselineEgn(egn) as EGNFile;
 
   if (asHash) {
-    return hashStrippedEgn(egn);
+    return hashBaselineEgn(egn);
   }
 
   const outputExt = outputPath ? path.extname(outputPath).toLowerCase() : ".egn";
@@ -243,4 +243,4 @@ if (require.main === module) {
   main();
 }
 
-export { hashStrippedEgn, stripAnalysisItems, loadEgnFromInput, writeStrippedEgn, collectAnalysisPropertyNames };
+export { hashBaselineEgn, convertToBaselineEgn };

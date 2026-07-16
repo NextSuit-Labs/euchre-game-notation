@@ -439,7 +439,7 @@ describe("EGN Converter CLI", () => {
         expect(originalValidation.errors[0].message).toMatch(/must NOT have additional properties|must have required property/);
       }
 
-      // 2. Run upgrade tool to convert to v1.2.0 format
+      // 2. Run upgrade tool to convert to v1.2.1 format
       execSync(`node "${upgradeCliPath}" "${testEgnPath}" "${upgradedPath}"`).toString();
       expect(fs.existsSync(upgradedPath)).toBe(true);
 

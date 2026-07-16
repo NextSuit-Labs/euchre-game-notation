@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 import * as fs from "fs";
-import * as path from "path";
 import { VERSION } from "./version";
 
 function showHelp() {
   console.log(`
 EGN File Upgrade CLI (v${VERSION})
 
-Upgrades older EGN files to v1.2.0 format by:
+Upgrades older EGN files to current version format by:
   - Renaming snake_case properties to camelCase
   - Removing redundant fields (kitty, initialLead)
   - Supporting backward compatibility with v1.0.0 and v1.1.0 formats
@@ -26,7 +25,7 @@ Options:
 }
 
 /**
- * Recursively upgrade an object from old format to v1.2.0 format.
+ * Recursively upgrade an object from old format to current version format.
  * Handles snake_case -> camelCase conversion and field removals.
  */
 function upgradeObject(obj: any): any {
@@ -108,12 +107,12 @@ function upgradeObject(obj: any): any {
   return upgraded;
 }
 
-function upgradeEGN(jsonString: string): string {
+function upgradeEgn(jsonString: string): string {
   const parsed = JSON.parse(jsonString);
 
-  // Update version to 1.2.0
+  // Update version to current version
   if (parsed.version) {
-    parsed.version = "1.2.0";
+    parsed.version = VERSION;
   }
 
   // Recursively upgrade all properties
@@ -154,7 +153,7 @@ function main() {
 
   try {
     const inputData = fs.readFileSync(inputPath, "utf8");
-    const upgradedData = upgradeEGN(inputData);
+    const upgradedData = upgradeEgn(inputData);
 
     // Write output file
     fs.writeFileSync(outputPath, upgradedData, "utf8");
@@ -176,4 +175,8 @@ function main() {
   }
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+export { upgradeEgn };

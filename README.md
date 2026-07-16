@@ -18,14 +18,14 @@ An `.egn` file purposefully strips out easily calculated metrics—such as trick
 
 ---
 
-## 🛠️ File Structure Example (EGN v1.2.0)
+## 🛠️ File Structure Example (EGN v1.2.1)
 
 Under the hood, an `.egn` file utilizes human-readable, web-native JSON structural primitives:
 
 ```json
 {
   "fileType": "Euchre Game Notation",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "metadata": {
     "gameId": "egn_m_20260528_01",
     "title": "WEC Finals",
@@ -333,7 +333,7 @@ egn-baseline game.egn --hash
 For details on baseline EGNs and their use cases, see [docs/determinism-of-egn.md](docs/determinism-of-egn.md).
 
 #### `egn-upgrade` — Version Migration
-Upgrades older EGN files (v1.0.0, v1.1.0) to the v1.2.0 format by automatically renaming snake_case properties to camelCase, removing redundant fields, and updating the version string.
+Upgrades older EGN files (v1.0.0, v1.1.0) to the v1.2.1 format by automatically renaming snake_case properties to camelCase, removing redundant fields, and updating the version string.
 
 ```bash
 # Upgrade in-place
