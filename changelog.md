@@ -4,6 +4,10 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2026-07-16
+
+Add support for calling upgrade function with EGNFile object rather than just a json string.
+
 ## [1.2.2] - 2026-07-16
 
 This release decouples the **schema version** from the **npm package version**. The canonical schema version emitted in EGN file metadata is now `1.2` (major.minor only). The npm package version (`1.2.2`) continues to use patch increments for library/tooling updates that do not alter the EGN schema itself. The validator accepts both bare `1.2` and any `1.2.x` patch strings for full backward compatibility.
