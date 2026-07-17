@@ -4,6 +4,23 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.4] - 2026-07-17
+
+### Added
+- Browser-safe in-memory converter exports: `convertBinDataToEgnFile`, `convertBinDataToEgnJson`, `convertEgnFileToBinData`, `convertEgnJsonToBinData`, and `detectBinaryFormatFromData`.
+- Maintained centralization of the proto definitions using a generated file `proto-schemas.ts` that is generated at test/build time using `generate-proto-schemas.js`.
+- Created test to ensure that the `proto-schemas.ts` matches the source of truth `.proto` files.
+- Added converter tests covering oversized binary rejection, decode-side schema validation, encode-side schema validation, and non-numeric annotation-map key rejection.
+
+### Changed
+- Binary file naming now uses `.egnb` for condensed output by default, with `.expanded.egnb` reserved for expanded protobuf output.
+- The converter's Node.js file helpers and browser-safe in-memory helpers now share the same serialization and magic-byte detection logic.
+- Converter encode/decode helpers now enforce EGN schema validation at the conversion boundary and reject non-numeric annotation-map keys.
+- Converter binary inputs and outputs are now capped at 8 MiB.
+
+### Documentation
+- Updated the README and binary format documentation to describe the new in-memory/browser conversion APIs and the new validation and size-limit behavior.
+
 ## [1.2.3] - 2026-07-16
 
 Add support for calling upgrade function with EGNFile object rather than just a json string.

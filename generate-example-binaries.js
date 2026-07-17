@@ -19,9 +19,9 @@ console.log(`Found ${exampleFiles.length} EGN files to process\n`);
 exampleFiles.forEach(fileName => {
   const filePath = path.join(EXAMPLES_DIR, fileName);
   const fileContent = fs.readFileSync(filePath, "utf8");
-  
+
   // Generate expanded binary
-  const expandedBinPath = path.join(EXAMPLES_DIR, `${fileName.substring(0, fileName.length - 4)}.expanded.bin`);
+  const expandedBinPath = path.join(EXAMPLES_DIR, `${fileName.substring(0, fileName.length - 4)}.expanded.egnb`);
   try {
     convertEgnJsonToBin(fileContent, expandedBinPath, false);
     const expandedSize = fs.statSync(expandedBinPath).size;
@@ -30,9 +30,9 @@ exampleFiles.forEach(fileName => {
   } catch (error) {
     console.error(`✗ Failed to generate expanded binary for ${fileName}:`, error.message);
   }
-  
+
   // Generate condensed binary
-  const condensedBinPath = path.join(EXAMPLES_DIR, `${fileName.substring(0, fileName.length - 4)}.condensed.bin`);
+  const condensedBinPath = path.join(EXAMPLES_DIR, `${fileName.substring(0, fileName.length - 4)}.egnb`);
   try {
     convertEgnJsonToBin(fileContent, condensedBinPath, true);
     const condensedSize = fs.statSync(condensedBinPath).size;
@@ -40,7 +40,7 @@ exampleFiles.forEach(fileName => {
   } catch (error) {
     console.error(`✗ Failed to generate condensed binary for ${fileName}:`, error.message);
   }
-  
+
   console.log();
 });
 

@@ -207,11 +207,18 @@ When implementing or parsing EGN, keep the following details in mind:
 
 ## 💾 Binary Serialization (Condensed vs. Expanded)
 
-EGN supports two binary serialization modes for storage optimization. Binary files include a **magic byte** header that enables automatic format detection without external metadata. For complete technical specifications including all version details, see the [Condensed Binary Format Specification](docs/binary-format.md).
+EGN supports two binary serialization modes for storage optimization. Binary files use the **`.egnb`** (EGN Binary) extension and include a **magic byte** header that enables automatic format detection without external metadata. For complete technical specifications including all version details, see the [Condensed Binary Format Specification](docs/binary-format.md).
+
+### 🔍 File Extensions
+
+| Extension | Format | Description |
+|---|---|---|
+| `.egnb` | **Condensed** (default) | Base64URL bitpacked deals — most compact |
+| `.expanded.egnb` | **Expanded** | Full Protobuf-serialized EGN structure |
 
 ### 🔍 Automatic Format Detection
 
-All EGN binary files begin with a single-byte **magic byte** that identifies the format:
+All `.egnb` files begin with a single-byte **magic byte** that identifies the format:
 
 * **`0x00`** — Expanded format (Protobuf)
 * **`0x01`** — Condensed format (Base64URL bitpacked deals)
@@ -220,7 +227,7 @@ When converting binary files to JSON, the CLI automatically detects the format f
 
 ```bash
 # Format auto-detected from magic byte
-egn-convert game.bin game.json
+egn-convert game.egnb game.json
 # Output: "Format auto-detected: condensed" (or "expanded")
 ```
 
@@ -299,13 +306,13 @@ Converts between human-readable JSON (`.egn`) files and optimized binary represe
 
 ```bash
 # JSON to condensed binary (default, most compact)
-egn-convert game.egn game.condensed.bin
+egn-convert game.egn game.egnb
 
 # JSON to expanded binary (Protobuf)
-egn-convert game.egn game.expanded.bin --expanded
+egn-convert game.egn game.expanded.egnb --expanded
 
 # Binary back to JSON
-egn-convert game.condensed.bin game.egn
+egn-convert game.egnb game.egn
 ```
 
 #### `egn-bitpack-deal` — Deal Bitpacking
@@ -385,8 +392,46 @@ Convert between JSON strings and binary representations programmatically:
 import { convertEgnJsonToBin, convertBinToEgnJson } from "euchre-game-notation";
 
 // Convert EGN JSON string to a condensed binary file
-convertEgnJsonToBin(egnJsonString, "path/to/output.bin", true);
+convertEgnJsonToBin(egnJsonString, "path/to/output.egnb", true);
 
 // Convert a condensed binary file back to a pretty-printed EGN JSON string
-const decodedJsonString = convertBinToEgnJson("path/to/output.bin", true);
+const decodedJsonString = convertBinToEgnJson("path/to/output.egnb", true);
 ```
+
+For browser and other in-memory runtimes, use the data-oriented exports that avoid filesystem access while preserving the same conversion logic:
+
+```typescript
+import {
+  convertBinDataToEgnFile,
+  convertEgnFileToBinData,
+  detectBinaryFormatFromData,
+  type EGNFile,
+} from "euchre-game-notation";
+
+const egnFile: EGNFile = JSON.parse(egnJsonString);
+
+// Encode an EGNFile object into .egnb bytes.
+const binaryData = convertEgnFileToBinData(egnFile, true);
+
+// Inspect the magic byte when needed.
+const format = detectBinaryFormatFromData(binaryData);
+
+// Decode .egnb bytes back into an EGNFile object.
+const decodedEgnFile = convertBinDataToEgnFile(binaryData);
+```
+
+Available conversion exports:
+
+- `convertEgnJsonToBin` / `convertBinToEgnJson`: file-based helpers for Node.js and CLI-style workflows.
+- `convertEgnJsonToBinData` / `convertBinDataToEgnJson`: JSON-string helpers that work entirely in memory.
+- `convertEgnFileToBinData` / `convertBinDataToEgnFile`: browser-friendly object and byte-array helpers.
+- `detectBinaryFormat` / `detectBinaryFormatFromData`: magic-byte detection for files or in-memory bytes.
+
+All converter entry points now enforce the EGN schema at the conversion boundary:
+
+- Binary decode validates the reconstructed `EGNFile` before returning it.
+- Binary encode validates the input `EGNFile` before serializing it.
+- Annotation maps reject non-numeric keys such as `__proto__`, `constructor`, and `prototype`.
+- Binary inputs and outputs are capped at 8 MiB to reduce denial-of-service risk from oversized payloads.
+
+If you need to handle untrusted binary uploads in a browser or service, these helpers now fail fast on malformed, non-conformant, or oversized inputs instead of returning partially trusted data.

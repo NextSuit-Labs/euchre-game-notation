@@ -1,10 +1,19 @@
 import { describe, it, expect } from "@jest/globals";
-import { convertBinToEgnJson, convertEgnJsonToBin } from "../src/converter";
+import {
+  convertBinDataToEgnFile,
+  convertBinToEgnJson,
+  convertEgnFileToBinData,
+  convertEgnJsonToBin,
+  detectBinaryFormatFromData,
+} from "../src/converter";
 import * as fs from "fs";
 import * as path from "path";
+import protobuf from "protobufjs";
+import { COMMON_PROTO_SCHEMA, EXPANDED_PROTO_SCHEMA } from "../src/proto-schemas";
+import { BiddingPhase, Deal, EGNFile } from "../src/types";
 import { VERSION } from "../src/version";
 
-const validMockData = {
+const validMockData: EGNFile = {
   "fileType": "Euchre Game Notation",
   "version": VERSION,
   "metadata": {
@@ -39,7 +48,7 @@ describe("EGN Protobuf Converter Core", () => {
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
     }
-    const tempBinFilePath = path.join(tempDir, "players-expanded.bin");
+    const tempBinFilePath = path.join(tempDir, "players-expanded.egnb");
 
     const playersData = {
       fileType: "Euchre Game Notation",
@@ -84,7 +93,7 @@ describe("EGN Protobuf Converter Core", () => {
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
     }
-    const tempBinFilePath = path.join(tempDir, "players-condensed.bin");
+    const tempBinFilePath = path.join(tempDir, "players-condensed.egnb");
 
     const playersData = {
       fileType: "Euchre Game Notation",
@@ -134,11 +143,11 @@ describe("EGN Protobuf Converter Core", () => {
       deals: []
     });
 
-    const tempBinFilePath = path.join(__dirname, "invalid_temp_test.bin");
+    const tempBinFilePath = path.join(__dirname, "invalid_temp_test.egnb");
 
     expect(() => {
       convertEgnJsonToBin(invalidJsonStr, tempBinFilePath);
-    }).toThrow("Protobuf verification failed");
+    }).toThrow("Input EGN failed schema validation before binary conversion");
 
     if (fs.existsSync(tempBinFilePath)) {
       fs.unlinkSync(tempBinFilePath);
@@ -147,7 +156,7 @@ describe("EGN Protobuf Converter Core", () => {
 
   it("should fail when converting non-existent binary file", () => {
     expect(() => {
-      convertBinToEgnJson("non_existent_file.bin");
+      convertBinToEgnJson("non_existent_file.egnb");
     }).toThrow();
   });
 
@@ -156,7 +165,7 @@ describe("EGN Protobuf Converter Core", () => {
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
     }
-    const tempBinFilePath = path.join(tempDir, "test_game_annotations.bin");
+    const tempBinFilePath = path.join(tempDir, "test_game_annotations.egnb");
     const jsonStr = JSON.stringify(validMockData, null, 2);
 
     try {
@@ -189,7 +198,7 @@ describe("EGN Protobuf Converter Core", () => {
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
     }
-    const tempBinFilePath = path.join(tempDir, "corrupted.bin");
+    const tempBinFilePath = path.join(tempDir, "corrupted.egnb");
 
     // Write trash bytes
     fs.writeFileSync(tempBinFilePath, Buffer.from([0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc]));
@@ -208,12 +217,85 @@ describe("EGN Protobuf Converter Core", () => {
     }
   });
 
+  it("should fail when binary input exceeds the maximum allowed size", () => {
+    const oversizedBinary = new Uint8Array((8 * 1024 * 1024) + 1);
+
+    expect(() => {
+      convertBinDataToEgnFile(oversizedBinary);
+    }).toThrow("Binary input too large for conversion");
+  });
+
+  it("should fail when decoded binary does not conform to the EGN schema", () => {
+    const root = new protobuf.Root();
+    protobuf.parse(COMMON_PROTO_SCHEMA, root, { keepCase: true });
+    protobuf.parse(EXPANDED_PROTO_SCHEMA, root, { keepCase: true });
+    const EgnFileMessage = root.lookupType("egn.EgnFile");
+
+    const invalidDecodedData = {
+      file_type: "Euchre Game Notation",
+      version: VERSION,
+      metadata: {
+        players: ["P0", "P1", "P2", "P3"],
+        initial_score: [0, 0],
+        title: "<script>alert('xss')</script>"
+      },
+      deals: []
+    };
+
+    const protoBuffer = EgnFileMessage.encode(EgnFileMessage.create(invalidDecodedData)).finish();
+    const invalidBinary = new Uint8Array(protoBuffer.length + 1);
+    invalidBinary[0] = 0x00;
+    invalidBinary.set(protoBuffer, 1);
+
+    expect(() => {
+      convertBinDataToEgnFile(invalidBinary, false);
+    }).toThrow("Decoded binary failed EGN schema validation");
+  });
+
+  it("should fail when input EGN does not conform to the schema before binary conversion", () => {
+    const invalidEgn = {
+      ...validMockData,
+      metadata: {
+        ...validMockData.metadata,
+        title: "<script>alert('xss')</script>"
+      }
+    } as EGNFile;
+
+    expect(() => {
+      convertEgnFileToBinData(invalidEgn, false);
+    }).toThrow("Input EGN failed schema validation before binary conversion");
+  });
+
+  it("should reject non-numeric annotation map keys before binary conversion", () => {
+    const unsafeAnnotations = Object.create(null) as Record<number, string[]>;
+    (unsafeAnnotations as Record<string, string[]>)["__proto__"] = ["unsafe"];
+
+    const invalidEgn = {
+      ...validMockData,
+      deals: [
+        {
+          ...(validMockData.deals[0] as Deal),
+          phases: [
+            {
+              ...((validMockData.deals[0] as Deal).phases[0] as BiddingPhase),
+              callAnnotations: unsafeAnnotations
+            }
+          ]
+        }
+      ]
+    } as EGNFile;
+
+    expect(() => {
+      convertEgnFileToBinData(invalidEgn, false);
+    }).toThrow("Invalid annotation map key: __proto__. Annotation keys must be numeric.");
+  });
+
   it("should successfully roundtrip non-default ruleset configurations", () => {
     const tempDir = path.resolve(__dirname, "../temp_test_dir_rules");
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
     }
-    const tempBinFilePath = path.join(tempDir, "rules.bin");
+    const tempBinFilePath = path.join(tempDir, "rules.egnb");
 
     const rulesData = {
       fileType: "Euchre Game Notation",
@@ -264,7 +346,7 @@ describe("EGN Protobuf Converter Core", () => {
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
     }
-    const tempBinFilePath = path.join(tempDir, "condensed.bin");
+    const tempBinFilePath = path.join(tempDir, "condensed.egnb");
 
     const testData = {
       fileType: "Euchre Game Notation",
@@ -342,7 +424,7 @@ describe("EGN Protobuf Converter Core", () => {
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
     }
-    const tempBinFilePath = path.join(tempDir, "condensed-discard-playercards.bin");
+    const tempBinFilePath = path.join(tempDir, "condensed-discard-playercards.egnb");
 
     const testData = {
       fileType: "Euchre Game Notation",
@@ -397,7 +479,7 @@ describe("EGN Protobuf Converter Core", () => {
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
     }
-    const tempBinFilePath = path.join(tempDir, "alonedefer.bin");
+    const tempBinFilePath = path.join(tempDir, "alonedefer.egnb");
 
     const testData = {
       fileType: "Euchre Game Notation",
@@ -449,6 +531,27 @@ describe("EGN Protobuf Converter Core", () => {
         fs.rmdirSync(tempDir);
       }
     }
+  });
+
+  it("should roundtrip EGNFile objects directly through in-memory binary data", () => {
+    const encodedCondensed = convertEgnFileToBinData(validMockData, true);
+    expect(encodedCondensed).toBeInstanceOf(Uint8Array);
+    expect(detectBinaryFormatFromData(encodedCondensed)).toBe("condensed");
+
+    const decodedCondensed = convertBinDataToEgnFile(encodedCondensed);
+    expect(decodedCondensed).toEqual(validMockData);
+
+    const encodedExpanded = convertEgnFileToBinData(validMockData, false);
+    expect(encodedExpanded).toBeInstanceOf(Uint8Array);
+    expect(detectBinaryFormatFromData(encodedExpanded)).toBe("expanded");
+
+    const decodedExpanded = convertBinDataToEgnFile(encodedExpanded);
+    const expectedDeal = validMockData.deals[0] as Deal;
+    const decodedDeal = decodedExpanded.deals[0] as Deal;
+    const expectedPhase = expectedDeal.phases[0] as BiddingPhase;
+    const decodedPhase = decodedDeal.phases[0] as BiddingPhase;
+    expect(decodedExpanded as any).toMatchObject(validMockData as any);
+    expect(decodedPhase.callAnnotations).toEqual(expectedPhase.callAnnotations);
   });
 });
 

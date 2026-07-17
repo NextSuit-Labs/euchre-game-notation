@@ -8,7 +8,7 @@ Condensed mode encodes the full bidding and card play history of individual deal
 
 ## 🔍 0. Magic Byte Header & Format Detection
 
-All EGN binary files begin with a single-byte **magic byte** header that identifies the serialization format. This header enables automatic detection without requiring external metadata.
+All EGN binary files (`.egnb`) begin with a single-byte **magic byte** header that identifies the serialization format. This header enables automatic detection without requiring external metadata.
 
 | Byte | Format | Description |
 | :--- | :--- | :--- |
@@ -25,15 +25,50 @@ All EGN binary files begin with a single-byte **magic byte** header that identif
   * If the first byte is `0x00` or `0x01`, skip it and proceed with Protobuf decoding.
   * If the first byte is neither, the file is legacy (pre-magic byte format) and should default to condensed format.
 
+### File Extensions
+
+| Extension | Format | Description |
+| :--- | :--- | :--- |
+| `.egnb` | **Condensed** (default) | Base64URL bitpacked deals — most compact |
+| `.expanded.egnb` | **Expanded** | Full Protobuf-serialized EGN structure |
+
 ### CLI Usage
 
 The EGN CLI automatically detects the format from the magic byte:
 
 ```bash
-egn-convert game.bin game.json
+egn-convert game.egnb game.json
 # Automatically detects "condensed" or "expanded" from magic byte
 # Displays: "Format auto-detected: condensed"
 ```
+
+### Programmatic Usage
+
+The library exposes the same magic-byte aware conversion logic for both file-based Node.js workflows and browser-safe in-memory workflows.
+
+* **Node.js file helpers**:
+   * `convertEgnJsonToBin(egnJson, outPath, condensed)`
+   * `convertBinToEgnJson(binPath, condensed?)`
+   * `detectBinaryFormat(binPath)`
+* **In-memory helpers**:
+   * `convertEgnJsonToBinData(egnJson, condensed)`
+   * `convertBinDataToEgnJson(binData, condensed?)`
+   * `convertEgnFileToBinData(egnFile, condensed)`
+   * `convertBinDataToEgnFile(binData, condensed?)`
+   * `detectBinaryFormatFromData(binData)`
+
+When the `condensed` flag is omitted during decoding, the converter reads the first byte and automatically chooses expanded (`0x00`) or condensed (`0x01`) mode. Legacy binaries without a magic byte still default to condensed mode.
+
+### Validation and Safety Limits
+
+All converter entry points enforce the same safety checks regardless of whether they are used from Node.js file paths or in-memory browser data.
+
+* **Schema validation after decode**: Binary decode validates the reconstructed `EGNFile` before returning it.
+* **Schema validation before encode**: Binary encode validates the input `EGNFile` before serializing it.
+* **Numeric-only annotation keys**: Annotation maps such as `callAnnotations` and `playAnnotations` only accept numeric keys.
+* **Binary size cap**: Binary inputs and outputs are limited to **8 MiB**.
+
+These checks make the converter fail fast on malformed, non-conformant, or oversized payloads instead of returning partially trusted data.
 
 ---
 

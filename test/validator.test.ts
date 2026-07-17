@@ -458,7 +458,7 @@ describe("EGN Protobuf Converter", () => {
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
     }
-    const tempBinFilePath = path.join(tempDir, "test_game.bin");
+    const tempBinFilePath = path.join(tempDir, "test_game.egnb");
 
     const jsonStr = JSON.stringify(validMockData, null, 2);
 
@@ -490,7 +490,7 @@ describe("EGN Protobuf Converter", () => {
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
     }
-    const tempBinFilePath = path.join(tempDir, "test_game.bin");
+    const tempBinFilePath = path.join(tempDir, "test_game.egnb");
 
     const jsonStr = JSON.stringify(validMockData, null, 2);
 

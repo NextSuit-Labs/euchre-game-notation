@@ -21,7 +21,7 @@ function deleteFileSync(filePath: string) {
       if (err.code === "EBUSY" || err.code === "EPERM") {
         // Wait 50ms synchronously
         const end = Date.now() + 50;
-        while (Date.now() < end) {}
+        while (Date.now() < end) { }
       } else {
         throw err;
       }
@@ -39,7 +39,7 @@ function removeDirSync(dirPath: string) {
       if (err.code === "EBUSY" || err.code === "ENOTEMPTY" || err.code === "EPERM") {
         // Wait 50ms synchronously
         const end = Date.now() + 50;
-        while (Date.now() < end) {}
+        while (Date.now() < end) { }
       } else {
         throw err;
       }
@@ -110,7 +110,7 @@ describe("EGN Converter CLI", () => {
   it("should fail when input file does not exist", () => {
     let threw = false;
     try {
-      execSync(`node "${cliPath}" non_existent_file_xyz.egn output.bin`, { stdio: "pipe" });
+      execSync(`node "${cliPath}" non_existent_file_xyz.egn output.egnb`, { stdio: "pipe" });
     } catch (err: any) {
       threw = true;
       expect(err.status).toBe(1);
@@ -125,7 +125,7 @@ describe("EGN Converter CLI", () => {
     }
 
     const inputJsonPath = path.join(tempDir, "input.egn");
-    const outputBinPath = path.join(tempDir, "output.bin");
+    const outputBinPath = path.join(tempDir, "output.egnb");
     const outputJsonPath = path.join(tempDir, "output.egn");
 
     fs.writeFileSync(inputJsonPath, JSON.stringify(validMockData), "utf8");
@@ -161,7 +161,7 @@ describe("EGN Converter CLI", () => {
     }
 
     const inputJsonPath = path.join(tempDir, "input.egn");
-    const outputBinPath = path.join(tempDir, "output.bin");
+    const outputBinPath = path.join(tempDir, "output.egnb");
     const outputJsonPath = path.join(tempDir, "output.egn");
 
     fs.writeFileSync(inputJsonPath, JSON.stringify(validMockData), "utf8");
@@ -197,7 +197,7 @@ describe("EGN Converter CLI", () => {
 
     const inputJsonPath = path.join(tempDir, "input.egn");
     const outputJsonPath = path.join(tempDir, "output.egn");
-    const outputBinPath = path.join(tempDir, "output.bin");
+    const outputBinPath = path.join(tempDir, "output.egnb");
 
     const egnWithAnnotations = {
       ...validMockData,
@@ -242,8 +242,8 @@ describe("EGN Converter CLI", () => {
 
     const inputJsonPath = path.join(tempDir, "input.egn");
     const baselineJsonPath = path.join(tempDir, "baseline.egn");
-    const condensedBinPath = path.join(tempDir, "condensed.bin");
-    const expandedBinPath = path.join(tempDir, "expanded.bin");
+    const condensedBinPath = path.join(tempDir, "output.egnb");
+    const expandedBinPath = path.join(tempDir, "output.expanded.egnb");
 
     const baseEgn = {
       ...validMockData,
@@ -318,10 +318,10 @@ describe("EGN Converter CLI", () => {
 
     const baseInputPath = path.resolve(__dirname, "../examples/VWEC Finals.egn");
     const annotatedInputPath = path.resolve(__dirname, "../examples/VWEC Finals Annotated.egn");
-    const baseCondensedBinPath = path.join(tempDir, "vwec-condensed.bin");
-    const baseExpandedBinPath = path.join(tempDir, "vwec-expanded.bin");
-    const annotatedCondensedBinPath = path.join(tempDir, "vwec-annotated-condensed.bin");
-    const annotatedExpandedBinPath = path.join(tempDir, "vwec-annotated-expanded.bin");
+    const baseCondensedBinPath = path.join(tempDir, "vwec-condensed.egnb");
+    const baseExpandedBinPath = path.join(tempDir, "vwec-expanded.egnb");
+    const annotatedCondensedBinPath = path.join(tempDir, "vwec-annotated-condensed.egnb");
+    const annotatedExpandedBinPath = path.join(tempDir, "vwec-annotated-expanded.egnb");
 
     try {
       execSync(`node "${cliPath}" "${baseInputPath}" "${baseCondensedBinPath}"`).toString();
@@ -357,7 +357,7 @@ describe("EGN Converter CLI", () => {
       fs.mkdirSync(tempDir);
     }
     const inputJsonPath = path.join(tempDir, "input_malformed.egn");
-    const outputBinPath = path.join(tempDir, "output_malformed.bin");
+    const outputBinPath = path.join(tempDir, "output_malformed.egnb");
 
     // Write malformed JSON string (missing closing bracket/brace)
     fs.writeFileSync(inputJsonPath, '{"fileType": "Euchre Game Notation"', "utf8");
@@ -385,7 +385,7 @@ describe("EGN Converter CLI", () => {
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
     }
-    const inputBinPath = path.join(tempDir, "input_corrupted.bin");
+    const inputBinPath = path.join(tempDir, "input_corrupted.egnb");
     const outputJsonPath = path.join(tempDir, "output_corrupted.egn");
 
     // Write garbage bytes

@@ -29,7 +29,7 @@ function normalizeEgnObj(obj: any, isCondensed = false, isRuleset = false): any 
 
       // Ignore keys not preserved in condensed mode
       if (isCondensed && [
-         "cardExchanges"
+        "cardExchanges"
       ].includes(key)) {
         continue;
       }
@@ -110,7 +110,7 @@ describe("EGN Example Files Roundtrip Verification", () => {
       });
 
       it("should roundtrip correctly in expanded mode", () => {
-        const tempBinPath = path.join(EXAMPLES_DIR, `${fileName}.expanded.temp.bin`);
+        const tempBinPath = path.join(EXAMPLES_DIR, `${fileName}.expanded.temp.egnb`);
         try {
           // 1. Convert JSON to expanded binary Protobuf
           convertEgnJsonToBin(fileContent, tempBinPath, false);
@@ -133,7 +133,7 @@ describe("EGN Example Files Roundtrip Verification", () => {
       });
 
       it("should roundtrip correctly in condensed mode", () => {
-        const tempBinPath = path.join(EXAMPLES_DIR, `${fileName}.condensed.temp.bin`);
+        const tempBinPath = path.join(EXAMPLES_DIR, `${fileName}.temp.egnb`);
         try {
           // 1. Convert JSON to condensed binary Protobuf
           convertEgnJsonToBin(fileContent, tempBinPath, true);

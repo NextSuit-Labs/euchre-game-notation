@@ -12,9 +12,9 @@ Usage:
   egn-convert <input-file> <output-file> [options]
 
 Examples:
-  egn-convert game.egn game.condensed.bin
-  egn-convert game.egn game.expanded.bin --expanded
-  egn-convert game.condensed.bin game.egn
+  egn-convert game.egn game.egnb
+  egn-convert game.egn game.expanded.egnb --expanded
+  egn-convert game.egnb game.egn
 
 Options:
   --expanded      Use expanded Protobuf schema when encoding to binary (default: condensed)
@@ -57,7 +57,7 @@ function main() {
   }
 
   try {
-    const isBinInput = inputPath.endsWith(".bin");
+    const isBinInput = inputPath.endsWith(".egnb");
 
     if (isBinInput) {
       console.log(`Converting binary "${inputPath}" to JSON "${outputPath}"...`);

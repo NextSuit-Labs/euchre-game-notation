@@ -18,8 +18,8 @@ Usage:
 Examples:
   egn-baseline game.egn
   egn-baseline game.egn baseline.egn
-  egn-baseline game.condensed.bin baseline.egn
-  egn-baseline game.expanded.bin baseline.bin --expanded
+  egn-baseline game.egnb baseline.egn
+  egn-baseline game.expanded.egnb baseline.egnb --expanded
 
 Options:
   --expanded      Use expanded Protobuf schema instead of the default condensed mode
@@ -143,7 +143,7 @@ function hashBaselineEgn(egn: EGNFile): string {
 function loadEgnFromInput(inputPath: string, condensed: boolean): EGNFile {
   const ext = path.extname(inputPath).toLowerCase();
 
-  if (ext === ".bin") {
+  if (ext === ".egnb") {
     const jsonText = convertBinToEgnJson(inputPath, condensed);
     const parsed = JSON.parse(jsonText) as EGNFile;
     const validation = validateEGN(parsed);
@@ -171,13 +171,13 @@ function writeStrippedEgn(inputPath: string, outputPath: string | undefined, con
   }
 
   const outputExt = outputPath ? path.extname(outputPath).toLowerCase() : ".egn";
-  const outputIsBinary = outputExt === ".bin";
+  const outputIsBinary = outputExt === ".egnb";
 
   if (outputPath) {
     const outputText = JSON.stringify(stripped, null, 2);
 
     if (outputIsBinary) {
-      const tmpJsonPath = path.resolve(path.dirname(outputPath), `${path.basename(outputPath, ".bin")}.json`);
+      const tmpJsonPath = path.resolve(path.dirname(outputPath), `${path.basename(outputPath, ".egnb")}.json`);
       fs.writeFileSync(tmpJsonPath, outputText, "utf8");
       convertEgnJsonToBin(outputText, outputPath, condensed);
       fs.unlinkSync(tmpJsonPath);
@@ -214,7 +214,7 @@ function main() {
   const inputPath = path.resolve(positionals[0]);
   const outputPath = positionals[1] ? path.resolve(positionals[1]) : undefined;
   const inputExt = path.extname(inputPath).toLowerCase();
-  const condensed = inputExt === ".bin"
+  const condensed = inputExt === ".egnb"
     ? !flags.includes("--expanded")
     : !flags.includes("--expanded");
   const asHash = flags.includes("--hash");

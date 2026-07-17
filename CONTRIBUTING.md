@@ -28,6 +28,16 @@ We welcome suggestions for new features or improvements to the EGN standard. Ple
 4. Make sure your commit messages are clear and descriptive.
 5. Submit your Pull Request!
 
+## Generated Files
+
+The protobuf schema source of truth lives in the `.proto` files under `schemas/`.
+
+- Do not edit `src/proto-schemas.ts` by hand.
+- After changing `schemas/egn-common.proto`, `schemas/egn.proto`, or `schemas/egn-expanded.proto`, run `npm run generate:proto-schemas`.
+- `npm run build` and `npm test` both regenerate `src/proto-schemas.ts` automatically before compiling or running tests.
+
+There is also a Jest sync test that will fail if `src/proto-schemas.ts` is out of date with the files in `schemas/`.
+
 ## Specification Guidelines
 
 Because EGN operates on deterministic minimalism, any proposed additions to the standard should avoid duplicating game states that can be easily calculated (such as trick winners or score mutations).
