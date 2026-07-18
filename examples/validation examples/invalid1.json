@@ -1,0 +1,76 @@
+{
+  "fileType": "Euchre Layout Template",
+  "version": "1.0.0",
+  "views": [
+    {
+      "id": "default-view",
+      "name": "Default View",
+      "layout": {
+        "width": 1920,
+        "height": 1080,
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "elements": [
+          {
+            "id": "ns-score",
+            "type": "ns-score",
+            "x": 1322,
+            "y": 58,
+            "scale": 2.2,
+            "visible": true,
+            "styleSettings": {
+              "backgroundColor": "rgba(200, 24, 33, 1)",
+              "textColor": "#ffffff",
+              "fontSize": 16,
+              "borderRadius": 12,
+              "padding": 16
+            }
+          },
+          {
+            "id": "ew-score",
+            "type": "ew-score",
+            "x": 48,
+            "y": 54,
+            "scale": 2.2,
+            "visible": true,
+            "styleSettings": {
+              "backgroundColor": "rgba(20, 24, 200, 1)",
+              "textColor": "#ffffff",
+              "fontSize": 16,
+              "borderRadius": 12,
+              "padding": 16
+            }
+          },
+          {
+            "id": "trick-tracker",
+            "type": "trick-tracker",
+            "x": 35,
+            "y": 592,
+            "scale": 1.95,
+            "visible": false,
+            "styleSettings": {
+              "backgroundColor": "rgba(20, 24, 33, 0.85)",
+              "textColor": "#ffffff",
+              "fontSize": 16,
+              "borderRadius": 12,
+              "padding": 16
+            }
+          },
+          {
+            "id": "play-area",
+            "type": "play-area",
+            "x": 710,
+            "y": 340,
+            "scale": 1,
+            "visible": false,
+            "styleSettings": {
+              "backgroundColor": "rgba(20, 24, 33, 0.4)",
+              "borderRadius": 16,
+              "padding": 20
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "viewSwitches": {}
+}

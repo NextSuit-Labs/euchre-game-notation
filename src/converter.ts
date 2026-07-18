@@ -2,8 +2,8 @@ import * as fs from "fs";
 import protobuf from "protobufjs";
 import { packDeal, unpackDeal } from "./bitpacker";
 import { COMMON_PROTO_SCHEMA, CONDENSED_PROTO_SCHEMA, EXPANDED_PROTO_SCHEMA } from "./proto-schemas";
-import { EGNFile } from "./types";
-import { validateEGN } from "./validator";
+import { EgnFile } from "./types";
+import { validateEgn } from "./validator";
 
 // Magic bytes to identify binary format
 const MAGIC_BYTE_EXPANDED = 0x00;
@@ -49,7 +49,7 @@ function assertAnnotationIndexKey(key: string): void {
   }
 }
 
-function formatValidationErrors(errors: ReturnType<typeof validateEGN>["errors"]): string {
+function formatValidationErrors(errors: ReturnType<typeof validateEgn>["errors"]): string {
   if (!errors || errors.length === 0) {
     return "Unknown validation error";
   }
@@ -59,8 +59,8 @@ function formatValidationErrors(errors: ReturnType<typeof validateEGN>["errors"]
     .join("; ");
 }
 
-function assertValidEgnFile(egnFile: unknown, context: string): asserts egnFile is EGNFile {
-  const validation = validateEGN(egnFile);
+function assertValidEgnFile(egnFile: unknown, context: string): asserts egnFile is EgnFile {
+  const validation = validateEgn(egnFile);
   if (!validation.isValid) {
     throw new Error(`${context}: ${formatValidationErrors(validation.errors)}`);
   }
@@ -373,7 +373,7 @@ function stripMagicByte(binData: Uint8Array): Uint8Array {
   return binData;
 }
 
-function normalizeEgnForEncoding(egnFile: EGNFile, condensed: boolean): any {
+function normalizeEgnForEncoding(egnFile: EgnFile, condensed: boolean): any {
   const jsonObj = JSON.parse(JSON.stringify(egnFile));
 
   if (Array.isArray(jsonObj.deals)) {
@@ -411,7 +411,7 @@ function normalizeEgnForEncoding(egnFile: EGNFile, condensed: boolean): any {
   return jsonObj;
 }
 
-export function convertBinDataToEgnFile(binData: Uint8Array, condensed?: boolean): EGNFile {
+export function convertBinDataToEgnFile(binData: Uint8Array, condensed?: boolean): EgnFile {
   const resolvedCondensed = resolveCondensedMode(binData, condensed);
   const root = getProtobufRoot(resolvedCondensed);
   const EgnFileMessage = root.lookupType("egn.EgnFile");
@@ -454,7 +454,7 @@ export function convertBinToEgnJson(binFilePath: string, condensed?: boolean): s
   return convertBinDataToEgnJson(fs.readFileSync(binFilePath), condensed);
 }
 
-export function convertEgnFileToBinData(egnFile: EGNFile, condensed = true): Uint8Array {
+export function convertEgnFileToBinData(egnFile: EgnFile, condensed = true): Uint8Array {
   assertNumericAnnotationKeys(egnFile);
   assertValidEgnFile(egnFile, "Input EGN failed schema validation before binary conversion");
 
@@ -486,5 +486,5 @@ export function convertEgnJsonToBin(egnJsonStr: string, outBinFilePath: string, 
 }
 
 export function convertEgnJsonToBinData(egnJsonStr: string, condensed = true): Uint8Array {
-  return convertEgnFileToBinData(JSON.parse(egnJsonStr) as EGNFile, condensed);
+  return convertEgnFileToBinData(JSON.parse(egnJsonStr) as EgnFile, condensed);
 }

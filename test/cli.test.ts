@@ -3,7 +3,7 @@ import { execSync } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
 import { collectAnalysisPropertyNames } from "../src/cli-baseline-egn";
-import { validateEGN } from "../src/validator";
+import { validateEgn } from "../src/validator";
 import { VERSION } from "../src/version";
 
 const cliPath = path.resolve(__dirname, "../dist/src/cli.js");
@@ -429,7 +429,7 @@ describe("EGN Converter CLI", () => {
       // 1. Verify that original v1.0.0 file does NOT validate
       const originalContent = fs.readFileSync(testEgnPath, "utf8");
       const originalJson = JSON.parse(originalContent);
-      const originalValidation = validateEGN(originalJson);
+      const originalValidation = validateEgn(originalJson);
       expect(originalValidation.isValid).toBe(false);
       expect(originalValidation.errors).toBeDefined();
       expect(originalValidation.errors).not.toBeNull();
@@ -439,7 +439,7 @@ describe("EGN Converter CLI", () => {
         expect(originalValidation.errors[0].message).toMatch(/must match pattern|must NOT have additional properties|must have required property/);
       }
 
-      // 2. Run upgrade tool to convert to v1.2 format
+      // 2. Run upgrade tool to convert to v1.3 format
       execSync(`node "${upgradeCliPath}" "${testEgnPath}" "${upgradedPath}"`).toString();
       expect(fs.existsSync(upgradedPath)).toBe(true);
 
@@ -453,7 +453,7 @@ describe("EGN Converter CLI", () => {
       // Verify kitty field was removed (should not exist)
       expect(upgradedJson.deals[0].initialState.kitty).toBeUndefined();
       // Verify validation now passes
-      const upgradedValidation = validateEGN(upgradedJson);
+      const upgradedValidation = validateEgn(upgradedJson);
       expect(upgradedValidation.isValid).toBe(true);
       expect(upgradedValidation.errors).toEqual(null);
     } finally {

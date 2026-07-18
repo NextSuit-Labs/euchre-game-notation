@@ -1,5 +1,5 @@
 import { describe, it, expect } from "@jest/globals";
-import { validateEGN } from "../src/validator";
+import { validateEgn } from "../src/validator";
 import { convertEgnJsonToBin, convertBinToEgnJson } from "../src/converter";
 import * as fs from "fs";
 import * as path from "path";
@@ -102,7 +102,7 @@ describe("EGN Example Files Roundtrip Verification", () => {
       const originalObj = JSON.parse(fileContent);
 
       it("should be valid according to the EGN JSON schema", () => {
-        const result = validateEGN(originalObj);
+        const result = validateEgn(originalObj);
         if (!result.isValid) {
           console.error(`Validation failed for ${fileName}:`, result.errors);
         }
@@ -121,7 +121,7 @@ describe("EGN Example Files Roundtrip Verification", () => {
           const backObj = JSON.parse(backJsonContent);
 
           // 3. Validate roundtripped EGN
-          expect(validateEGN(backObj).isValid).toBe(true);
+          expect(validateEgn(backObj).isValid).toBe(true);
 
           // 4. Assert content parity (using normalizeEgnObj to handle Protobuf default representations)
           expect(normalizeEgnObj(backObj, false)).toEqual(normalizeEgnObj(originalObj, false));
@@ -144,7 +144,7 @@ describe("EGN Example Files Roundtrip Verification", () => {
           const backObj = JSON.parse(backJsonContent);
 
           // 3. Validate roundtripped EGN
-          expect(validateEGN(backObj).isValid).toBe(true);
+          expect(validateEgn(backObj).isValid).toBe(true);
 
           // 4. Assert content parity (ignoring cards/exchanges omitted by the bitpacker)
           expect(normalizeEgnObj(backObj, true)).toEqual(normalizeEgnObj(originalObj, true));

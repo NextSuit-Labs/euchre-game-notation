@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as fs from "fs";
 import { PACKAGE_VERSION, SCHEMA_VERSION } from "./version";
-import { EGNFile } from "./types";
+import { EgnFile } from "./types";
 
 
 function showHelp() {
@@ -110,8 +110,8 @@ function upgradeObject(obj: any): any {
 }
 
 function upgradeEgn(jsonString: string): string;
-function upgradeEgn(data: EGNFile): EGNFile;
-function upgradeEgn(input: string | EGNFile): string | EGNFile {
+function upgradeEgn(data: EgnFile): EgnFile;
+function upgradeEgn(input: string | EgnFile): string | EgnFile {
   const parsed: any = typeof input === "string" ? JSON.parse(input) : input;
 
   // Update version to current schema version
@@ -122,7 +122,7 @@ function upgradeEgn(input: string | EGNFile): string | EGNFile {
   // Recursively upgrade all properties
   const upgraded = upgradeObject(parsed);
 
-  return typeof input === "string" ? JSON.stringify(upgraded, null, 2) : upgraded as EGNFile;
+  return typeof input === "string" ? JSON.stringify(upgraded, null, 2) : upgraded as EgnFile;
 }
 
 function main() {

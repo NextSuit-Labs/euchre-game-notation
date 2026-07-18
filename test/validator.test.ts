@@ -1,5 +1,5 @@
 import { describe, it, expect } from "@jest/globals";
-import { validateEGN, isEGNFile } from "../src/validator";
+import { validateEgn, isEgnFile, validateEGN, isEGNFile } from "../src/validator";
 import { convertBinToEgnJson, convertEgnJsonToBin } from "../src/converter";
 import { packDeal, unpackDeal } from "../src/bitpacker";
 import { BiddingPhase, TrickPlayPhase } from "../src/types";
@@ -86,7 +86,7 @@ const validMockData = {
 
 describe("EGN Validator", () => {
   it("should successfully validate a correct EGN file", () => {
-    const result = validateEGN(validMockData);
+    const result = validateEgn(validMockData);
 
     // If validation fails, logging the errors helps with debugging
     if (!result.isValid) {
@@ -126,7 +126,7 @@ describe("EGN Validator", () => {
         }
       ]
     };
-    const result = validateEGN(alternateData);
+    const result = validateEgn(alternateData);
     expect(result.isValid).toBe(true);
   });
 
@@ -136,9 +136,33 @@ describe("EGN Validator", () => {
       version: VERSION
       // Missing required metadata and deals
     };
-    const result = validateEGN(invalidData);
+    const result = validateEgn(invalidData);
     expect(result.isValid).toBe(false);
     expect(result.errors).toBeDefined();
+
+    // verify the deprecated function works the same
+    const result2 = validateEGN(invalidData);
+    expect(result2.isValid).toBe(false);
+    expect(result2.errors).toBeDefined();
+  });
+
+  it("should reject validation example files prefixed with invalid and ending in .egn", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const validationDir = path.resolve(__dirname, "../examples/validation examples");
+
+    const invalidEgnFiles = fs.readdirSync(validationDir)
+      .filter((fileName: string) => fileName.toLowerCase().startsWith("invalid"));
+
+    // Some repos may not yet include invalid*.egn fixtures; if present, each must fail validation.
+    invalidEgnFiles.forEach((fileName: string) => {
+      const filePath = path.join(validationDir, fileName);
+      const jsonText = fs.readFileSync(filePath, "utf8");
+      const parsed = JSON.parse(jsonText);
+      const result = validateEgn(parsed);
+
+      expect(result.isValid).toBe(false);
+    });
   });
 
   it("should successfully validate an EGN file where deals is an array of base64 strings", () => {
@@ -151,7 +175,7 @@ describe("EGN Validator", () => {
       },
       "deals": ["VNMUUiCJNJCjiEpHF1A"]
     };
-    const result = validateEGN(base64DealsData);
+    const result = validateEgn(base64DealsData);
     expect(result.isValid).toBe(true);
     expect(result.errors).toBeFalsy();
   });
@@ -164,22 +188,22 @@ describe("EGN Validator", () => {
     // 0 players
     const data0 = cloneMock();
     data0.metadata.players = [];
-    expect(validateEGN(data0).isValid).toBe(true);
+    expect(validateEgn(data0).isValid).toBe(true);
 
     // 2 players
     const data2 = cloneMock();
     data2.metadata.players = ["P0", "P1"];
-    expect(validateEGN(data2).isValid).toBe(true);
+    expect(validateEgn(data2).isValid).toBe(true);
 
     // 5 players
     const data5 = cloneMock();
     data5.metadata.players = ["P0", "P1", "P2", "P3", "P4"];
-    expect(validateEGN(data5).isValid).toBe(true);
+    expect(validateEgn(data5).isValid).toBe(true);
 
     // non-string elements should fail
     const dataBad = cloneMock();
     dataBad.metadata.players = ["P0", 123];
-    expect(validateEGN(dataBad).isValid).toBe(false);
+    expect(validateEgn(dataBad).isValid).toBe(false);
   });
 
   it("should validate players as objects with playerIds", () => {
@@ -199,213 +223,215 @@ describe("EGN Validator", () => {
       "P3",
     ];
 
-    expect(validateEGN(data).isValid).toBe(true);
+    expect(validateEgn(data).isValid).toBe(true);
   });
 
   it("should validate root-level properties", () => {
     // Missing fileType
     const m1 = cloneMock();
     delete m1.fileType;
-    expect(validateEGN(m1).isValid).toBe(false);
+    expect(validateEgn(m1).isValid).toBe(false);
 
     // Wrong fileType
     const m2 = cloneMock();
     m2.fileType = "Hearts Game Notation";
-    expect(validateEGN(m2).isValid).toBe(false);
+    expect(validateEgn(m2).isValid).toBe(false);
 
     // Missing version
     const m3 = cloneMock();
     delete m3.version;
-    expect(validateEGN(m3).isValid).toBe(false);
+    expect(validateEgn(m3).isValid).toBe(false);
 
     // Invalid version format
     const m4 = cloneMock();
     m4.version = "1.0";
-    expect(validateEGN(m4).isValid).toBe(false);
+    expect(validateEgn(m4).isValid).toBe(false);
 
     m4.version = "1.0.a";
-    expect(validateEGN(m4).isValid).toBe(false);
+    expect(validateEgn(m4).isValid).toBe(false);
   });
 
   it("should validate metadata properties", () => {
     // Missing players
     const m1 = cloneMock();
     delete m1.metadata.players;
-    expect(validateEGN(m1).isValid).toBe(false);
+    expect(validateEgn(m1).isValid).toBe(false);
 
     // Missing initialScore
     const m2 = cloneMock();
     delete m2.metadata.initialScore;
-    expect(validateEGN(m2).isValid).toBe(false);
+    expect(validateEgn(m2).isValid).toBe(false);
 
     // initialScore size is flexible (no min/max constraint — supports variable player counts)
 
     // initialScore contains non-integers
     const m4 = cloneMock();
     m4.metadata.initialScore = [1.5, 2];
-    expect(validateEGN(m4).isValid).toBe(false);
+    expect(validateEgn(m4).isValid).toBe(false);
 
     // invalid ruleset properties
     const m5 = cloneMock();
     m5.metadata.ruleset.std = "true"; // string instead of boolean
-    expect(validateEGN(m5).isValid).toBe(false);
+    expect(validateEgn(m5).isValid).toBe(false);
 
     const m6 = cloneMock();
     m6.metadata.ruleset.loner_lead = "LEFT_OF_PARTNER"; // not in enum
-    expect(validateEGN(m6).isValid).toBe(false);
+    expect(validateEgn(m6).isValid).toBe(false);
   });
 
   it("should validate hardened schema constraints (additionalProperties, maxItems, maxLength)", () => {
     // 1. Rejects unknown property in root
     const rootBad = cloneMock();
     (rootBad as any).extraProperty = "not allowed";
-    expect(validateEGN(rootBad).isValid).toBe(false);
+    expect(validateEgn(rootBad).isValid).toBe(false);
 
     // 2. Rejects unknown property in ruleset
     const rulesetBad = cloneMock();
     (rulesetBad.metadata.ruleset as any).extraRule = "not allowed";
-    expect(validateEGN(rulesetBad).isValid).toBe(false);
+    expect(validateEgn(rulesetBad).isValid).toBe(false);
 
     // 3. Rejects title exceeding maxLength of 128
     const titleTooLong = cloneMock();
     titleTooLong.metadata.title = "a".repeat(129);
-    expect(validateEGN(titleTooLong).isValid).toBe(false);
+    expect(validateEgn(titleTooLong).isValid).toBe(false);
 
     // 4. Rejects description exceeding maxLength of 1024
     const descTooLong = cloneMock();
     descTooLong.metadata.description = "a".repeat(1025);
-    expect(validateEGN(descTooLong).isValid).toBe(false);
+    expect(validateEgn(descTooLong).isValid).toBe(false);
 
     // 5. Rejects player name exceeding maxLength of 64
     const playerTooLong = cloneMock();
     playerTooLong.metadata.players = ["P0", "P1", "P2", "a".repeat(65)];
-    expect(validateEGN(playerTooLong).isValid).toBe(false);
+    expect(validateEgn(playerTooLong).isValid).toBe(false);
 
     // 6. Rejects players count exceeding maxItems of 10
     const tooManyPlayers = cloneMock();
     tooManyPlayers.metadata.players = Array(11).fill("Player");
-    expect(validateEGN(tooManyPlayers).isValid).toBe(false);
+    expect(validateEgn(tooManyPlayers).isValid).toBe(false);
 
     // 7. Rejects deals count exceeding maxItems of 100
     const tooManyDeals = cloneMock();
     tooManyDeals.deals = Array(101).fill(cloneMock().deals[0]);
-    expect(validateEGN(tooManyDeals).isValid).toBe(false);
+    expect(validateEgn(tooManyDeals).isValid).toBe(false);
   });
 
   it("should validate date property with or without timezone offset", () => {
     // Valid date with timezone offset (Z)
     const m1 = cloneMock();
     m1.metadata.date = "2026-05-17T19:00:00Z";
-    expect(validateEGN(m1).isValid).toBe(true);
+    expect(validateEgn(m1).isValid).toBe(true);
 
     // Valid date with timezone offset (+05:30)
     const m2 = cloneMock();
     m2.metadata.date = "2026-05-17T19:00:00+05:30";
-    expect(validateEGN(m2).isValid).toBe(true);
+    expect(validateEgn(m2).isValid).toBe(true);
 
     // Valid date without timezone offset (T-separated)
     const m3 = cloneMock();
     m3.metadata.date = "2026-05-29T16:30";
-    expect(validateEGN(m3).isValid).toBe(true);
+    expect(validateEgn(m3).isValid).toBe(true);
 
     // Valid date without timezone offset (Space-separated)
     const m4 = cloneMock();
     m4.metadata.date = "2026-05-29 16:30:00";
-    expect(validateEGN(m4).isValid).toBe(true);
+    expect(validateEgn(m4).isValid).toBe(true);
 
     // Valid date without timezone offset and with subseconds
     const m5 = cloneMock();
     m5.metadata.date = "2026-05-29T16:30:00.123";
-    expect(validateEGN(m5).isValid).toBe(true);
+    expect(validateEgn(m5).isValid).toBe(true);
 
     // Invalid date format
     const m6 = cloneMock();
     m6.metadata.date = "not-a-date";
-    expect(validateEGN(m6).isValid).toBe(false);
+    expect(validateEgn(m6).isValid).toBe(false);
 
     // Invalid local date-time format (missing time)
     const m7 = cloneMock();
     m7.metadata.date = "2026-05-29";
-    expect(validateEGN(m7).isValid).toBe(false);
+    expect(validateEgn(m7).isValid).toBe(false);
   });
 
   it("should validate deal properties and phases", () => {
     // negative dealNumber
     const m1 = cloneMock();
     m1.deals[0].dealNumber = -1;
-    expect(validateEGN(m1).isValid).toBe(false);
+    expect(validateEgn(m1).isValid).toBe(false);
 
     // dealer has no max constraint — supports variable player counts (validated by ruleset/num_players)
 
     // malformed upCard
     const m3 = cloneMock();
     m3.deals[0].initialState.upCard = "invalid";
-    expect(validateEGN(m3).isValid).toBe(false);
+    expect(validateEgn(m3).isValid).toBe(false);
 
     m3.deals[0].initialState.upCard = "9z";
-    expect(validateEGN(m3).isValid).toBe(false);
+    expect(validateEgn(m3).isValid).toBe(false);
 
     // bidding phase: invalid call
     const m4 = cloneMock();
     m4.deals[0].phases[0].calls = ["Pass", "Order", "InvalidCall"];
-    expect(validateEGN(m4).isValid).toBe(false);
+    expect(validateEgn(m4).isValid).toBe(false);
 
     // calls length has no max constraint — supports extended bidding variants
 
     // trick play: tricks with invalid cards
     const m6 = cloneMock();
     m6.deals[0].phases[1].tricks[0] = ["Ac", "Tc", "9z", "Kc"];
-    expect(validateEGN(m6).isValid).toBe(false);
+    expect(validateEgn(m6).isValid).toBe(false);
   });
 
   it("should validate alternative lines and annotations", () => {
     // negative branchIndex in alternative lines
     const m1 = cloneMock();
     m1.deals[0].alternativeLines[0].branchIndex = -1;
-    expect(validateEGN(m1).isValid).toBe(false);
+    expect(validateEgn(m1).isValid).toBe(false);
 
     // annotations with non-numeric key
     const m2 = cloneMock();
     m2.deals[0].phases[0].callAnnotations["abc"] = ["annotation text"];
-    expect(validateEGN(m2).isValid).toBe(false);
+    expect(validateEgn(m2).isValid).toBe(false);
 
     // annotations value not string array
     const m3 = cloneMock();
     m3.deals[0].phases[0].callAnnotations["2"] = "not-an-array";
-    expect(validateEGN(m3).isValid).toBe(false);
+    expect(validateEgn(m3).isValid).toBe(false);
   });
+  it("should allow values containing HTML/script tags or mathematical comparison characters", () => {
+    // 1. Math/HTML character in title
+    const docWithMathTitle = cloneMock();
+    docWithMathTitle.metadata.title = "Game Title: Team 1 < Team 2";
+    expect(validateEgn(docWithMathTitle).isValid).toBe(true);
 
-  it("should reject any values containing HTML/script tags or XSS-like injection patterns", () => {
-    // 1. HTML injection in title
-    const badTitle = cloneMock();
-    badTitle.metadata.title = "<script>alert('XSS')</script>";
-    expect(validateEGN(badTitle).isValid).toBe(false);
+    // 2. Math/HTML character in description
+    const docWithMathDesc = cloneMock();
+    docWithMathDesc.metadata.description = "Win probability was > 95%";
+    expect(validateEgn(docWithMathDesc).isValid).toBe(true);
 
-    // 2. HTML injection in description
-    const badDesc = cloneMock();
-    badDesc.metadata.description = "This is a <p>paragraph</p>";
-    expect(validateEGN(badDesc).isValid).toBe(false);
+    // 3. Math/HTML character in players names
+    const docWithMathPlayer = cloneMock();
+    docWithMathPlayer.metadata.players = ["Player0", "Player1", "Player2", "Player <3>"];
+    expect(validateEgn(docWithMathPlayer).isValid).toBe(true);
 
-    // 3. HTML injection in players names
-    const badPlayer = cloneMock();
-    badPlayer.metadata.players = ["Player0", "Player1", "Player2", "<b>Player3</b>"];
-    expect(validateEGN(badPlayer).isValid).toBe(false);
-
-    // 4. HTML injection in annotations
-    const badAnnot = cloneMock();
-    badAnnot.deals[0].phases[0].callAnnotations["3"] = ["Strong order by Player 3", "More info <script>"];
-    expect(validateEGN(badAnnot).isValid).toBe(false);
+    // 4. Math/HTML character in annotations
+    const docWithMathAnnot = cloneMock();
+    docWithMathAnnot.deals[0].phases[0].callAnnotations["3"] = ["Strong order by Player 3", "More info: 3 < 4"];
+    expect(validateEgn(docWithMathAnnot).isValid).toBe(true);
   });
 
   it("should reject card strings that are blank", () => {
     const dataWithBlankCards = cloneMock();
     dataWithBlankCards.deals[0].initialState.upCard = "";
 
-    const result = validateEGN(dataWithBlankCards);
+    const result = validateEgn(dataWithBlankCards);
     expect(result.isValid).toBe(false);
   });
 
-  it("isEGNFile should work correctly as a type guard", () => {
+  it("isEgnFile and isEGNFile should work correctly as type guards", () => {
+    expect(isEgnFile(validMockData)).toBe(true);
+    expect(isEgnFile({})).toBe(false);
+
     expect(isEGNFile(validMockData)).toBe(true);
     expect(isEGNFile({})).toBe(false);
   });
@@ -471,7 +497,7 @@ describe("EGN Protobuf Converter", () => {
 
       expect(normalizeCondensedEgn(backObj)).toEqual(normalizeCondensedEgn(validMockData));
 
-      const result = validateEGN(backObj);
+      const result = validateEgn(backObj);
       expect(result.isValid).toBe(true);
     } finally {
       if (fs.existsSync(tempBinFilePath)) {
@@ -503,7 +529,7 @@ describe("EGN Protobuf Converter", () => {
 
       expect(normalizeEgn(backObj)).toEqual(normalizeEgn(validMockData));
 
-      const result = validateEGN(backObj);
+      const result = validateEgn(backObj);
       expect(result.isValid).toBe(true);
     } finally {
       if (fs.existsSync(tempBinFilePath)) {

@@ -63,8 +63,8 @@ When the `condensed` flag is omitted during decoding, the converter reads the fi
 
 All converter entry points enforce the same safety checks regardless of whether they are used from Node.js file paths or in-memory browser data.
 
-* **Schema validation after decode**: Binary decode validates the reconstructed `EGNFile` before returning it.
-* **Schema validation before encode**: Binary encode validates the input `EGNFile` before serializing it.
+* **Schema validation after decode**: Binary decode validates the reconstructed `EgnFile` before returning it.
+* **Schema validation before encode**: Binary encode validates the input `EgnFile` before serializing it.
 * **Numeric-only annotation keys**: Annotation maps such as `callAnnotations` and `playAnnotations` only accept numeric keys.
 * **Binary size cap**: Binary inputs and outputs are limited to **8 MiB**.
 

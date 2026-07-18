@@ -174,7 +174,7 @@ CREATE TABLE game_players (
 ### TypeScript/Node.js Example
 
 ```typescript
-import { EGNFile, Player, PlayerObject } from "euchre-game-notation";
+import { EgnFile, Player, PlayerObject } from "euchre-game-notation";
 
 function extractPlayerIds(player: Player, source: string): string[] {
   if (typeof player === "string") {
@@ -197,7 +197,7 @@ function getPlayerName(player: Player): string {
 }
 
 // Usage
-const egn: EGNFile = loadEGN("game.egn");
+const egn: EgnFile = loadEgn("game.egn");
 egn.metadata.players.forEach((player, index) => {
   const name = getPlayerName(player);
   const euchreComIds = extractPlayerIds(player, "euchre-site");
@@ -215,11 +215,11 @@ egn.metadata.players.forEach((player, index) => {
 
 ## Backward Compatibility
 
-EGN v1.2 is fully backward compatible with v1.0.0 and v1.1.0:
+EGN v1.3 is fully backward compatible with v1.0.0 and v1.1.0 and v1.2:
 
 - Parsers reading Player Objects will gracefully handle simple strings
 - Upgrades from older formats automatically convert player names to simple strings (IDs are lost)
-- Use the `egn-upgrade` CLI tool to migrate files to v1.2, then manually add Player Object data as needed
+- Use the `egn-upgrade` CLI tool to migrate files to v1.3, then manually add Player Object data as needed
 
 ## Migration from Simple Names to Player Objects
 
@@ -233,7 +233,7 @@ To upgrade an existing EGN file with player names to include external IDs:
   }
 }
 
-// After (v1.2 with external IDs)
+// After (v1.2+ with external IDs)
 {
   "metadata": {
     "players": [
@@ -256,4 +256,4 @@ To upgrade an existing EGN file with player names to include external IDs:
 
 ## Summary
 
-Player Objects in EGN v1.2 enable seamless cross-platform player tracking while maintaining backward compatibility with simple player names. This feature is essential for building robust tournament systems, competitive analytics, and unified game archives across the Euchre community.
+Player Objects in EGN v1.3 enable seamless cross-platform player tracking while maintaining backward compatibility with simple player names. This feature is essential for building robust tournament systems, competitive analytics, and unified game archives across the Euchre community.

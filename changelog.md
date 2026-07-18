@@ -4,6 +4,22 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-07-18
+
+### Added
+- **Egn Casing Standard aliases:** Added preferred camel-case exports `EgnFile`, `validateEgn`, and `isEgnFile` to resolve naming discrepancies across the public API.
+
+### Changed
+- **Schema-level validation loosening:** Removed strict HTML/XSS input patterns (`^[^<>]*$`) from text and description fields (`gameId`, `title`, `description`, player names, player IDs, player sources, and commentary annotations) in the EGN JSON schema. This allows natural notation for mathematical comparisons (e.g. `score < 10`) and flow/arrows (e.g. `->`), delegating context-aware output encoding and sanitization responsibilities to the rendering client applications.
+- **Internal Naming Casing Migration:** Migrated all internal components, CLI tools (`egn-baseline`, `egn-convert`, `egn-upgrade`), examples, and test suites to standard `Egn` camel casing.
+
+### Deprecated
+- **Legacy EGN casing exports:** Marked `EGNFile`, `validateEGN`, and `isEGNFile` as `@deprecated` in JSDoc. These remain exported and fully functional for backward-compatibility but will be removed in a future major release.
+
+### Documentation
+- Added a "Security & Safe Rendering Guidelines" section to the README explaining why HTML characters are allowed in the schema and detailing the client-side context-aware output encoding responsibilities.
+- Updated all README examples and documentation to prefer standard `Egn` casing.
+
 ## [1.2.4] - 2026-07-17
 
 ### Added

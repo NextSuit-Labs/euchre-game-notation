@@ -11,7 +11,7 @@
     },
     "version": {
       "type": "string",
-      "pattern": "^1\\.2(?:\\.\\d+)?$"
+      "pattern": "^1\\.[23](?:\\.\\d+)?$"
     },
     "metadata": {
       "type": "object",
@@ -19,17 +19,14 @@
       "properties": {
         "gameId": {
           "type": "string",
-          "pattern": "^[^<>]*$",
           "maxLength": 64
         },
         "title": {
           "type": "string",
-          "pattern": "^[^<>]*$",
           "maxLength": 128
         },
         "description": {
           "type": "string",
-          "pattern": "^[^<>]*$",
           "maxLength": 1024
         },
         "players": {
@@ -38,7 +35,6 @@
             "oneOf": [
               {
                 "type": "string",
-                "pattern": "^[^<>]*$",
                 "maxLength": 64
               },
               {
@@ -387,7 +383,6 @@
         "maxItems": 50,
         "items": {
           "type": "string",
-          "pattern": "^[^<>]*$",
           "maxLength": 1024
         }
       },
@@ -401,7 +396,6 @@
       "properties": {
         "name": {
           "type": "string",
-          "pattern": "^[^<>]*$",
           "maxLength": 64
         },
         "playerIds": {
@@ -414,12 +408,10 @@
             "properties": {
               "id": {
                 "type": "string",
-                "pattern": "^[^<>]*$",
                 "maxLength": 64
               },
               "source": {
                 "type": "string",
-                "pattern": "^[^<>]*$",
                 "maxLength": 64
               }
             },

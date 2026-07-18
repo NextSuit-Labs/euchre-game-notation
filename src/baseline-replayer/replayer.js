@@ -13,16 +13,16 @@ async function loadSampleHand(key) {
   if (!filename) return;
   switch (filename) {
     case "vwec-hand-1.egn":
-      initializeEGN(vwec1);
+      initializeEgn(vwec1);
       break;
     case "vwec-hand-2.egn":
-      initializeEGN(vwec2);
+      initializeEgn(vwec2);
       break;
     case "vwec-hand-8.egn":
-      initializeEGN(vwec8);
+      initializeEgn(vwec8);
       break;
     case "me-and-bears.egn":
-      initializeEGN(meAndBears);
+      initializeEgn(meAndBears);
       break;
   }
 }
@@ -39,7 +39,7 @@ const MAX_INPUT_CHARS = 2_000_000;
 function createCardElement(cardStr) {
   const span = document.createElement("span");
   span.className = "card-txt";
-  
+
   if (!cardStr || cardStr === "Xx") {
     span.style.backgroundColor = "var(--bg-light)";
     span.style.color = "var(--text-gray)";
@@ -50,7 +50,7 @@ function createCardElement(cardStr) {
     const suit = cardStr[1].toLowerCase();
     const suitSymbols = { 's': '♠', 'h': '♥', 'c': '♣', 'd': '♦' };
     const symbol = suitSymbols[suit] || suit;
-    
+
     span.classList.add(`suit-${suit}`);
     span.textContent = `${rank}${symbol}`;
   }
@@ -106,7 +106,7 @@ function renderStep() {
     } else {
       nameEl.classList.remove("maker-highlight");
     }
-    
+
     const cardsEl = document.getElementById(`cards-${i}`);
     cardsEl.textContent = "";
 
@@ -154,7 +154,7 @@ function renderStep() {
     const bidValue = step.bidCall.call;
     const targetSeatEl = document.getElementById(`cards-${bidderSeat}`);
     targetSeatEl.textContent = "";
-    
+
     const span = document.createElement("span");
     span.style.backgroundColor = "var(--color-accent)";
     span.style.color = "white";
@@ -208,7 +208,7 @@ function formatCall(call, isAlone) {
 }
 
 // 4. Initialize EGN File
-function initializeEGN(data = null) {
+function initializeEgn(data = null) {
   try {
     if (data) {
       egnData = data;
@@ -257,7 +257,7 @@ function initializeEGN(data = null) {
 }
 
 // 5. Navigation Event Listeners
-document.getElementById("load-btn").addEventListener("click", () => initializeEGN());
+document.getElementById("load-btn").addEventListener("click", () => initializeEgn());
 
 document.getElementById("sample-select").addEventListener("change", (e) => {
   loadSampleHand(e.target.value);

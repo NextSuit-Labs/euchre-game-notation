@@ -1,6 +1,6 @@
 /**
  * Core TypeScript definitions for Euchre Game Notation (EGN).
- * Maps directly to the EGN schema v1.2 family.
+ * Maps directly to the EGN schema v1.3 family.
  */
 
 export type Card = string; // Pattern: ^([78N9TJQKAX][SsHhCcDdxtngh]|[LRB])$
@@ -94,9 +94,14 @@ export interface Deal {
   alternativeLines?: AlternativeLine[];
 }
 
-export interface EGNFile {
+export interface EgnFile {
   fileType: "Euchre Game Notation";
   version: string;
   metadata: Metadata;
   deals: (Deal | string)[];
 }
+
+/**
+ * @deprecated Use {@link EgnFile} instead.
+ */
+export type EGNFile = EgnFile;

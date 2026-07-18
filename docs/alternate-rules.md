@@ -4,7 +4,7 @@ Euchre is a game famous for its local "house rules" and regional variations. To 
 
 By defining these toggles, parsing engines can accurately reconstruct the game state and correctly validate behaviors that would otherwise be illegal in standard play.
 
-Here are the alternate rules supported in EGN v1.2:
+Here are the alternate rules supported in EGN v1.3:
 
 ## `std` (boolean)
 **Default:** `true`

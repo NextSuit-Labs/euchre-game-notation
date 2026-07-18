@@ -4,8 +4,8 @@ import * as fs from "fs";
 import * as path from "path";
 import egnSchema from "../schemas/egn-schema-v1.json";
 import { convertBinToEgnJson, convertEgnJsonToBin } from "./converter";
-import { validateEGN } from "./validator";
-import { EGNFile } from "./types";
+import { validateEgn } from "./validator";
+import { EgnFile } from "./types";
 import { PACKAGE_VERSION } from "./version";
 
 function showHelp() {
@@ -134,19 +134,19 @@ function stableStringify(value: unknown): string {
   return JSON.stringify(value);
 }
 
-function hashBaselineEgn(egn: EGNFile): string {
+function hashBaselineEgn(egn: EgnFile): string {
   const stripped = convertToBaselineEgn(egn) as Record<string, unknown>;
   const canonical = stableStringify(stripped);
   return crypto.createHash("sha256").update(canonical).digest("hex");
 }
 
-function loadEgnFromInput(inputPath: string, condensed: boolean): EGNFile {
+function loadEgnFromInput(inputPath: string, condensed: boolean): EgnFile {
   const ext = path.extname(inputPath).toLowerCase();
 
   if (ext === ".egnb") {
     const jsonText = convertBinToEgnJson(inputPath, condensed);
-    const parsed = JSON.parse(jsonText) as EGNFile;
-    const validation = validateEGN(parsed);
+    const parsed = JSON.parse(jsonText) as EgnFile;
+    const validation = validateEgn(parsed);
     if (!validation.isValid) {
       throw new Error(`Input binary failed validation: ${JSON.stringify(validation.errors)}`);
     }
@@ -154,8 +154,8 @@ function loadEgnFromInput(inputPath: string, condensed: boolean): EGNFile {
   }
 
   const jsonText = fs.readFileSync(inputPath, "utf8");
-  const parsed = JSON.parse(jsonText) as EGNFile;
-  const validation = validateEGN(parsed);
+  const parsed = JSON.parse(jsonText) as EgnFile;
+  const validation = validateEgn(parsed);
   if (!validation.isValid) {
     throw new Error(`Input JSON failed validation: ${JSON.stringify(validation.errors)}`);
   }
@@ -164,7 +164,7 @@ function loadEgnFromInput(inputPath: string, condensed: boolean): EGNFile {
 
 function writeStrippedEgn(inputPath: string, outputPath: string | undefined, condensed: boolean, asHash: boolean): string {
   const egn = loadEgnFromInput(inputPath, condensed);
-  const stripped = convertToBaselineEgn(egn) as EGNFile;
+  const stripped = convertToBaselineEgn(egn) as EgnFile;
 
   if (asHash) {
     return hashBaselineEgn(egn);

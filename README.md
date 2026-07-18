@@ -18,14 +18,14 @@ An `.egn` file purposefully strips out easily calculated metrics—such as trick
 
 ---
 
-## 🛠️ File Structure Example (EGN v1.2)
+## 🛠️ File Structure Example (EGN v1.3)
 
 Under the hood, an `.egn` file utilizes human-readable, web-native JSON structural primitives:
 
 ```json
 {
   "fileType": "Euchre Game Notation",
-  "version": "1.2",
+  "version": "1.3",
   "metadata": {
     "gameId": "egn_m_20260528_01",
     "title": "WEC Finals",
@@ -340,7 +340,7 @@ egn-baseline game.egn --hash
 For details on baseline EGNs and their use cases, see [docs/determinism-of-egn.md](docs/determinism-of-egn.md).
 
 #### `egn-upgrade` — Version Migration
-Upgrades older EGN files (v1.0.0, v1.1.0) to the v1.2 format by automatically renaming snake_case properties to camelCase, removing redundant fields, and updating the version string.
+Upgrades older EGN files (v1.0.0, v1.1.0) to the v1.3 format by automatically renaming snake_case properties to camelCase, removing redundant fields, and updating the version string.
 
 ```bash
 # Upgrade in-place
@@ -365,12 +365,12 @@ npm install euchre-game-notation
 Ensure an EGN JSON object conforms strictly to the specification:
 
 ```typescript
-import { validateEGN, isEGNFile, EGNFile } from "euchre-game-notation";
+import { validateEgn, isEgnFile, EgnFile } from "euchre-game-notation";
 
 const parsedData = JSON.parse(egnJsonString);
 
 // Option A: Detailed validation result
-const result = validateEGN(parsedData);
+const result = validateEgn(parsedData);
 if (result.isValid) {
   console.log("Valid EGN file!");
 } else {
@@ -378,8 +378,8 @@ if (result.isValid) {
 }
 
 // Option B: TypeScript Type Guard
-if (isEGNFile(parsedData)) {
-  const egn: EGNFile = parsedData; // Typecasted automatically
+if (isEgnFile(parsedData)) {
+  const egn: EgnFile = parsedData; // Typecasted automatically
   console.log(`Loaded game: ${egn.metadata.title}`);
 }
 ```
@@ -405,18 +405,18 @@ import {
   convertBinDataToEgnFile,
   convertEgnFileToBinData,
   detectBinaryFormatFromData,
-  type EGNFile,
+  type EgnFile,
 } from "euchre-game-notation";
 
-const egnFile: EGNFile = JSON.parse(egnJsonString);
+const egnFile: EgnFile = JSON.parse(egnJsonString);
 
-// Encode an EGNFile object into .egnb bytes.
+// Encode an EgnFile object into .egnb bytes.
 const binaryData = convertEgnFileToBinData(egnFile, true);
 
 // Inspect the magic byte when needed.
 const format = detectBinaryFormatFromData(binaryData);
 
-// Decode .egnb bytes back into an EGNFile object.
+// Decode .egnb bytes back into an EgnFile object.
 const decodedEgnFile = convertBinDataToEgnFile(binaryData);
 ```
 
@@ -429,9 +429,20 @@ Available conversion exports:
 
 All converter entry points now enforce the EGN schema at the conversion boundary:
 
-- Binary decode validates the reconstructed `EGNFile` before returning it.
-- Binary encode validates the input `EGNFile` before serializing it.
+- Binary decode validates the reconstructed `EgnFile` before returning it.
+- Binary encode validates the input `EgnFile` before serializing it.
 - Annotation maps reject non-numeric keys such as `__proto__`, `constructor`, and `prototype`.
 - Binary inputs and outputs are capped at 8 MiB to reduce denial-of-service risk from oversized payloads.
 
 If you need to handle untrusted binary uploads in a browser or service, these helpers now fail fast on malformed, non-conformant, or oversized inputs instead of returning partially trusted data.
+
+### 🔒 Security & Safe Rendering Guidelines
+
+The EGN schema guarantees type correctness, structural validity, and field length limits (such as a maximum of 128 characters for a game title). However, the schema **does not restrict or sanitize HTML/XML characters** (such as `<` and `>`) in free-text fields (including `title`, `description`, player names, and commentary annotations). Avoiding these character restrictions at the schema level is intentional; it allows users to write natural mathematical comparisons (e.g., `score < 10`) and structural arrows (e.g., `->`) in game commentary and names.
+
+Consequently, client applications (replayers, loggers, overlay renderers, and web portals) are responsible for performing **context-aware output encoding**:
+
+* **Vanilla Javascript:** Use safe DOM properties like `element.textContent` rather than `element.innerHTML` when displaying titles, player names, or descriptions.
+* **Modern Frameworks (React, Vue, etc.):** Standard text interpolation (e.g., `{player.name}` in React) automatically escapes text content and should be preferred.
+* **Markdown Commentary:** If rendering descriptions or annotations as markdown, parse the markdown and sanitize the resulting HTML using a robust library (such as `DOMPurify`) before placing it in the DOM.
+* **Attributes and Links:** Properly escape attributes if injecting user content (e.g., `<span data-name="...">`), and validate URL schemes for any links or sources to prevent `javascript:` injection.

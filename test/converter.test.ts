@@ -10,10 +10,10 @@ import * as fs from "fs";
 import * as path from "path";
 import protobuf from "protobufjs";
 import { COMMON_PROTO_SCHEMA, EXPANDED_PROTO_SCHEMA } from "../src/proto-schemas";
-import { BiddingPhase, Deal, EGNFile } from "../src/types";
+import { BiddingPhase, Deal, EgnFile } from "../src/types";
 import { VERSION } from "../src/version";
 
-const validMockData: EGNFile = {
+const validMockData: EgnFile = {
   "fileType": "Euchre Game Notation",
   "version": VERSION,
   "metadata": {
@@ -237,7 +237,7 @@ describe("EGN Protobuf Converter Core", () => {
       metadata: {
         players: ["P0", "P1", "P2", "P3"],
         initial_score: [0, 0],
-        title: "<script>alert('xss')</script>"
+        title: "a".repeat(129)
       },
       deals: []
     };
@@ -257,9 +257,9 @@ describe("EGN Protobuf Converter Core", () => {
       ...validMockData,
       metadata: {
         ...validMockData.metadata,
-        title: "<script>alert('xss')</script>"
+        title: "a".repeat(129)
       }
-    } as EGNFile;
+    } as EgnFile;
 
     expect(() => {
       convertEgnFileToBinData(invalidEgn, false);
@@ -283,7 +283,7 @@ describe("EGN Protobuf Converter Core", () => {
           ]
         }
       ]
-    } as EGNFile;
+    } as EgnFile;
 
     expect(() => {
       convertEgnFileToBinData(invalidEgn, false);
@@ -533,7 +533,7 @@ describe("EGN Protobuf Converter Core", () => {
     }
   });
 
-  it("should roundtrip EGNFile objects directly through in-memory binary data", () => {
+  it("should roundtrip EgnFile objects directly through in-memory binary data", () => {
     const encodedCondensed = convertEgnFileToBinData(validMockData, true);
     expect(encodedCondensed).toBeInstanceOf(Uint8Array);
     expect(detectBinaryFormatFromData(encodedCondensed)).toBe("condensed");
