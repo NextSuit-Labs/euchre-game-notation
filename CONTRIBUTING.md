@@ -45,3 +45,42 @@ Because EGN operates on deterministic minimalism, any proposed additions to the 
 ## Licensing
 
 By contributing to EGN, you agree that your contributions will be licensed under the Apache 2.0 License.
+
+## Source File Header Policy
+
+To keep licensing clear and consistent, this repository uses the following header policy for source files:
+
+- Use the full Apache 2.0 header block in comment-friendly source files (`.ts`, `.js`, `.css`, `.html`).
+- Keep shebang lines (`#!/usr/bin/env node`) as line 1; place the header immediately after.
+- For HTML files, use an HTML comment form of the same header text.
+- Do not add headers to generated files (for example `src/proto-schemas.ts`), since they are regenerated from source.
+- Do not add headers to formats that do not support comments (for example JSON and binary artifacts).
+- If a file already has a different required third-party notice, preserve that notice.
+
+Standard copyright line for this repository:
+
+`Copyright 2026 {your name / company name}`
+
+Canonical full header text:
+
+```ts
+/*
+ * Copyright 2026 {your name / company name}
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+```
+
+Optional short form for files where the project chooses SPDX-style notices:
+
+`SPDX-License-Identifier: Apache-2.0`

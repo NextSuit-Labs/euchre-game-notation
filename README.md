@@ -6,6 +6,16 @@ Inspired by Chess PGN (Portable Game Notation), EGN provides a highly optimized,
 
 ---
 
+## Latest Release
+
+- **Current npm package:** `1.3.1`
+- **Schema family:** `1.3` (no schema-format change in this patch release)
+- **Highlights:** Apache 2.0 source-header standardization and contributor header policy documentation.
+
+See [changelog.md](changelog.md) for full release details.
+
+---
+
 ## 💡 Core Philosophy: Deterministic Minimalism
 
 Unlike ad-hoc database schemas or nested JSON models that duplicate real-time game states, EGN operates on a philosophy of **strict rule-engine deduction**. 

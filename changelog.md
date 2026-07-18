@@ -4,6 +4,18 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-07-18
+
+### Changed
+- Standardized Apache 2.0 copyright headers across comment-friendly source files (`.ts`, `.js`, `.css`, `.html`) in core source, CLI scripts, baseline replayer assets, and test files.
+
+### Documentation
+- Added a formal "Source File Header Policy" to `CONTRIBUTING.md`, including:
+  - Required full-header usage for comment-friendly source files.
+  - Shebang/header placement guidance for CLI scripts.
+  - Exclusions for generated files and non-commentable formats.
+  - Canonical project copyright line and optional SPDX short form.
+
 ## [1.3.0] - 2026-07-18
 
 ### Added
