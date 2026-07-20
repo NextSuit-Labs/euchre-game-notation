@@ -11,7 +11,7 @@
     },
     "version": {
       "type": "string",
-      "pattern": "^1\\.[23](?:\\.\\d+)?$"
+      "pattern": "^1\\.[234](?:\\.\\d+)?$"
     },
     "metadata": {
       "type": "object",
@@ -80,7 +80,15 @@
             },
             "winning_score": {
               "type": "integer",
-              "default": 10
+              "minimum": 0,
+              "default": 10,
+              "description": "The target score to win the game. A value of 0 means there is no winning score."
+            },
+            "max_deals": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "description": "The maximum number of deals to play. A value of 0 (or omitting the field) means there is no maximum deal limit. If both max_deals and winning_score are non-zero, the game ends when either limit is reached."
             },
             "canadian": {
               "type": "boolean",
@@ -138,7 +146,32 @@
               "type": "boolean",
               "default": false
             }
-          }
+          },
+          "anyOf": [
+            {
+              "not": {
+                "properties": {
+                  "winning_score": {
+                    "const": 0
+                  }
+                },
+                "required": [
+                  "winning_score"
+                ]
+              }
+            },
+            {
+              "properties": {
+                "max_deals": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "max_deals"
+              ]
+            }
+          ]
         }
       },
       "required": [

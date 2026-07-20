@@ -293,6 +293,43 @@ describe("EGN Validator", () => {
     const m6 = cloneMock();
     m6.metadata.ruleset.loner_lead = "LEFT_OF_PARTNER"; // not in enum
     expect(validateEgn(m6).isValid).toBe(false);
+
+    // valid max_deals
+    const m7 = cloneMock();
+    m7.metadata.ruleset.max_deals = 8;
+    expect(validateEgn(m7).isValid).toBe(true);
+
+    // valid combination: winning_score = 0 and max_deals = 8
+    const m8 = cloneMock();
+    m8.metadata.ruleset.winning_score = 0;
+    m8.metadata.ruleset.max_deals = 8;
+    expect(validateEgn(m8).isValid).toBe(true);
+
+    // invalid combination: both winning_score and max_deals are 0
+    const m9 = cloneMock();
+    m9.metadata.ruleset.winning_score = 0;
+    m9.metadata.ruleset.max_deals = 0;
+    expect(validateEgn(m9).isValid).toBe(false);
+
+    // invalid combination: winning_score = 0 and max_deals omitted (defaults to 0)
+    const m10 = cloneMock();
+    m10.metadata.ruleset.winning_score = 0;
+    expect(validateEgn(m10).isValid).toBe(false);
+
+    // invalid max_deals (negative)
+    const m11 = cloneMock();
+    m11.metadata.ruleset.max_deals = -1;
+    expect(validateEgn(m11).isValid).toBe(false);
+
+    // invalid max_deals (type string)
+    const m12 = cloneMock();
+    m12.metadata.ruleset.max_deals = "eight" as any;
+    expect(validateEgn(m12).isValid).toBe(false);
+
+    // invalid winning_score (negative)
+    const m13 = cloneMock();
+    m13.metadata.ruleset.winning_score = -1;
+    expect(validateEgn(m13).isValid).toBe(false);
   });
 
   it("should validate hardened schema constraints (additionalProperties, maxItems, maxLength)", () => {

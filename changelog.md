@@ -4,6 +4,16 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-07-19
+
+### Added
+- **Fixed Hand Limit Support (`max_deals`):** Introduced a new optional ruleset property `max_deals` (integer, default `0`, minimum `0`) to specify a limit on the number of hands/deals played in a game (ideal for progressive Euchre).
+- **At Least One Completion Condition Guard:** Added schema validation enforcing that a ruleset cannot have both `winning_score` and `max_deals` set to `0` (or `max_deals` omitted when `winning_score` is `0`). A game must always have at least one valid completion condition.
+- **Protobuf & Types updates:** Expanded the `Ruleset` protobuf schema (`optional int32 max_deals = 17`), updated TypeScript definitions, and updated the version validation pattern to support the new `1.4` schema family.
+
+### Changed
+- **Winning Score limits:** Updated `winning_score` schema constraints to support a minimum of `0` (where `0` disables the winning score limit).
+
 ## [1.3.1] - 2026-07-18
 
 ### Changed

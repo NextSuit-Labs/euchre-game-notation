@@ -88,6 +88,7 @@ function normalizeEgnObj(obj: any, isCondensed = false, isRuleset = false): any 
       res.loner_march_score = res.loner_march_score ?? 4;
       res.loner_euchred_score = res.loner_euchred_score ?? 2;
       res.loner_lead = res.loner_lead ?? "LEFT_OF_DEALER";
+      res.max_deals = res.max_deals ?? 0;
 
       for (const k of [
         "canadian", "farmers", "partners_best", "go_under", "joker",

@@ -17,14 +17,14 @@
 /**
  * Canonical schema version emitted in EGN file metadata.
  *
- * The validator supports this family plus 1.3.x patch aliases for backward compatibility.
+ * The validator supports this family plus 1.4.x patch aliases for backward compatibility.
  */
-export const SCHEMA_VERSION = "1.3";
+export const SCHEMA_VERSION = "1.4";
 
 /**
  * Current npm package version for CLI/library releases.
  */
-export const PACKAGE_VERSION = "1.3.1";
+export const PACKAGE_VERSION = "1.4.0";
 
 /**
  * Backward-compatible alias used across existing code/tests.
@@ -34,7 +34,7 @@ export const VERSION = SCHEMA_VERSION;
 /**
  * Supported schema version family matcher.
  */
-export const SUPPORTED_SCHEMA_VERSION_RE = /^1\.[23](?:\.\d+)?$/;
+export const SUPPORTED_SCHEMA_VERSION_RE = /^1\.[234](?:\.\d+)?$/;
 
 export function isSupportedSchemaVersion(version: string): boolean {
 	return SUPPORTED_SCHEMA_VERSION_RE.test(version);

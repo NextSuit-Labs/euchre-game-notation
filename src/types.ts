@@ -16,17 +16,21 @@
 
 /**
  * Core TypeScript definitions for Euchre Game Notation (EGN).
- * Maps directly to the EGN schema v1.3 family.
+ * Maps directly to the EGN schema v1.4 family.
  */
 
 export type Card = string; // Pattern: ^([78N9TJQKAX][SsHhCcDdxtngh]|[LRB])$
 
 export type Call = "Pass" | "Order" | "s" | "h" | "d" | "c" | "n" | "x";
 
-export interface Ruleset {
+export interface CompletionConditions {
+  winning_score?: number;
+  max_deals?: number;
+}
+
+export interface Ruleset extends CompletionConditions {
   std?: boolean;
   min_rank?: number;
-  winning_score?: number;
   canadian?: boolean;
   loner_lead?: "LEFT_OF_DEALER" | "LEFT_OF_LONER";
   loner_march_score?: number;

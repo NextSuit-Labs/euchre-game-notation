@@ -7,6 +7,7 @@ dist/
 # internal files
 validation_report*
 verify-example-binaries*
+plans/
 
 # Logs
 *.log

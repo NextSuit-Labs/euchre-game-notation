@@ -455,7 +455,7 @@ describe("EGN Converter CLI", () => {
         expect(originalValidation.errors[0].message).toMatch(/must match pattern|must NOT have additional properties|must have required property/);
       }
 
-      // 2. Run upgrade tool to convert to v1.3 format
+      // 2. Run upgrade tool to convert to v1.4 format
       execSync(`node "${upgradeCliPath}" "${testEgnPath}" "${upgradedPath}"`).toString();
       expect(fs.existsSync(upgradedPath)).toBe(true);
 

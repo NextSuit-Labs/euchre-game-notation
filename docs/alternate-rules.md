@@ -4,7 +4,7 @@ Euchre is a game famous for its local "house rules" and regional variations. To 
 
 By defining these toggles, parsing engines can accurately reconstruct the game state and correctly validate behaviors that would otherwise be illegal in standard play.
 
-Here are the alternate rules supported in EGN v1.3:
+Here are the alternate rules supported in EGN v1.4:
 
 ## `std` (boolean)
 **Default:** `true`
@@ -14,9 +14,22 @@ Standardizes the baseline rules of the game. When `true`, it commonly enforces *
 **Default:** `9`
 Defines the lowest card rank in the deck. While standard Euchre uses a 24-card deck (9s and up), some variations use a 32-card deck extending down to 7s (`min_rank: 7`).
 
-## `winning_score` (integer)
-**Default:** `10`
-Indicates the target score to win the game. If a team ends a hand with more than this many points, they win the game.
+## 🏁 Completion Conditions
+
+A ruleset must define how a game is completed. This is controlled by two interrelated parameters, at least one of which must be active (non-zero):
+
+### `winning_score` (integer)
+* **Default:** `10`
+* **Description:** Indicates the target score to win the game. If a team ends a hand with this many points or more, they win the game. A value of `0` disables the winning score limit.
+
+### `max_deals` (integer)
+* **Default:** `0` (or omitted)
+* **Description:** Defines a limit on the number of deals (hands) to play in a game. A value of `0` (or omitting the field) disables the maximum deal limit.
+
+### Interaction of limits
+* **Whichever Comes First**: If both `max_deals` and `winning_score` are positive non-zero integers, the game ends when either limit is reached.
+* **Fixed Number of Deals Only**: To play strictly a fixed number of deals (e.g., progressive Euchre), set `max_deals` to your limit (e.g., `8`) and set `winning_score` to `0`.
+* **At Least One Limit Required**: A ruleset cannot set both `winning_score` and `max_deals` to `0` (or omit `max_deals` when `winning_score` is `0`). A game must have at least one defined completion condition.
 
 ## `canadian` (boolean)
 **Default:** `false`

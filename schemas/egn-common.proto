@@ -25,6 +25,7 @@ message Ruleset {
   optional int32 loner_euchred_score = 14;
   optional bool defend_alone = 15;
   optional int32 num_players = 16;
+  optional int32 max_deals = 17;
 }
 
 message Metadata {

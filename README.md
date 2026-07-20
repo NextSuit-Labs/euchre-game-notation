@@ -6,11 +6,19 @@ Inspired by Chess PGN (Portable Game Notation), EGN provides a highly optimized,
 
 ---
 
+## 🃏 What is Euchre?
+
+**Euchre** is a fast-paced, trick-taking card game traditionally played by four players in two partnerships using a standard 24-card deck (consisting of 9, 10, Jack, Queen, King, and Ace of each suit). The game revolves around calling a "trump" suit, in which the Jacks (known as Bowers) become the highest-ranking cards. Players bid to establish the trump suit and attempt to win at least three of the five tricks in each hand, earning points for their team.
+
+For a comprehensive guide on gameplay, scoring, and card rankings, see the [Standard Euchre Rules](docs/base-rules.md).
+
+---
+
 ## Latest Release
 
-- **Current npm package:** `1.3.1`
-- **Schema family:** `1.3` (no schema-format change in this patch release)
-- **Highlights:** Apache 2.0 source-header standardization and contributor header policy documentation.
+- **Current npm package:** `1.4.0`
+- **Schema family:** `1.4`
+- **Highlights:** Added `max_deals` ruleset support to play fixed-hand games (e.g., progressive Euchre).
 
 See [changelog.md](changelog.md) for full release details.
 
@@ -28,14 +36,14 @@ An `.egn` file purposefully strips out easily calculated metrics—such as trick
 
 ---
 
-## 🛠️ File Structure Example (EGN v1.3)
+## 🛠️ File Structure Example (EGN v1.4)
 
 Under the hood, an `.egn` file utilizes human-readable, web-native JSON structural primitives:
 
 ```json
 {
   "fileType": "Euchre Game Notation",
-  "version": "1.3",
+  "version": "1.4",
   "metadata": {
     "gameId": "egn_m_20260528_01",
     "title": "WEC Finals",
@@ -244,15 +252,14 @@ egn-convert game.egnb game.json
 This allows seamless round-trip conversion without requiring the user to specify the format. Legacy binary files without a magic byte will default to condensed format.
 
 ### ⚡ Condensed Mode (Default)
-In condensed mode, the `deals` list is replaced by an array of Base64URL-encoded bitpacked strings. The format is highly optimized and supports multiple versions:
 
-* **Version 1 (`0001`)**: The standard format featuring a 4-bit version header, dealer index, up-card, bidding calls, played cards, and encodes **commentary annotations** and **alternative branching lines** directly into the bitstream.
-* **Version 2 (`0010`)**: Extended format supporting variant rulesets with variable player counts (1-8 players), alternate deck sizes (24, 28, 32, or 36 cards), and the `aloneDefender` feature for defending-alone scenarios.
-* **Version 3 (`0011`)**: Premium format extending V2 with optional preservation of game state details like the `discard` (card discarded when picking up the up-card) and `playerCards` (initial hands dealt to each player).
-* **Version 0 (Legacy)**: Fully compatible with legacy Version 0 bitpacked streams (which lack the version header, annotations, and alternative lines). The parser automatically falls back to Version 0 decoding if none of the modern headers are detected.
-* **Automatic Version Selection**: The converter automatically selects the optimal version (V1, V2, or V3) based on the features present in your EGN data, ensuring compact encoding while preserving all necessary information.
+In condensed mode, the `deals` list is replaced by an array of Base64URL-encoded bitpacked strings. The format is highly optimized:
 
-For detailed bit-level specifications, version detection logic, and encoding examples, see [docs/binary-format.md](docs/binary-format.md).
+* **Bitpacked Serialization**: The default format utilizes a bitstream header, dealer index, up-card, bidding calls, and played cards, and can preserve game state details like the `discard` card and `playerCards` (initial hands).
+* **Support for Variant Rulesets**: Supports variable player counts (1-8 players), alternate deck sizes (24, 28, 32, or 36 cards), and the `aloneDefender` feature.
+* **Backward Compatibility**: Fully compatible with older legacy and standard bitpacked stream versions. The parser automatically detects and decodes these formats.
+
+For detailed bit-level specifications of all format versions, version detection logic, and encoding examples, see [docs/binary-format.md](docs/binary-format.md).
 
 ### 🔍 Expanded Mode
 In expanded mode, the entire EGN JSON structure (including metadata, annotations, and alternative lines) is serialized directly into binary using Protobuf for maximum compatibility and ease of integration with other systems.
@@ -309,9 +316,7 @@ Or run tools directly using `npx`:
 npx egn-convert --help
 ```
 
-### Available Tools
-
-#### `egn-convert` — Format Conversion
+### `egn-convert` — Format Conversion
 Converts between human-readable JSON (`.egn`) files and optimized binary representations.
 
 ```bash
@@ -325,7 +330,7 @@ egn-convert game.egn game.expanded.egnb --expanded
 egn-convert game.egnb game.egn
 ```
 
-#### `egn-bitpack-deal` — Deal Bitpacking
+### `egn-bitpack-deal` — Deal Bitpacking
 Compresses specific deals from an EGN file into Base64URL-encoded bitstream strings for analysis or storage.
 
 ```bash
@@ -336,7 +341,7 @@ egn-bitpack-deal game.egn
 egn-bitpack-deal game.egn --deals 0,2,5
 ```
 
-#### `egn-baseline` — Baseline Generation & Hashing
+### `egn-baseline` — Baseline Generation & Hashing
 Extracts "baseline" EGN files by removing all analysis-only properties (`callAnnotations`, `playAnnotations`, `alternativeLines`) and generates deterministic SHA256 hashes. Useful for deduplication, validation, and comparing game records without analysis metadata.
 
 ```bash
@@ -349,8 +354,8 @@ egn-baseline game.egn --hash
 
 For details on baseline EGNs and their use cases, see [docs/determinism-of-egn.md](docs/determinism-of-egn.md).
 
-#### `egn-upgrade` — Version Migration
-Upgrades older EGN files (v1.0.0, v1.1.0) to the v1.3 format by automatically renaming snake_case properties to camelCase, removing redundant fields, and updating the version string.
+### `egn-upgrade` — Version Migration
+Upgrades older EGN files to the current v1.4 format by automatically renaming snake_case properties to camelCase, removing redundant fields, and updating the version string.
 
 ```bash
 # Upgrade in-place
