@@ -22,14 +22,15 @@ A ruleset must define how a game is completed. This is controlled by two interre
 * **Default:** `10`
 * **Description:** Indicates the target score to win the game. If a team ends a hand with this many points or more, they win the game. A value of `0` disables the winning score limit.
 
-### `max_deals` (integer)
+### `num_deals` (integer)
 * **Default:** `0` (or omitted)
-* **Description:** Defines a limit on the number of deals (hands) to play in a game. A value of `0` (or omitting the field) disables the maximum deal limit.
+* **Description:** Defines a fixed number of deals (hands) to play in a game. A value of `0` (or omitting the field) disables the deal limit.
 
 ### Interaction of limits
-* **Whichever Comes First**: If both `max_deals` and `winning_score` are positive non-zero integers, the game ends when either limit is reached.
-* **Fixed Number of Deals Only**: To play strictly a fixed number of deals (e.g., progressive Euchre), set `max_deals` to your limit (e.g., `8`) and set `winning_score` to `0`.
-* **At Least One Limit Required**: A ruleset cannot set both `winning_score` and `max_deals` to `0` (or omit `max_deals` when `winning_score` is `0`). A game must have at least one defined completion condition.
+* **Mutually Exclusive Limits**: A ruleset enforces either a target score (`winning_score`) **OR** a fixed deal count (`num_deals`), but not both simultaneously.
+* **Target Score Game**: Standard Euchre uses `winning_score` (default `10`).
+* **Fixed Deal Game**: For fixed-hand games (e.g., progressive Euchre), omit `winning_score` (or set `winning_score` to `0`) and set `num_deals` to your deal limit (e.g., `8`).
+* **At Least One Limit Required**: A ruleset cannot set both `winning_score` and `num_deals` to `0` (or omit both). A game must have a single defined completion condition.
 
 ## `canadian` (boolean)
 **Default:** `false`

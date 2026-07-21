@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package egn;
+
+import "egn-common.proto";
+
+message MatchFormat {
+  enum MatchType {
+    BEST_OF_N = 0;
+    PROGRESSIVE = 1;
+    ROUND_ROBIN = 2;
+    CUSTOM = 3;
+    FIXED_GAMES = 4;
+    TARGET_SCORE = 5;
+    ELIMINATION = 6;
+    SWISS = 7;
+    TIMED = 8;
+    SINGLE_GAME = 9;
+  }
+  MatchType type = 1;
+  optional int32 target = 2;
+}
+
+message MatchResult {
+  enum Status {
+    COMPLETED = 0;
+    IN_PROGRESS = 1;
+    FORFEIT = 2;
+    DRAW = 3;
+  }
+  Status status = 1;
+  repeated string winner = 2; // Winning player ID(s) or team key
+  map<string, double> scores = 3; // Player ID / team key -> score metric
+}
+
+message MatchMetadata {
+  optional string match_id = 1;
+  optional string title = 2;
+  optional string description = 3;
+  repeated MatchPlayer players = 4;
+  optional string date = 5;
+  MatchFormat match_format = 6;
+  MatchResult result = 7;
+}
+
+message GameEntry {
+  int32 game_index = 1;
+  repeated string players = 2; // Exactly 4 player ID references mapping to seats (0: North, 1: East, 2: South, 3: West)
+  oneof game_data {
+    string egn_json = 3;          // Stringified JSON EGN
+    bytes egn_protobuf_bytes = 4; // Serialized Protobuf EGN
+  }
+}
+
+message MatchFile {
+  string file_type = 1; // "Euchre Match Notation"
+  string version = 2;
+  MatchMetadata metadata = 3;
+  repeated GameEntry games = 4;
+}

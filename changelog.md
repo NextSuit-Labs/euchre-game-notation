@@ -4,15 +4,16 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.0] - 2026-07-19
+## [1.4.0] - 2026-07-21
 
 ### Added
-- **Fixed Hand Limit Support (`max_deals`):** Introduced a new optional ruleset property `max_deals` (integer, default `0`, minimum `0`) to specify a limit on the number of hands/deals played in a game (ideal for progressive Euchre).
-- **At Least One Completion Condition Guard:** Added schema validation enforcing that a ruleset cannot have both `winning_score` and `max_deals` set to `0` (or `max_deals` omitted when `winning_score` is `0`). A game must always have at least one valid completion condition.
-- **Protobuf & Types updates:** Expanded the `Ruleset` protobuf schema (`optional int32 max_deals = 17`), updated TypeScript definitions, and updated the version validation pattern to support the new `1.4` schema family.
-
-### Changed
-- **Winning Score limits:** Updated `winning_score` schema constraints to support a minimum of `0` (where `0` disables the winning score limit).
+- **Euchre Match Notation (EMN) Specification & Support**: Introduced the `.emn` meta-specification and schema (`schemas/emn/emn-schema-v1.json`, `schemas/emn/emn.proto`) to represent multi-game series, round-robins, and progressive tournaments.
+- **Match Combine CLI (`emn-match-combine`)**: Added a CLI tool and library API (`combineEgnToEmn`) to combine multiple EGN games into a single `.emn` match with automatic player deduplication, master ID assignment (`p-01`, `p-02`), seat mapping, and format-aware score calculation.
+- **Optional `finalScore` Metadata**: Added optional `metadata.finalScore` (`[number, number]`) to EGN schema, Protobuf schemas, and TypeScript typings to record game completion scores.
+- **Fixed Hand Limit Support (`num_deals`):** Introduced optional ruleset property `num_deals` (integer, minimum `1`) to specify a limit on the number of hands/deals played in a game (ideal for progressive Euchre). Games set to num_deals do not have a winner, but rather count the number of points scored by each player individually across multiple rounds.
+- **Mutually Exclusive Completion Conditions:** Added schema validation enforcing that a ruleset enforces either `winning_score` OR `num_deals`, but not both simultaneously (`not: { required: ["winning_score", "num_deals"] }`).
+- **Protobuf & Types updates:** Expanded Protobuf schemas (`optional int32 num_deals = 17`, `repeated int32 final_score = 8`, `message MatchPlayer`), updated TypeScript definitions, and updated EMN serialization with magic byte `0x02`.
+- **Baseline Replayer:** Added support for loading EMN files and hydrating the player names for each game. Added description of this in `replayer-logic.md`
 
 ## [1.3.1] - 2026-07-18
 

@@ -301,3 +301,40 @@ Advanced EGN ruleset configurations modify the core card rankings and play mecha
 * **Farmer's Hands (`farmers`) & Go Under (`go_under`)**: Triggers starting hand card-exchanges (typically between a player and the kitty).
 * **Partner's Best (`partners_best`)**: Triggers a card exchange between partners when a loner is called.
 * **Defend Alone (`defend_alone`)**: Allows a defender to sit their partner out to defend alone against a loner. Replayers must recalculate trick seating clockwise, skipping both sitting-out seats.
+
+---
+
+## 🏆 Replaying Multi-Game Matches (EMN Files) & Player Name Mapping
+
+Euchre Match Notation (`.emn`) files bundle multiple EGN games into a single unified match series, round-robin, or progressive tournament.
+
+### 1. Master Player Name Resolution
+In an `.emn` file, master player identities are defined centrally in `metadata.players` with master IDs (`p-01`, `p-02`, etc.):
+```json
+"players": [
+  { "id": "p-01", "name": "Dad of Carl" },
+  { "id": "p-02", "name": "Jen-Eye" },
+  { "id": "p-03", "name": "Chach" },
+  { "id": "p-04", "name": "WWMM" }
+]
+```
+
+Each game in the `games` array contains a 4-element `players` array mapping seats 0, 1, 2, and 3 to master player IDs for that specific game:
+```json
+"players": ["p-01", "p-02", "p-03", "p-04"]
+```
+
+**Replayer Seat Mapping Logic**:
+Before rendering a game or step, the replayer constructs a lookup dictionary mapping master IDs to player names:
+$$\text{MasterPlayerMap}[\text{id}] \rightarrow \text{name}$$
+For each game, seat names for North (Seat 0), East (Seat 1), South (Seat 2), and West (Seat 3) are resolved dynamically:
+$$\text{SeatPlayerNames}[i] = \text{MasterPlayerMap}[\text{game.players}[i]]$$
+
+### 2. Multi-Game Deal Flattening & Multi-Tier Navigation
+To provide smooth, unbroken step-by-step playback across an entire multi-game match:
+1. **Deal Flattening**: The replayer iterates through all games $g \in \{0 \dots N-1\}$ in `match.games`, building a continuous sequence of all deals in the match.
+2. **Deal-Specific Context**: Each deal in the sequence retains its game title (e.g. `"MotE W5 G1"`), initial hand score, ruleset, and resolved seat player names.
+3. **Multi-Tier Navigation**:
+   - **Step Controls** (`Prev`, `Next`): Move forward/backward through individual bidding decisions and card drops.
+   - **Hand Controls** (`<= Hand`, `Hand =>`): Jump to the start of the previous or next hand across game boundaries.
+   - **Game Controls** (`<= Game`, `Game =>`): Jump directly to the first hand of the previous or next game in the series.

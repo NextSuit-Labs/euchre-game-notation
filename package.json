@@ -8,7 +8,8 @@
     "egn-convert": "./dist/src/cli.js",
     "egn-bitpack-deal": "./dist/src/cli-bitpack.js",
     "egn-baseline": "./dist/src/cli-baseline-egn.js",
-    "egn-upgrade": "./dist/src/cli-upgrade.js"
+    "egn-upgrade": "./dist/src/cli-upgrade.js",
+    "emn-match-combine": "./dist/src/emn/cli-combine.js"
   },
   "files": [
     "dist",

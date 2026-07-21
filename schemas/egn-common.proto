@@ -25,7 +25,7 @@ message Ruleset {
   optional int32 loner_euchred_score = 14;
   optional bool defend_alone = 15;
   optional int32 num_players = 16;
-  optional int32 max_deals = 17;
+  optional int32 num_deals = 17;
 }
 
 message Metadata {
@@ -34,6 +34,7 @@ message Metadata {
   optional string description = 3;
   repeated Player players = 4;
   repeated int32 initial_score = 5;
+  repeated int32 final_score = 8;
   optional string date = 6; // ISO 8601 formatted date-time string
   Ruleset ruleset = 7;
 }
@@ -48,6 +49,12 @@ message Player {
 message PlayerWithId {
   string name = 1;
   repeated Id ids = 2;
+}
+
+message MatchPlayer {
+  string id = 1;
+  string name = 2;
+  repeated Id player_ids = 3;
 }
 
 message Id {

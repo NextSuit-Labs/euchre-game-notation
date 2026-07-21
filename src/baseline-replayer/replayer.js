@@ -21,7 +21,8 @@ const SAMPLE_FILES = {
   "0": "vwec-hand-1.egn",
   "1": "vwec-hand-2.egn",
   "2": "vwec-hand-8.egn",
-  "3": "me-and-bears.egn"
+  "3": "me-and-bears.egn",
+  "4": "MotE-W5.emn"
 };
 
 async function loadSampleHand(key) {
@@ -40,6 +41,9 @@ async function loadSampleHand(key) {
     case "me-and-bears.egn":
       initializeEgn(meAndBears);
       break;
+    case "MotE-W5.emn":
+      initializeEgn(moteW5Match);
+      break;
   }
 }
 
@@ -49,6 +53,10 @@ let currentDealIndex = 0;
 let steps = [];
 let currentStepIndex = 0;
 let dealStartingScores = [];
+let isEmnMode = false;
+let gameStartIndices = [];
+let currentGameIndex = 0;
+let games = [];
 const MAX_INPUT_CHARS = 2_000_000;
 
 // Helper to create card DOM element securely
@@ -77,13 +85,19 @@ function createCardElement(cardStr) {
 function renderStep() {
   if (steps.length === 0) return;
   const step = steps[currentStepIndex];
-  const players = egnData.metadata.players || ["Player 0", "Player 1", "Player 2", "Player 3"];
+  const deal = egnData.deals[currentDealIndex];
+  const dealMeta = (isEmnMode && egnData.dealMetadatas) ? egnData.dealMetadatas[currentDealIndex] : egnData.metadata;
+  const players = dealMeta.players || ["Player 0", "Player 1", "Player 2", "Player 3"];
 
-  document.getElementById("meta-title").textContent = egnData.metadata.title || "Untitled";
-  document.getElementById("deal-num").textContent = `Deal #${currentDealIndex + 1}`;
+  document.getElementById("meta-title").textContent = dealMeta.title || egnData.metadata.title || "Untitled";
+  document.getElementById("deal-num").textContent = `Hand ${currentDealIndex + 1} / ${egnData.deals.length}`;
   document.getElementById("phase-type").textContent = step.type;
 
-  document.getElementById("step-info").textContent = `Step: ${currentStepIndex} / ${steps.length - 1}`;
+  document.getElementById("step-info").textContent = `Step: ${currentStepIndex + 1} / ${steps.length}`;
+  const gameInfoEl = document.getElementById("game-info");
+  if (gameInfoEl) {
+    gameInfoEl.textContent = `Game: ${currentGameIndex + 1} / ${games.length || 1}`;
+  }
   document.getElementById("action-val").textContent = step.description;
 
   document.getElementById("annotation-box").textContent = step.annotation || "No annotation at this step.";
@@ -91,16 +105,16 @@ function renderStep() {
   const upcardValEl = document.getElementById("upcard-val");
   upcardValEl.textContent = "Up: ";
 
-  const deal = egnData.deals[currentDealIndex];
   if (step.type === "PLAY") {
     document.getElementById("center-info").style.visibility = "hidden";
     document.getElementById("dealer-val").textContent = "-";
     upcardValEl.appendChild(document.createTextNode("-"));
   } else {
     document.getElementById("center-info").style.visibility = "visible";
-    document.getElementById("dealer-val").textContent = deal.initialState.dealer ?? "-";
+    const dealer = deal ? deal.initialState.dealer ?? "-" : "-";
+    document.getElementById("dealer-val").textContent = dealer;
 
-    if (deal.initialState.upCard) {
+    if (deal && deal.initialState.upCard) {
       if (step.type === "INITIAL" || (step.type === "BID" && step.callIndex < 4)) {
         upcardValEl.appendChild(createCardElement(deal.initialState.upCard));
       } else {
@@ -113,10 +127,10 @@ function renderStep() {
 
   for (let i = 0; i < 4; i++) {
     const nameEl = document.getElementById(`name-${i}`);
-    const dealer = deal.initialState.dealer ?? 0;
+    const dealer = deal ? (deal.initialState.dealer ?? 0) : 0;
     nameEl.textContent = `${players[i]}${dealer === i ? " (D)" : ""}`;
 
-    const makerSeat = determineMaker(deal);
+    const makerSeat = deal ? determineMaker(deal) : null;
     if (step.type === 'PLAY' && makerSeat === i) {
       nameEl.classList.add("maker-highlight");
     } else {
@@ -165,7 +179,7 @@ function renderStep() {
     }
   }
 
-  if (step.type === "BID" && step.bidCall) {
+  if (step.type === "BID" && step.bidCall && deal) {
     const bidderSeat = step.bidCall.seat;
     const bidValue = step.bidCall.call;
     const targetSeatEl = document.getElementById(`cards-${bidderSeat}`);
@@ -186,17 +200,16 @@ function renderStep() {
   let scoreText = "-";
   let gameScoreText = "-";
 
-  const startScore = dealStartingScores[currentDealIndex] || [0, 0];
-  gameScoreText = `Team 1: ${startScore[0]} | Team 2: ${startScore[1]}`;
+  const startingScore = dealStartingScores[currentDealIndex] || (dealMeta.initialScore || [0, 0]);
 
-  if (step.type === "PLAY") {
-    const callTricks = step.callingTeamTricks;
-    const defTricks = step.defendingTeamTricks;
-    tricksText = `Call Team: ${callTricks} | Def Team: ${defTricks}`;
+  if (step.callingTeam !== null) {
+    tricksText = `Team ${step.callingTeam + 1}: ${step.callingTeamTricks} | Team ${step.callingTeam === 0 ? 2 : 1}: ${step.defendingTeamTricks}`;
 
-    if (currentStepIndex === steps.length - 1) {
-      scoreText = `+${step.scoreChange[0]} (Team 1) / +${step.scoreChange[1]} (Team 2)`;
-      const endScore = [startScore[0] + step.scoreChange[0], startScore[1] + step.scoreChange[1]];
+    if (step.scoreChange) {
+      const [t0Change, t1Change] = step.scoreChange;
+      scoreText = `Team 1: +${t0Change} | Team 2: +${t1Change}`;
+
+      const endScore = [startingScore[0] + t0Change, startingScore[1] + t1Change];
       gameScoreText = `Team 1: ${endScore[0]} | Team 2: ${endScore[1]} (End of Hand)`;
     } else {
       scoreText = "In Progress";
@@ -214,7 +227,7 @@ function renderStep() {
 function formatCall(call, isAlone) {
   const isAloneSuffix = isAlone ? " (Alone)" : "";
   switch (call) {
-    case "Order": return call + isAloneSuffix
+    case "Order": return call + isAloneSuffix;
     case "s": return "Spades" + isAloneSuffix;
     case "h": return "Hearts" + isAloneSuffix;
     case "c": return "Clubs" + isAloneSuffix;
@@ -223,9 +236,106 @@ function formatCall(call, isAlone) {
   return call;
 }
 
+function loadDeal(index) {
+  if (!egnData || !egnData.deals || index < 0 || index >= egnData.deals.length) return;
+  currentDealIndex = index;
+  currentStepIndex = 0;
+
+  if (isEmnMode && egnData.dealMetadatas && egnData.dealMetadatas[currentDealIndex]) {
+    currentGameIndex = egnData.dealMetadatas[currentDealIndex].gameIndex || 0;
+  } else {
+    currentGameIndex = 0;
+  }
+
+  const deal = egnData.deals[currentDealIndex];
+  const dealMeta = (isEmnMode && egnData.dealMetadatas) ? egnData.dealMetadatas[currentDealIndex] : egnData.metadata;
+
+  steps = compileDealSteps(deal, dealMeta);
+  renderStep();
+}
+
+function initializeEmn(matchData) {
+  isEmnMode = true;
+  games = matchData.games || [];
+  const gameSection = document.getElementById("game-controls-section");
+  if (gameSection) gameSection.style.display = "block";
+
+  var masterPlayerMap = {};
+  (matchData.metadata.players || []).forEach(p => {
+    masterPlayerMap[p.id] = p.name;
+  });
+
+  const allDeals = [];
+  const allDealMetadatas = [];
+  dealStartingScores = [];
+  gameStartIndices = [];
+
+  (matchData.games || []).forEach((game, gIdx) => {
+    gameStartIndices.push(allDeals.length);
+    var gameTitle = (game.gameData.metadata && game.gameData.metadata.title) || ("Game " + (gIdx + 1));
+    var seatPlayerNames = (game.players || []).map(pid => masterPlayerMap[pid] || pid);
+    var subDeals = (game.gameData && game.gameData.deals) || [];
+    var initialScore = (game.gameData.metadata && game.gameData.metadata.initialScore) || [0, 0];
+    var ruleset = (game.gameData.metadata && game.gameData.metadata.ruleset) || { std: true };
+
+    var runningScore = [...initialScore];
+
+    subDeals.forEach((deal, dIdx) => {
+      dealStartingScores.push([...runningScore]);
+
+      const dealMeta = {
+        title: (matchData.metadata.title || "Match") + " - " + gameTitle + " (Hand " + (dIdx + 1) + "/" + subDeals.length + ")",
+        players: seatPlayerNames,
+        initialScore: initialScore,
+        ruleset: ruleset,
+        gameIndex: gIdx
+      };
+
+      allDeals.push(deal);
+      allDealMetadatas.push(dealMeta);
+
+      const dSteps = compileDealSteps(deal, dealMeta);
+      if (dSteps.length > 0) {
+        const finalStep = dSteps[dSteps.length - 1];
+        if (finalStep.scoreChange) {
+          runningScore[0] += finalStep.scoreChange[0];
+          runningScore[1] += finalStep.scoreChange[1];
+        }
+      }
+    });
+  });
+
+  if (allDeals.length === 0) {
+    alert("No deals found in this EMN match file.");
+    return;
+  }
+
+  egnData = {
+    fileType: "Euchre Match Notation",
+    metadata: {
+      title: matchData.metadata.title || "Match",
+      players: matchData.metadata.players
+    },
+    deals: allDeals,
+    dealMetadatas: allDealMetadatas
+  };
+
+  currentDealIndex = 0;
+  currentStepIndex = 0;
+  currentGameIndex = 0;
+  loadDeal(0);
+}
+
 // 4. Initialize EGN File
 function initializeEgn(data = null) {
   try {
+    isEmnMode = false;
+    currentGameIndex = 0;
+    games = data ? [data] : [];
+    gameStartIndices = [];
+    const gameSection = document.getElementById("game-controls-section");
+    if (gameSection) gameSection.style.display = "none";
+
     if (data) {
       egnData = data;
       document.getElementById("egn-input").value = JSON.stringify(egnData, null, 2);
@@ -238,8 +348,13 @@ function initializeEgn(data = null) {
       egnData = JSON.parse(rawInput);
     }
 
+    if (egnData.fileType === "Euchre Match Notation") {
+      initializeEmn(egnData);
+      return;
+    }
+
     if (egnData.fileType !== "Euchre Game Notation") {
-      alert("Invalid fileType! Must be 'Euchre Game Notation'.");
+      alert("Invalid fileType! Must be 'Euchre Game Notation' or 'Euchre Match Notation'.");
       return;
     }
 
@@ -251,8 +366,10 @@ function initializeEgn(data = null) {
         const dSteps = compileDealSteps(deal, egnData.metadata);
         if (dSteps.length > 0) {
           const finalStep = dSteps[dSteps.length - 1];
-          runningScore[0] += finalStep.scoreChange[0];
-          runningScore[1] += finalStep.scoreChange[1];
+          if (finalStep.scoreChange) {
+            runningScore[0] += finalStep.scoreChange[0];
+            runningScore[1] += finalStep.scoreChange[1];
+          }
         }
       });
     }
@@ -284,11 +401,8 @@ document.getElementById("next-btn").addEventListener("click", () => {
     currentStepIndex++;
     renderStep();
   } else {
-    if (currentDealIndex < egnData.deals.length - 1) {
-      currentDealIndex++;
-      currentStepIndex = 0;
-      steps = compileDealSteps(egnData.deals[currentDealIndex], egnData.metadata);
-      renderStep();
+    if (egnData && egnData.deals && currentDealIndex < egnData.deals.length - 1) {
+      loadDeal(currentDealIndex + 1);
     }
   }
 });
@@ -299,8 +413,7 @@ document.getElementById("prev-btn").addEventListener("click", () => {
     renderStep();
   } else {
     if (currentDealIndex > 0) {
-      currentDealIndex--;
-      steps = compileDealSteps(egnData.deals[currentDealIndex], egnData.metadata);
+      loadDeal(currentDealIndex - 1);
       currentStepIndex = steps.length - 1;
       renderStep();
     }
@@ -308,20 +421,33 @@ document.getElementById("prev-btn").addEventListener("click", () => {
 });
 
 document.getElementById("next-hand-btn").addEventListener("click", () => {
-  if (currentDealIndex < egnData.deals.length - 1) {
-    currentDealIndex++;
-    currentStepIndex = 0;
-    steps = compileDealSteps(egnData.deals[currentDealIndex], egnData.metadata);
-    renderStep();
+  if (egnData && egnData.deals && currentDealIndex < egnData.deals.length - 1) {
+    loadDeal(currentDealIndex + 1);
   }
 });
 
 document.getElementById("prev-hand-btn").addEventListener("click", () => {
   if (currentDealIndex > 0) {
-    currentDealIndex--;
-    currentStepIndex = 0;
-    steps = compileDealSteps(egnData.deals[currentDealIndex], egnData.metadata);
-    renderStep();
+    loadDeal(currentDealIndex - 1);
+  }
+});
+
+document.getElementById("next-game-btn").addEventListener("click", () => {
+  if (!isEmnMode || gameStartIndices.length === 0 || !egnData.dealMetadatas) return;
+  const curGameIdx = egnData.dealMetadatas[currentDealIndex].gameIndex;
+  if (curGameIdx < gameStartIndices.length - 1) {
+    loadDeal(gameStartIndices[curGameIdx + 1]);
+  }
+});
+
+document.getElementById("prev-game-btn").addEventListener("click", () => {
+  if (!isEmnMode || gameStartIndices.length === 0 || !egnData.dealMetadatas) return;
+  const curGameIdx = egnData.dealMetadatas[currentDealIndex].gameIndex;
+  const curGameStart = gameStartIndices[curGameIdx];
+  if (currentDealIndex > curGameStart) {
+    loadDeal(curGameStart);
+  } else if (curGameIdx > 0) {
+    loadDeal(gameStartIndices[curGameIdx - 1]);
   }
 });
 

@@ -110,7 +110,8 @@ function upgradeObject(obj: any): any {
         fast_break: "fast_break", // Keep in ruleset (no change)
         four_trick_tokens: "four_trick_tokens", // Keep in ruleset (no change)
         go_under: "go_under", // Keep in ruleset (no change)
-        max_deals: "max_deals", // Keep in ruleset (no change)
+        max_deals: "num_deals",
+        num_deals: "num_deals",
         partners_best: "partners_best", // Keep in ruleset (no change)
         farmers: "farmers", // Keep in ruleset (no change)
         joker: "joker", // Keep in ruleset (no change)

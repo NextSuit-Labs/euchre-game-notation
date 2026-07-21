@@ -26,6 +26,7 @@ const schemaFiles = [
   ["COMMON_PROTO_SCHEMA", "egn-common.proto"],
   ["CONDENSED_PROTO_SCHEMA", "egn.proto"],
   ["EXPANDED_PROTO_SCHEMA", "egn-expanded.proto"],
+  ["EMN_PROTO_SCHEMA", path.join("emn", "emn.proto")],
 ];
 
 function readSchema(fileName) {

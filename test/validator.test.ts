@@ -294,36 +294,39 @@ describe("EGN Validator", () => {
     m6.metadata.ruleset.loner_lead = "LEFT_OF_PARTNER"; // not in enum
     expect(validateEgn(m6).isValid).toBe(false);
 
-    // valid max_deals
+    // valid num_deals (winning_score omitted)
     const m7 = cloneMock();
-    m7.metadata.ruleset.max_deals = 8;
+    delete m7.metadata.ruleset.winning_score;
+    m7.metadata.ruleset.num_deals = 8;
     expect(validateEgn(m7).isValid).toBe(true);
 
-    // valid combination: winning_score = 0 and max_deals = 8
+    // invalid combination: both winning_score and num_deals present
     const m8 = cloneMock();
-    m8.metadata.ruleset.winning_score = 0;
-    m8.metadata.ruleset.max_deals = 8;
-    expect(validateEgn(m8).isValid).toBe(true);
+    m8.metadata.ruleset.winning_score = 10;
+    m8.metadata.ruleset.num_deals = 8;
+    expect(validateEgn(m8).isValid).toBe(false);
 
-    // invalid combination: both winning_score and max_deals are 0
+    // invalid combination: both winning_score and num_deals are 0
     const m9 = cloneMock();
     m9.metadata.ruleset.winning_score = 0;
-    m9.metadata.ruleset.max_deals = 0;
+    m9.metadata.ruleset.num_deals = 0;
     expect(validateEgn(m9).isValid).toBe(false);
 
-    // invalid combination: winning_score = 0 and max_deals omitted (defaults to 0)
+    // invalid combination: winning_score = 0 and num_deals omitted
     const m10 = cloneMock();
     m10.metadata.ruleset.winning_score = 0;
     expect(validateEgn(m10).isValid).toBe(false);
 
-    // invalid max_deals (negative)
+    // invalid num_deals (negative)
     const m11 = cloneMock();
-    m11.metadata.ruleset.max_deals = -1;
+    delete m11.metadata.ruleset.winning_score;
+    m11.metadata.ruleset.num_deals = -1;
     expect(validateEgn(m11).isValid).toBe(false);
 
-    // invalid max_deals (type string)
+    // invalid num_deals (type string)
     const m12 = cloneMock();
-    m12.metadata.ruleset.max_deals = "eight" as any;
+    delete m12.metadata.ruleset.winning_score;
+    m12.metadata.ruleset.num_deals = "eight" as any;
     expect(validateEgn(m12).isValid).toBe(false);
 
     // invalid winning_score (negative)

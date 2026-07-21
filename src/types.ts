@@ -25,7 +25,7 @@ export type Call = "Pass" | "Order" | "s" | "h" | "d" | "c" | "n" | "x";
 
 export interface CompletionConditions {
   winning_score?: number;
-  max_deals?: number;
+  num_deals?: number;
 }
 
 export interface Ruleset extends CompletionConditions {
@@ -52,6 +52,7 @@ export interface Metadata {
   description?: string;
   players: Player[];
   initialScore: [number, number];
+  finalScore?: [number, number];
   date?: string;
   ruleset?: Ruleset;
 }

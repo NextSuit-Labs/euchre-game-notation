@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Euchre Match Notation (EMN)",
+  "description": "JSON Schema for validating Euchre Match Notation (.emn) files.",
+  "type": "object",
+  "required": ["fileType", "version", "metadata", "games"],
+  "additionalProperties": false,
+  "properties": {
+    "fileType": {
+      "type": "string",
+      "const": "Euchre Match Notation"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^1\\.[0](?:\\.\\d+)?$"
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["players"],
+      "additionalProperties": false,
+      "properties": {
+        "matchId": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "date": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "players": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "allOf": [
+              { "$ref": "../egn-schema-v1.json#/definitions/player" },
+              {
+                "type": "object",
+                "required": ["id"],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "maxLength": 64
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "matchFormat": {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "BEST_OF_N",
+                "PROGRESSIVE",
+                "ROUND_ROBIN",
+                "CUSTOM",
+                "FIXED_GAMES",
+                "TARGET_SCORE",
+                "ELIMINATION",
+                "SWISS",
+                "TIMED",
+                "SINGLE_GAME"
+              ]
+            },
+            "target": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["COMPLETED", "IN_PROGRESS", "FORFEIT", "DRAW"]
+            },
+            "winner": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Winning player ID(s) or team key"
+            },
+            "scores": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number"
+              },
+              "description": "Map of player ID or team key to final score metric"
+            }
+          }
+        }
+      }
+    },
+    "games": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["gameIndex", "players", "gameData"],
+        "additionalProperties": false,
+        "properties": {
+          "gameIndex": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "players": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of 4 player IDs mapped to [Seat 0: North, Seat 1: East, Seat 2: South, Seat 3: West]"
+          },
+          "gameData": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

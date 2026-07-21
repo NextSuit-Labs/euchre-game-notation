@@ -1,0 +1,688 @@
+{
+  "fileType": "Euchre Game Notation",
+  "version": "1.0.0",
+  "metadata": {
+    "title": "MotE W5 G5",
+    "description": "",
+    "date": "2026-07-17T00:04",
+    "players": [
+      "WWMM",
+      "Dad of Carl",
+      "Chach",
+      "Jen-Eye"
+    ],
+    "initialScore": [
+      0,
+      0
+    ],
+    "ruleset": {
+      "std": true,
+      "canadian": false,
+      "loner_lead": "LEFT_OF_DEALER"
+    }
+  },
+  "deals": [
+    {
+      "dealNumber": 0,
+      "initialState": {
+        "dealer": 3,
+        "upCard": "Js",
+        "kitty": [
+          "",
+          "",
+          ""
+        ],
+        "player_cards": [
+          [],
+          [],
+          [],
+          []
+        ]
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Pass",
+            "Pass",
+            "Pass",
+            "h"
+          ],
+          "isAlone": false
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 0,
+          "tricks": [
+            [
+              "Jh",
+              "Kh",
+              "Th",
+              "Qh"
+            ],
+            [
+              "Jd",
+              "Td",
+              "9c",
+              "Ah"
+            ],
+            [
+              "As",
+              "Qs",
+              "Tc",
+              "9d"
+            ],
+            [
+              "Jc",
+              "Ac",
+              "Kd",
+              "Kc"
+            ],
+            [
+              "Qc",
+              "Ad",
+              "Qd",
+              "Ts"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "dealNumber": 1,
+      "initialState": {
+        "dealer": 0,
+        "upCard": "Ad",
+        "kitty": [
+          "",
+          "",
+          ""
+        ],
+        "player_cards": [
+          [],
+          [],
+          [],
+          []
+        ]
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Order"
+          ],
+          "isAlone": false
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 1,
+          "tricks": [
+            [
+              "Jd",
+              "9d",
+              "Jh",
+              "Ad"
+            ],
+            [
+              "As",
+              "Js",
+              "9s",
+              "Ts"
+            ],
+            [
+              "9h",
+              "Kh",
+              "Ah",
+              "Qs"
+            ],
+            [
+              "Jc",
+              "Ac",
+              "Td",
+              "Qc"
+            ],
+            [
+              "Qd",
+              "Kd",
+              "9c",
+              "Ks"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "dealNumber": 2,
+      "initialState": {
+        "dealer": 1,
+        "upCard": "Ks",
+        "kitty": [
+          "",
+          "",
+          ""
+        ],
+        "player_cards": [
+          [],
+          [],
+          [],
+          []
+        ]
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Order"
+          ],
+          "isAlone": false
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 2,
+          "tricks": [
+            [
+              "Ah",
+              "Ts",
+              "9h",
+              "Qh"
+            ],
+            [
+              "Td",
+              "Ad",
+              "As",
+              "Kd"
+            ],
+            [
+              "Qc",
+              "Tc",
+              "9c",
+              "Ac"
+            ],
+            [
+              "Qd",
+              "Ks",
+              "Js",
+              "Qs"
+            ],
+            [
+              "Jh",
+              "Jc",
+              "Jd",
+              "Kc"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "dealNumber": 3,
+      "initialState": {
+        "dealer": 2,
+        "upCard": "Kh",
+        "kitty": [
+          "",
+          "",
+          ""
+        ],
+        "player_cards": [
+          [],
+          [],
+          [],
+          []
+        ]
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Pass",
+            "Pass",
+            "Order"
+          ],
+          "isAlone": true,
+          "discard": "9d"
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 3,
+          "tricks": [
+            [
+              "Qc",
+              "Kc",
+              "Ac"
+            ],
+            [
+              "Jh",
+              "9s",
+              "Ah"
+            ],
+            [
+              "Kh",
+              "Td",
+              "Ks"
+            ],
+            [
+              "Qh",
+              "Ts",
+              "Kd"
+            ],
+            [
+              "9c",
+              "Js",
+              "Qd"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "dealNumber": 4,
+      "initialState": {
+        "dealer": 3,
+        "upCard": "Qs",
+        "kitty": [
+          "",
+          "",
+          ""
+        ],
+        "player_cards": [
+          [],
+          [],
+          [],
+          []
+        ]
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Pass",
+            "Pass",
+            "Pass",
+            "h"
+          ],
+          "isAlone": false
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 0,
+          "tricks": [
+            [
+              "9d",
+              "Jc",
+              "Kd",
+              "Td"
+            ],
+            [
+              "Qd",
+              "9c",
+              "Jd",
+              "Ac"
+            ],
+            [
+              "Qc",
+              "As",
+              "Kc",
+              "Qh"
+            ],
+            [
+              "Jh",
+              "9h",
+              "Ah",
+              "9s"
+            ],
+            [
+              "Js",
+              "Th",
+              "Kh",
+              "Ks"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "dealNumber": 5,
+      "initialState": {
+        "dealer": 0,
+        "upCard": "9d",
+        "kitty": [
+          "",
+          "",
+          ""
+        ],
+        "player_cards": [
+          [],
+          [],
+          [
+            "Td",
+            "Tc",
+            "Th",
+            "Ts",
+            "Jh"
+          ],
+          []
+        ]
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Pass",
+            "Pass",
+            "Pass",
+            "Pass",
+            "Pass",
+            "Pass",
+            "s"
+          ],
+          "isAlone": true
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 1,
+          "tricks": [
+            [
+              "Qc",
+              "9c",
+              "Ac"
+            ],
+            [
+              "Js",
+              "Qs",
+              "Ks"
+            ],
+            [
+              "As",
+              "Jc",
+              "9h"
+            ],
+            [
+              "Qh",
+              "Kc",
+              "Ah"
+            ],
+            [
+              "9s",
+              "Jd",
+              "Ad"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "dealNumber": 6,
+      "initialState": {
+        "dealer": 1,
+        "upCard": "Th",
+        "kitty": [
+          "",
+          "",
+          ""
+        ],
+        "player_cards": [
+          [],
+          [],
+          [],
+          []
+        ]
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Pass",
+            "Pass",
+            "Order"
+          ],
+          "isAlone": true
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 2,
+          "tricks": [
+            [
+              "9s",
+              "Ks",
+              "Js"
+            ],
+            [
+              "Td",
+              "9h",
+              "Qd"
+            ],
+            [
+              "Th",
+              "9c",
+              "Qh"
+            ],
+            [
+              "Ac",
+              "Jd",
+              "Jc"
+            ],
+            [
+              "Jh",
+              "Ts",
+              "Qc"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "dealNumber": 7,
+      "initialState": {
+        "dealer": 2,
+        "upCard": "9c",
+        "kitty": [
+          "",
+          "",
+          ""
+        ],
+        "player_cards": [
+          [],
+          [],
+          [],
+          []
+        ]
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Order"
+          ],
+          "isAlone": false,
+          "discard": "9s"
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 3,
+          "tricks": [
+            [
+              "9h",
+              "Jd",
+              "Kh",
+              "Th"
+            ],
+            [
+              "Jh",
+              "Jc",
+              "Td",
+              "Tc"
+            ],
+            [
+              "9c",
+              "Ac",
+              "Js",
+              "9d"
+            ],
+            [
+              "Kc",
+              "Qd",
+              "Kd",
+              "Ts"
+            ],
+            [
+              "Qc",
+              "Ks",
+              "Ad",
+              "As"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "dealNumber": 8,
+      "initialState": {
+        "dealer": 3,
+        "upCard": "Td",
+        "kitty": [
+          "",
+          "",
+          ""
+        ],
+        "player_cards": [
+          [],
+          [],
+          [],
+          []
+        ]
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Order"
+          ],
+          "isAlone": false
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 0,
+          "tricks": [
+            [
+              "Jh",
+              "Jd",
+              "9h",
+              "Td"
+            ],
+            [
+              "9s",
+              "Tc",
+              "As",
+              "Ts"
+            ],
+            [
+              "Ad",
+              "Qd",
+              "Qs",
+              "Jc"
+            ],
+            [
+              "Kc",
+              "Kd",
+              "Ks",
+              "Ac"
+            ],
+            [
+              "Ah",
+              "Kh",
+              "Qh",
+              "Qc"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "dealNumber": 9,
+      "initialState": {
+        "dealer": 0,
+        "upCard": "Ac",
+        "kitty": [
+          "",
+          "",
+          ""
+        ],
+        "player_cards": [
+          [],
+          [],
+          [],
+          []
+        ]
+      },
+      "phases": [
+        {
+          "phaseNumber": 0,
+          "type": "EUCHRE_BIDDING",
+          "calls": [
+            "Pass",
+            "Order"
+          ],
+          "isAlone": true
+        },
+        {
+          "phaseNumber": 1,
+          "type": "TRICK_PLAY",
+          "initialLead": 1,
+          "tricks": [
+            [
+              "Jh",
+              "Qc",
+              "Ah"
+            ],
+            [
+              "Js",
+              "Tc",
+              "Jd"
+            ],
+            [
+              "Kc",
+              "Kh",
+              "Qd"
+            ],
+            [
+              "Ks",
+              "Qh",
+              "Kd"
+            ],
+            [
+              "Qs",
+              "Th",
+              "Ad"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

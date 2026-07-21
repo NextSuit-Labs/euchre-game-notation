@@ -116,6 +116,7 @@ const protoToJsonKeyMap: Record<string, string> = {
   file_type: "fileType",
   game_id: "gameId",
   initial_score: "initialScore",
+  final_score: "finalScore",
   deal_number: "dealNumber",
   initial_state: "initialState",
   up_card: "upCard",
@@ -130,6 +131,7 @@ const jsonToProtoKeyMap: Record<string, string> = {
   fileType: "file_type",
   gameId: "game_id",
   initialScore: "initial_score",
+  finalScore: "final_score",
   dealNumber: "deal_number",
   initialState: "initial_state",
   upCard: "up_card",
@@ -152,6 +154,11 @@ function mapProtoToEgn(protoObj: any): any {
     for (const key of Object.keys(protoObj)) {
       const val = protoObj[key];
       const mappedKey = protoToJsonKeyMap[key] || key;
+
+      // Skip empty finalScore array if not present in original metadata
+      if (mappedKey === "finalScore" && Array.isArray(val) && val.length === 0) {
+        continue;
+      }
 
       // Convert card lists in playerCards (from array of CardList messages to array of string arrays)
       if (key === "playerCards" && Array.isArray(val)) {

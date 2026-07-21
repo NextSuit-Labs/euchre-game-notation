@@ -267,12 +267,18 @@ textarea {
   margin-top: 15px;
 }
 
-.step-controls {
+.step-controls,
+.game-controls {
   display: flex;
   gap: 10px;
 }
 
-.step-info {
+.game-controls {
+  width: 50%;
+}
+
+.step-info,
+.game-info {
   font-size: 0.9rem;
   color: var(--text-gray);
   font-weight: 500;

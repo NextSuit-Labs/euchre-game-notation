@@ -18,7 +18,7 @@ For a comprehensive guide on gameplay, scoring, and card rankings, see the [Stan
 
 - **Current npm package:** `1.4.0`
 - **Schema family:** `1.4`
-- **Highlights:** Added `max_deals` ruleset support to play fixed-hand games (e.g., progressive Euchre).
+- **Highlights:** Added `num_deals` ruleset support for fixed-hand games, optional `finalScore` metadata, Euchre Match Notation (`.emn`) meta-specification, and `emn-match-combine` CLI tool.
 
 See [changelog.md](changelog.md) for full release details.
 
@@ -363,6 +363,17 @@ egn-upgrade old-game.egn
 
 # Upgrade to new file
 egn-upgrade old-game.egn new-game.egn
+```
+
+### `emn-match-combine` — Match Series Combination
+Combines multiple sub-EGN files into a unified Euchre Match Notation (`.emn`) file with automatic player deduplication, master ID assignment (`p-01`, `p-02`), seat mapping, and format-aware result calculations.
+
+```bash
+# Combine games into a Best of 3 match
+emn-match-combine game1.egn game2.egn game3.egn -o match.emn --format BEST_OF_N --target 3 --title "League Finals"
+
+# Combine progressive rounds into a single match file
+emn-match-combine round1.egn round2.egn round3.egn -o progressive.emn --format PROGRESSIVE --target 3 --title "Weekly Progressive"
 ```
 
 ---
