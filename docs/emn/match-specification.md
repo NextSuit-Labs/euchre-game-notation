@@ -150,3 +150,17 @@ Every game in `games` contains an array of **exactly 4 player ID strings** match
 
 - **EMN (Match Layer)**: Handles match metadata, player registry, seat rotations, format rules, and overall results. Contains no move commentary or trick annotations.
 - **EGN (Game Layer)**: Inline `gameData` EGN objects contain all gameplay moves, card bitstreams, deal analysis, and trick commentary.
+
+---
+
+## 🛠️ Tooling & Operations
+
+### EMN Combiner (`emn-match-combine`)
+- **Deduplication**: Resolves unique player profiles using external platform IDs or exact names. Maps them to standardized master IDs (`p-01`, `p-02`).
+- **Seat Mapping**: Maps game participants to the 4 seats using their master IDs.
+- **Result Calculation**: Accumulates points or game wins from the `metadata.finalScore` arrays across all games to output a final match winner and scores automatically.
+
+### EMN Extractor (`emn-match-extract`)
+- **Player Name Resolution**: Replaces EMN master player IDs in the seat array with their master name registry strings during extraction.
+- **In-place Verification**: Automatically validates the extracted EGN files using EGN schema validation checks to ensure compliance and structure.
+

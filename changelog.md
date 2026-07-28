@@ -4,6 +4,14 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2026-07-28
+
+### Added
+- **Match Extract CLI (`emn-match-extract`)**: Added a CLI tool and library API (`extractEgnFromEmn`, `extractAllEgnsFromEmn`) to extract individual or all EGN games from a unified `.emn` match file with automatic restoration of master player names.
+- **Extractor Web-app Support**: Exposed pure in-memory, browser-safe extractor methods `extractEgnFromEmn` and `extractAllEgnsFromEmn` to support client-side extraction.
+- **Validation on Extract**: Integrated EGN schema validation checks directly into the extraction pipeline to ensure that all extracted games are valid EGN files.
+- **Combiner Web-app Support**: Moved EMN combiner logic into a standalone, browser-safe file (`src/emn/combiner.ts`) with zero Node.js filesystem dependencies, enabling web applications to combine EGN games into matches programmatically.
+
 ## [1.4.0] - 2026-07-21
 
 ### Added

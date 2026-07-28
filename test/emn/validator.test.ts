@@ -17,7 +17,7 @@
 import { describe, it, expect } from "@jest/globals";
 import { validateEmn, isEmnFile } from "../../src/emn/validator";
 import { emnToBinary, binaryToEmn } from "../../src/emn/converter";
-import { combineEgnToEmn } from "../../src/emn/cli-combine";
+import { combineEgnToEmn } from "../../src/emn/combiner";
 import { EmnFile } from "../../src/emn/types";
 import { EgnFile } from "../../src/types";
 

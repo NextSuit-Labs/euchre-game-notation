@@ -16,9 +16,9 @@ For a comprehensive guide on gameplay, scoring, and card rankings, see the [Stan
 
 ## Latest Release
 
-- **Current npm package:** `1.4.0`
+- **Current npm package:** `1.4.1`
 - **Schema family:** `1.4`
-- **Highlights:** Added `num_deals` ruleset support for fixed-hand games, optional `finalScore` metadata, Euchre Match Notation (`.emn`) meta-specification, and `emn-match-combine` CLI tool.
+- **Highlights:** Added `num_deals` ruleset support for fixed-hand games, optional `finalScore` metadata, Euchre Match Notation (`.emn`) meta-specification, `emn-match-combine` CLI tool, and `emn-match-extract` CLI/API extractor.
 
 See [changelog.md](changelog.md) for full release details.
 
@@ -376,6 +376,17 @@ emn-match-combine game1.egn game2.egn game3.egn -o match.emn --format BEST_OF_N 
 emn-match-combine round1.egn round2.egn round3.egn -o progressive.emn --format PROGRESSIVE --target 3 --title "Weekly Progressive"
 ```
 
+### `emn-match-extract` — Match Series Extraction
+Extracts one or all sub-EGN files from a unified Euchre Match Notation (`.emn`) file, automatically restoring seat-mapped player names from the master registry.
+
+```bash
+# Extract all games from a match to the directory "extracted_games"
+emn-match-extract match.emn -o ./extracted_games
+
+# Extract only Game 1 (index 0) to "game1.egn"
+emn-match-extract match.emn -g 0 -o game1.egn
+```
+
 ---
 
 ## 💻 Programmatic API Usage
@@ -461,6 +472,27 @@ All converter entry points now enforce the EGN schema at the conversion boundary
 - Binary inputs and outputs are capped at 8 MiB to reduce denial-of-service risk from oversized payloads.
 
 If you need to handle untrusted binary uploads in a browser or service, these helpers now fail fast on malformed, non-conformant, or oversized inputs instead of returning partially trusted data.
+
+### 3. Euchre Match Notation (EMN) Combining & Extraction
+
+For programmatic EMN match creation or extraction (both in Node.js and browser/web-app environments):
+
+```typescript
+import { emn, type EgnFile } from "euchre-game-notation";
+
+// 1. Combine multiple upgraded EGN files into a single EMN match file structure
+const emnFile = emn.combineEgnToEmn(egnFilesArray, {
+  format: "BEST_OF_N",
+  target: 3,
+  title: "Championship Series"
+});
+
+// 2. Extract a single EGN game (0-based) from an EMN file (replaces master player IDs with names)
+const singleGameEgn: EgnFile = emn.extractEgnFromEmn(emnFile, 0);
+
+// 3. Extract all EGN games from an EMN file
+const allGamesEgns: EgnFile[] = emn.extractAllEgnsFromEmn(emnFile);
+```
 
 ### 🔒 Security & Safe Rendering Guidelines
 
