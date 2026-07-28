@@ -41,8 +41,8 @@ function extractSingle(
   const egn: EgnFile = JSON.parse(JSON.stringify(game.gameData));
 
   // Resolve player names for the game using the EMN game's players mapping
-  // game.players maps seat 0-3 to master player IDs.
-  const seatPlayerNames = game.players.map((pid) => {
+  // game.playersOverride maps seat 0-3 to master player IDs.
+  const seatPlayerNames = game.playersOverride.map((pid) => {
     const name = playerMap.get(pid);
     if (!name) {
       throw new Error(`Master player ID "${pid}" in game index ${gameIndex} could not be resolved.`);

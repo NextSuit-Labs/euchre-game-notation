@@ -1,9 +1,11 @@
 # Euchre Match Notation (.emn) Specification
 
-**Version:** 1.0  
+**Version:** 1.1  
 **License:** Apache-2.0  
 
 Euchre Match Notation (EMN) is a meta-specification for representing multi-game series, tournaments, and social club sessions played by a common pool of players.
+
+> **Scope:** EMN only supports standard 4-player, 2-team Euchre formats. Each game entry always maps exactly 4 seats (North, East, South, West) with North+South forming Team 0 and East+West forming Team 1.
 
 ---
 
@@ -23,7 +25,7 @@ While Euchre Game Notation (EGN) defines the structure of individual games, EMN 
 ```json
 {
   "fileType": "Euchre Match Notation",
-  "version": "1.0",
+  "version": "1.1",
   "metadata": {
     "matchId": "emn_m_20260719_finals",
     "title": "NextSuit League 2026 Finals",
@@ -74,7 +76,7 @@ While Euchre Game Notation (EGN) defines the structure of individual games, EMN 
   "games": [
     {
       "gameIndex": 0,
-      "players": ["p-01", "p-02", "p-03", "p-04"],
+      "playersOverride": ["p-01", "p-02", "p-03", "p-04"],
       "gameData": {
         "fileType": "Euchre Game Notation",
         "version": "1.4",
@@ -84,7 +86,7 @@ While Euchre Game Notation (EGN) defines the structure of individual games, EMN 
     },
     {
       "gameIndex": 1,
-      "players": ["p-01", "p-03", "p-02", "p-04"],
+      "playersOverride": ["p-01", "p-03", "p-02", "p-04"],
       "gameData": {
         "fileType": "Euchre Game Notation",
         "version": "1.4",
@@ -94,7 +96,7 @@ While Euchre Game Notation (EGN) defines the structure of individual games, EMN 
     },
     {
       "gameIndex": 2,
-      "players": ["p-01", "p-02", "p-05", "p-04"],
+      "playersOverride": ["p-01", "p-02", "p-05", "p-04"],
       "gameData": {
         "fileType": "Euchre Game Notation",
         "version": "1.4",
@@ -110,7 +112,7 @@ While Euchre Game Notation (EGN) defines the structure of individual games, EMN 
 
 ## 🪑 Seating Conventions
 
-Every game in `games` contains an array of **exactly 4 player ID strings** matching master IDs in `metadata.players`:
+Every game in `games` contains a `playersOverride` array of **exactly 4 player ID strings** matching master IDs in `metadata.players`. This overrides the player names stored inside the embedded EGN `gameData` object for match-level display and scoring:
 
 | Index | Seat | Partnership | Notes |
 | :--- | :--- | :--- | :--- |

@@ -59,7 +59,7 @@ export interface MatchMetadata {
 
 export interface EmnGameEntry {
   gameIndex: number;
-  players: [string, string, string, string]; // Exactly 4 player IDs [Seat 0: North, Seat 1: East, Seat 2: South, Seat 3: West]
+  playersOverride: [string, string, string, string]; // Exactly 4 player IDs [Seat 0: North, Seat 1: East, Seat 2: South, Seat 3: West]
   gameData: EgnFile;
 }
 

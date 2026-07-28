@@ -45,7 +45,7 @@ message MatchMetadata {
 
 message GameEntry {
   int32 game_index = 1;
-  repeated string players = 2; // Exactly 4 player ID references mapping to seats (0: North, 1: East, 2: South, 3: West)
+  repeated string players_override = 2; // Exactly 4 player ID references mapping to seats (0: North, 1: East, 2: South, 3: West)
   oneof game_data {
     string egn_json = 3;          // Stringified JSON EGN
     bytes egn_protobuf_bytes = 4; // Serialized Protobuf EGN

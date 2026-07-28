@@ -88,7 +88,7 @@ export function combineEgnToEmn(
 
     return {
       gameIndex: idx,
-      players: seatPlayerIds as [string, string, string, string],
+      playersOverride: seatPlayerIds as [string, string, string, string],
       gameData: egn,
     };
   });
@@ -120,19 +120,19 @@ export function combineEgnToEmn(
 
       if (isNumDeals) {
         // Num-deals mode: Add individual points earned in the game to participants
-        scores[game.players[0]] = (scores[game.players[0]] || 0) + team0Score;
-        scores[game.players[2]] = (scores[game.players[2]] || 0) + team0Score;
+        scores[game.playersOverride[0]] = (scores[game.playersOverride[0]] || 0) + team0Score;
+        scores[game.playersOverride[2]] = (scores[game.playersOverride[2]] || 0) + team0Score;
 
-        scores[game.players[1]] = (scores[game.players[1]] || 0) + team1Score;
-        scores[game.players[3]] = (scores[game.players[3]] || 0) + team1Score;
+        scores[game.playersOverride[1]] = (scores[game.playersOverride[1]] || 0) + team1Score;
+        scores[game.playersOverride[3]] = (scores[game.playersOverride[3]] || 0) + team1Score;
       } else {
         // Game-to-10 / Target Score mode: Add 1 game win to each participant on winning team
         if (team0Score > team1Score) {
-          scores[game.players[0]] = (scores[game.players[0]] || 0) + 1;
-          scores[game.players[2]] = (scores[game.players[2]] || 0) + 1;
+          scores[game.playersOverride[0]] = (scores[game.playersOverride[0]] || 0) + 1;
+          scores[game.playersOverride[2]] = (scores[game.playersOverride[2]] || 0) + 1;
         } else if (team1Score > team0Score) {
-          scores[game.players[1]] = (scores[game.players[1]] || 0) + 1;
-          scores[game.players[3]] = (scores[game.players[3]] || 0) + 1;
+          scores[game.playersOverride[1]] = (scores[game.playersOverride[1]] || 0) + 1;
+          scores[game.playersOverride[3]] = (scores[game.playersOverride[3]] || 0) + 1;
         }
       }
     });
@@ -149,7 +149,7 @@ export function combineEgnToEmn(
 
   const emnFile: EmnFile = {
     fileType: "Euchre Match Notation",
-    version: "1.0",
+    version: "1.1",
     metadata: {
       title: options.title || "Combined Euchre Match",
       description: options.description,

@@ -273,7 +273,7 @@ function initializeEmn(matchData) {
   (matchData.games || []).forEach((game, gIdx) => {
     gameStartIndices.push(allDeals.length);
     var gameTitle = (game.gameData.metadata && game.gameData.metadata.title) || ("Game " + (gIdx + 1));
-    var seatPlayerNames = (game.players || []).map(pid => masterPlayerMap[pid] || pid);
+    var seatPlayerNames = (game.playersOverride || []).map(pid => masterPlayerMap[pid] || pid);
     var subDeals = (game.gameData && game.gameData.deals) || [];
     var initialScore = (game.gameData.metadata && game.gameData.metadata.initialScore) || [0, 0];
     var ruleset = (game.gameData.metadata && game.gameData.metadata.ruleset) || { std: true };

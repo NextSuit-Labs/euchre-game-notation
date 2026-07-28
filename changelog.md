@@ -4,6 +4,20 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.2] - 2026-07-28
+
+### Changed (Breaking — EMN Schema v1.1)
+- **EMN `games[].players` renamed to `playersOverride`**: The per-game seat mapping array inside each EMN `games` entry has been renamed from `players` to `playersOverride` to clearly distinguish it from the embedded EGN `gameData.metadata.players` array. The `playersOverride` array is the authoritative source of seat-to-master-player-ID mappings for match-level display and scoring; the inner EGN array is treated as legacy metadata only.
+- **EMN Schema bumped to v1.1**: The `version` field pattern in `emn-schema-v1.json` now requires `1.1` (or any `1.1.x` patch). Files produced by EMN v1.0 tools (using `players`) will fail schema validation and must be migrated.
+- **EMN version module (`src/emn/version.ts`)**: Added `EMN_SCHEMA_VERSION`, `SUPPORTED_EMN_SCHEMA_VERSION_RE`, and `isSupportedEmnSchemaVersion()` for programmatic version gating.
+- **Validator version check**: `validateEmn()` now explicitly rejects unsupported EMN schema versions with a clear error message.
+- **Replayer updated**: Baseline replayer (`replayer.js`) updated to read `game.playersOverride` when hydrating player names from an EMN match file.
+
+### Documentation
+- Added **4-player / 2-team scope note** to the EMN section of `README.md` and to `docs/emn/match-specification.md` clarifying that EMN only supports standard 4-seat Euchre formats.
+- Updated all JSON examples in `docs/emn/match-specification.md` to use `playersOverride`.
+- Updated `gameData.$ref` in `emn-schema-v1.json` to reference the EGN JSON schema for strict sub-game validation.
+
 ## [1.4.1] - 2026-07-28
 
 ### Added

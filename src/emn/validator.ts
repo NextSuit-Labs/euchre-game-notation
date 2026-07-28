@@ -20,6 +20,7 @@ import egnSchema from "../../schemas/egn-schema-v1.json";
 import emnSchema from "../../schemas/emn/emn-schema-v1.json";
 import { validateEgn } from "../validator";
 import { EmnFile } from "./types";
+import { isSupportedEmnSchemaVersion } from "./version";
 
 const ajv = new Ajv();
 addFormats(ajv);
@@ -51,6 +52,14 @@ export function validateEmn(data: unknown): EmnValidationResult {
   const emnData = data as any as EmnFile;
   const customErrors: { instancePath: string; message: string }[] = [];
 
+  // Check version support
+  if (emnData.version && !isSupportedEmnSchemaVersion(emnData.version)) {
+    customErrors.push({
+      instancePath: "/version",
+      message: `Unsupported EMN version '${emnData.version}'. Supported version is '1.1'.`,
+    });
+  }
+
   // 1. Verify master player IDs are unique
   const masterPlayerIds = new Set<string>();
   emnData.metadata.players.forEach((player, idx) => {
@@ -64,27 +73,27 @@ export function validateEmn(data: unknown): EmnValidationResult {
     }
   });
 
-  // 2. Verify games[i].players IDs exist in master player pool and are unique within each game
+  // 2. Verify games[i].playersOverride IDs exist in master player pool and are unique within each game
   emnData.games.forEach((game, gameIdx) => {
-    if (!game.players || game.players.length !== 4) {
+    if (!game.playersOverride || game.playersOverride.length !== 4) {
       customErrors.push({
-        instancePath: `/games/${gameIdx}/players`,
+        instancePath: `/games/${gameIdx}/playersOverride`,
         message: `Game at index ${gameIdx} must contain exactly 4 player IDs`,
       });
       return;
     }
 
     const gamePlayerIds = new Set<string>();
-    game.players.forEach((pId, seatIdx) => {
+    game.playersOverride.forEach((pId, seatIdx) => {
       if (!masterPlayerIds.has(pId)) {
         customErrors.push({
-          instancePath: `/games/${gameIdx}/players/${seatIdx}`,
+          instancePath: `/games/${gameIdx}/playersOverride/${seatIdx}`,
           message: `Player ID '${pId}' in game ${gameIdx} (seat ${seatIdx}) not found in metadata.players`,
         });
       }
       if (gamePlayerIds.has(pId)) {
         customErrors.push({
-          instancePath: `/games/${gameIdx}/players/${seatIdx}`,
+          instancePath: `/games/${gameIdx}/playersOverride/${seatIdx}`,
           message: `Duplicate player ID '${pId}' in game ${gameIdx}`,
         });
       } else {

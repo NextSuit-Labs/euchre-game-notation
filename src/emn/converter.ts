@@ -79,21 +79,21 @@ export function emnToBinary(emnFile: EmnFile): Uint8Array {
       })),
       match_format: emnFile.metadata.matchFormat
         ? {
-            type: protoFormatType,
-            target: emnFile.metadata.matchFormat.target,
-          }
+          type: protoFormatType,
+          target: emnFile.metadata.matchFormat.target,
+        }
         : undefined,
       result: emnFile.metadata.result
         ? {
-            status: protoStatus,
-            winner: emnFile.metadata.result.winner || [],
-            scores: emnFile.metadata.result.scores || {},
-          }
+          status: protoStatus,
+          winner: emnFile.metadata.result.winner || [],
+          scores: emnFile.metadata.result.scores || {},
+        }
         : undefined,
     },
     games: emnFile.games.map((g) => ({
       game_index: g.gameIndex,
-      players: g.players,
+      players_override: g.playersOverride,
       egn_json: JSON.stringify(g.gameData),
     })),
   };
@@ -151,7 +151,7 @@ export function binaryToEmn(data: Uint8Array): EmnFile {
 
   const emnFile: EmnFile = {
     fileType: "Euchre Match Notation",
-    version: decodedObject.version || "1.0",
+    version: decodedObject.version || "1.1",
     metadata: {
       matchId: decodedObject.metadata?.match_id || undefined,
       title: decodedObject.metadata?.title || undefined,
@@ -167,16 +167,16 @@ export function binaryToEmn(data: Uint8Array): EmnFile {
       })),
       matchFormat: decodedObject.metadata?.match_format
         ? {
-            type: (formatTypeStr || "BEST_OF_N") as any,
-            target: decodedObject.metadata.match_format.target,
-          }
+          type: (formatTypeStr || "BEST_OF_N") as any,
+          target: decodedObject.metadata.match_format.target,
+        }
         : undefined,
       result: decodedObject.metadata?.result
         ? {
-            status: statusStr as any,
-            winner: decodedObject.metadata.result.winner || [],
-            scores: decodedObject.metadata.result.scores || {},
-          }
+          status: statusStr as any,
+          winner: decodedObject.metadata.result.winner || [],
+          scores: decodedObject.metadata.result.scores || {},
+        }
         : undefined,
     },
     games: (decodedObject.games || []).map((g: any) => {
@@ -190,7 +190,7 @@ export function binaryToEmn(data: Uint8Array): EmnFile {
       }
       return {
         gameIndex: g.game_index,
-        players: g.players as [string, string, string, string],
+        playersOverride: g.players_override as [string, string, string, string],
         gameData,
       };
     }),

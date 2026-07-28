@@ -260,10 +260,10 @@ describe("EGN Validator", () => {
 
     // Invalid version format
     const m4 = cloneMock();
-    m4.version = "1.0";
+    m4.version = "1.1";
     expect(validateEgn(m4).isValid).toBe(false);
 
-    m4.version = "1.0.a";
+    m4.version = "1.1.a";
     expect(validateEgn(m4).isValid).toBe(false);
   });
 

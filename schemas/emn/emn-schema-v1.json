@@ -3,7 +3,12 @@
   "title": "Euchre Match Notation (EMN)",
   "description": "JSON Schema for validating Euchre Match Notation (.emn) files.",
   "type": "object",
-  "required": ["fileType", "version", "metadata", "games"],
+  "required": [
+    "fileType",
+    "version",
+    "metadata",
+    "games"
+  ],
   "additionalProperties": false,
   "properties": {
     "fileType": {
@@ -12,11 +17,13 @@
     },
     "version": {
       "type": "string",
-      "pattern": "^1\\.[0](?:\\.\\d+)?$"
+      "pattern": "^1\\.[1](?:\\.\\d+)?$"
     },
     "metadata": {
       "type": "object",
-      "required": ["players"],
+      "required": [
+        "players"
+      ],
       "additionalProperties": false,
       "properties": {
         "matchId": {
@@ -41,10 +48,14 @@
           "uniqueItems": true,
           "items": {
             "allOf": [
-              { "$ref": "../egn-schema-v1.json#/definitions/player" },
+              {
+                "$ref": "../egn-schema-v1.json#/definitions/player"
+              },
               {
                 "type": "object",
-                "required": ["id"],
+                "required": [
+                  "id"
+                ],
                 "properties": {
                   "id": {
                     "type": "string",
@@ -57,7 +68,9 @@
         },
         "matchFormat": {
           "type": "object",
-          "required": ["type"],
+          "required": [
+            "type"
+          ],
           "additionalProperties": false,
           "properties": {
             "type": {
@@ -87,7 +100,12 @@
           "properties": {
             "status": {
               "type": "string",
-              "enum": ["COMPLETED", "IN_PROGRESS", "FORFEIT", "DRAW"]
+              "enum": [
+                "COMPLETED",
+                "IN_PROGRESS",
+                "FORFEIT",
+                "DRAW"
+              ]
             },
             "winner": {
               "type": "array",
@@ -111,14 +129,18 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["gameIndex", "players", "gameData"],
+        "required": [
+          "gameIndex",
+          "playersOverride",
+          "gameData"
+        ],
         "additionalProperties": false,
         "properties": {
           "gameIndex": {
             "type": "integer",
             "minimum": 0
           },
-          "players": {
+          "playersOverride": {
             "type": "array",
             "minItems": 4,
             "maxItems": 4,
@@ -129,7 +151,7 @@
             "description": "Array of 4 player IDs mapped to [Seat 0: North, Seat 1: East, Seat 2: South, Seat 3: West]"
           },
           "gameData": {
-            "type": "object"
+            "$ref": "../egn-schema-v1.json"
           }
         }
       }

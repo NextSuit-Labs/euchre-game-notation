@@ -35,7 +35,7 @@ const mockSubEgn: EgnFile = {
 
 const validEmnMock: EmnFile = {
   fileType: "Euchre Match Notation",
-  version: "1.0",
+  version: "1.1",
   metadata: {
     matchId: "match_01",
     title: "Championship Series",
@@ -60,12 +60,12 @@ const validEmnMock: EmnFile = {
   games: [
     {
       gameIndex: 0,
-      players: ["p-01", "p-02", "p-03", "p-04"],
+      playersOverride: ["p-01", "p-02", "p-03", "p-04"],
       gameData: mockSubEgn,
     },
     {
       gameIndex: 1,
-      players: ["p-01", "p-03", "p-02", "p-04"],
+      playersOverride: ["p-01", "p-03", "p-02", "p-04"],
       gameData: mockSubEgn,
     },
   ],
@@ -106,7 +106,7 @@ describe("Euchre Match Notation (EMN) Validation", () => {
       games: [
         {
           gameIndex: 0,
-          players: ["p-01", "p-02", "p-99", "p-04"], // p-99 does not exist
+          playersOverride: ["p-01", "p-02", "p-99", "p-04"], // p-99 does not exist
           gameData: mockSubEgn,
         },
       ],
@@ -122,7 +122,7 @@ describe("Euchre Match Notation (EMN) Validation", () => {
       games: [
         {
           gameIndex: 0,
-          players: ["p-01", "p-02", "p-03"], // Only 3 players
+          playersOverride: ["p-01", "p-02", "p-03"], // Only 3 players
           gameData: mockSubEgn,
         },
       ],
@@ -142,7 +142,7 @@ describe("EMN Protobuf Binary Conversion", () => {
     expect(decoded.metadata.title).toBe("Championship Series");
     expect(decoded.metadata.players.length).toBe(4);
     expect(decoded.games.length).toBe(2);
-    expect(decoded.games[0].players).toEqual(["p-01", "p-02", "p-03", "p-04"]);
+    expect(decoded.games[0].playersOverride).toEqual(["p-01", "p-02", "p-03", "p-04"]);
   });
 });
 

@@ -1,6 +1,6 @@
 {
   "fileType": "Euchre Match Notation",
-  "version": "1.0",
+  "version": "1.1",
   "metadata": {
     "title": "MotE Week 5 Match",
     "date": "2026-07-21T03:47:33.103Z",
@@ -54,7 +54,7 @@
   "games": [
     {
       "gameIndex": 0,
-      "players": [
+      "playersOverride": [
         "p-01",
         "p-02",
         "p-03",
@@ -773,7 +773,7 @@
     },
     {
       "gameIndex": 1,
-      "players": [
+      "playersOverride": [
         "p-01",
         "p-02",
         "p-03",
@@ -1545,7 +1545,7 @@
     },
     {
       "gameIndex": 2,
-      "players": [
+      "playersOverride": [
         "p-02",
         "p-01",
         "p-03",
@@ -2261,7 +2261,7 @@
     },
     {
       "gameIndex": 3,
-      "players": [
+      "playersOverride": [
         "p-02",
         "p-01",
         "p-03",
@@ -3092,7 +3092,7 @@
     },
     {
       "gameIndex": 4,
-      "players": [
+      "playersOverride": [
         "p-04",
         "p-01",
         "p-03",
@@ -3729,7 +3729,7 @@
     },
     {
       "gameIndex": 5,
-      "players": [
+      "playersOverride": [
         "p-04",
         "p-01",
         "p-03",

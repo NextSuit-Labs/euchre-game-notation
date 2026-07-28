@@ -21,7 +21,7 @@ import { EgnFile } from "../../src/types";
 
 const mockEmn: EmnFile = {
   fileType: "Euchre Match Notation",
-  version: "1.0",
+  version: "1.1",
   metadata: {
     matchId: "match_123",
     title: "Testing Extractor",
@@ -35,7 +35,7 @@ const mockEmn: EmnFile = {
   games: [
     {
       gameIndex: 0,
-      players: ["p-01", "p-02", "p-03", "p-04"],
+      playersOverride: ["p-01", "p-02", "p-03", "p-04"],
       gameData: {
         fileType: "Euchre Game Notation",
         version: "1.4",
@@ -49,7 +49,7 @@ const mockEmn: EmnFile = {
     },
     {
       gameIndex: 1,
-      players: ["p-04", "p-03", "p-02", "p-01"],
+      playersOverride: ["p-04", "p-03", "p-02", "p-01"],
       gameData: {
         fileType: "Euchre Game Notation",
         version: "1.4",

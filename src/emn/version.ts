@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export * from "./types";
-export * from "./validator";
-export * from "./converter";
-export * from "./combiner";
-export * from "./extractor";
-export * from "./version";
+export const EMN_SCHEMA_VERSION = "1.1";
 
+export const SUPPORTED_EMN_SCHEMA_VERSION_RE = /^1\.1(?:\.\d+)?$/;
+
+export function isSupportedEmnSchemaVersion(version: string): boolean {
+  return SUPPORTED_EMN_SCHEMA_VERSION_RE.test(version);
+}

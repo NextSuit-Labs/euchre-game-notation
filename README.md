@@ -475,7 +475,10 @@ If you need to handle untrusted binary uploads in a browser or service, these he
 
 ### 3. Euchre Match Notation (EMN) Combining & Extraction
 
+> **Scope:** EMN only supports standard **4-player, 2-team** Euchre formats. Each game in a match maps exactly 4 seats (`[North, East, South, West]`) — North+South form Team 0 and East+West form Team 1. Progressive Euchre (rotating partnerships) is supported via the `num_deals` ruleset, but the 4-seat structure is always required.
+
 For programmatic EMN match creation or extraction (both in Node.js and browser/web-app environments):
+
 
 ```typescript
 import { emn, type EgnFile } from "euchre-game-notation";
