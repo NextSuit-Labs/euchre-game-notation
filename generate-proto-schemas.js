@@ -30,7 +30,7 @@ const schemaFiles = [
 ];
 
 function readSchema(fileName) {
-  return fs.readFileSync(path.join(schemaDir, fileName), "utf8");
+  return fs.readFileSync(path.join(schemaDir, fileName), "utf8").replace(/\r\n/g, "\n");
 }
 
 function generateProtoSchemasSource() {

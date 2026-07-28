@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Fixed Hand Limit Support (`num_deals`):** Introduced optional ruleset property `num_deals` (integer, minimum `1`) to specify a limit on the number of hands/deals played in a game (ideal for progressive Euchre). Games set to num_deals do not have a winner, but rather count the number of points scored by each player individually across multiple rounds.
 - **Mutually Exclusive Completion Conditions:** Added schema validation enforcing that a ruleset enforces either `winning_score` OR `num_deals`, but not both simultaneously (`not: { required: ["winning_score", "num_deals"] }`).
 - **Protobuf & Types updates:** Expanded Protobuf schemas (`optional int32 num_deals = 17`, `repeated int32 final_score = 8`, `message MatchPlayer`), updated TypeScript definitions, and updated EMN serialization with magic byte `0x02`.
-- **Baseline Replayer:** Added support for loading EMN files and hydrating the player names for each game. Added description of this in `replayer-logic.md`
+- **Baseline Replayer Match Support:** Added full playback support for `.emn` match files including dynamic player seat-name resolution, multi-tier navigation (step, hand, and game controls), and panel toggles to auto-hide match navigation in single EGN mode. Updated [docs/replayer-logic.md](docs/replayer-logic.md) to document these concepts.
 
 ## [1.3.1] - 2026-07-18
 

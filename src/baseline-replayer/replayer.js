@@ -257,8 +257,8 @@ function loadDeal(index) {
 function initializeEmn(matchData) {
   isEmnMode = true;
   games = matchData.games || [];
-  const gameSection = document.getElementById("game-controls-section");
-  if (gameSection) gameSection.style.display = "block";
+  const gamePanel = document.getElementById("game-controls-panel");
+  if (gamePanel) gamePanel.style.display = "block";
 
   var masterPlayerMap = {};
   (matchData.metadata.players || []).forEach(p => {
@@ -333,8 +333,8 @@ function initializeEgn(data = null) {
     currentGameIndex = 0;
     games = data ? [data] : [];
     gameStartIndices = [];
-    const gameSection = document.getElementById("game-controls-section");
-    if (gameSection) gameSection.style.display = "none";
+    const gamePanel = document.getElementById("game-controls-panel");
+    if (gamePanel) gamePanel.style.display = "none";
 
     if (data) {
       egnData = data;
