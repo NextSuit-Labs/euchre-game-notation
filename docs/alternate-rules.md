@@ -8,7 +8,7 @@ Here are the alternate rules supported in EGN v1.4:
 
 ## `std` (boolean)
 **Default:** `true`
-Standardizes the baseline rules of the game. When `true`, it commonly enforces **"Stick the Dealer"** (if all players pass during both bidding rounds, the dealer is forced to call a trump suit, preventing a throw-in). 
+When `true`, it enforces **"Stick the Dealer"** (if all players pass during both bidding rounds, the dealer is forced to call a trump suit, preventing a throw-in). 
 
 ## `min_rank` (integer)
 **Default:** `9`
@@ -30,7 +30,7 @@ A ruleset must define how a game is completed. This is controlled by two interre
 * **Mutually Exclusive Limits**: A ruleset enforces either a target score (`winning_score`) **OR** a fixed deal count (`num_deals`), but not both simultaneously.
 * **Target Score Game**: Standard Euchre uses `winning_score` (default `10`).
 * **Fixed Deal Game**: For fixed-hand games (e.g., progressive Euchre), omit `winning_score` (or set `winning_score` to `0`) and set `num_deals` to your deal limit (e.g., `8`).
-* **At Least One Limit Required**: A ruleset cannot set both `winning_score` and `num_deals` to `0` (or omit both). A game must have a single defined completion condition.
+* **At Least One Limit Required**: A ruleset cannot set both `winning_score` and `num_deals` to `0` nor have both be non-zero. A game must have a one and only one defined completion condition. If both are omitted, the winning condition will be a default `winning_score` of 10.
 
 ## `canadian` (boolean)
 **Default:** `false`
@@ -58,7 +58,7 @@ When active, the defending player's seat index is recorded in the `EUCHRE_BIDDIN
 
 ## `farmers` (boolean)
 **Default:** `false`
-Allows a **"Farmer's Hand"**. If a player receives three or more 9s and 10s (the "farm" cards), they can declare it. Depending on the specific house rules, this might force a misdeal or allow them to exchange cards.
+Allows a **"Farmer's Hand"**. If a player receives three or more 9s and 10s (the "farm" cards), or "Ace no face" in some rulesets, they can declare it. Depending on the specific house rules, this might force a misdeal or allow them to exchange cards.
 
 ## `partners_best` (boolean)
 **Default:** `false`
@@ -66,7 +66,7 @@ Also known as **"Call for Best"**. When a player calls a loner, this rule allows
 
 ## `go_under` (boolean)
 **Default:** `false`
-Also known as **"Defend the Left"** or **"Bottoms"**. If a player holds a remarkably poor hand (e.g., three 9s and 10s, or no face cards), they may swap three cards with the kitty cards. This action is recorded in the `EUCHRE_BIDDING` phase using the `cardExchanges` array if known.
+Also known as **"Bottoms"**. If a player holds a remarkably poor hand (e.g., three 9s and 10s, or no face cards), they may swap three cards with the kitty cards. This action is recorded in the `EUCHRE_BIDDING` phase using the `cardExchanges` array if known.
 
 ## `joker` (boolean)
 **Default:** `false`
@@ -82,7 +82,7 @@ Allows players to bid **"No Trump"** during the second round of bidding. In EGN,
 
 ## `fast_break` (boolean)
 **Default:** `false`
-If the defending team (the team that did not call trump) gets the first two tricks and then loses the last three, the score for that hand is 0 for both teams. The deal proceeds to the next player as normal
+If the defending team (the team that did not call trump) gets the first two tricks and then loses the last three, the score for that hand is 0 for both teams. The deal proceeds to the next player as normal.
 
 ## `four_trick_tokens` (boolean)
 **Default:** `false`
