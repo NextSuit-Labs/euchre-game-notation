@@ -269,6 +269,7 @@ In expanded mode, the entire EGN JSON structure (including metadata, annotations
 ## ⏱️ Partial Games
 
 This format can be used to denote partial games by indicating the initial score in the metadata section and only including the actions up to the point you want to highlight in the game.
+
 ---
 
 ## 🔐 Baseline EGNs
@@ -286,6 +287,7 @@ Baseline EGNs are useful for:
 - **Archival**: Store lightweight versions for long-term record keeping
 
 Each baseline EGN has a deterministic SHA256 hash that remains identical regardless of the source format (condensed or expanded binary). Use the `egn-baseline` CLI tool to generate baseline versions and hashes. For more details, see [docs/determinism-of-egn.md](docs/determinism-of-egn.md).
+
 ---
 
 ## 🚀 Applications & Ecosystem
