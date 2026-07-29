@@ -140,9 +140,9 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
       },
       "phases": [
         {
-          "phaseNumber": 0,
+          "phaseNumber": 3,
           "type": "EUCHRE_BIDDING",
-          "calls": ["Pass", "Pass", "Pass", "Pass", "Pass", "d"],
+          "calls": ["Pass", "Pass", "d"],
           "isAlone": false
         },
         {
