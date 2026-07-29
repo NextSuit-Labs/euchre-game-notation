@@ -4,6 +4,11 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.3] - 2026-07-28
+
+### Added
+- **Direct Top-Level EMN Exports**: Re-exported all EMN types and functions (`EmnFile`, `EmnGameEntry`, `MatchPlayer`, `validateEmn`, `combineEgnToEmn`, `extractEgnFromEmn`, etc.) directly at the top-level package entrypoint (`src/index.ts`). Clients can now import directly from `"euchre-game-notation"` without reaching into deep internal paths like `"euchre-game-notation/dist/src/emn"`. (Namespace usage `import { emn } from "euchre-game-notation"` remains fully supported).
+
 ## [1.4.2] - 2026-07-28
 
 ### Changed (Breaking — EMN Schema v1.1)

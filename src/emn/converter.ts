@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as fs from "fs";
 import protobuf from "protobufjs";
 import { COMMON_PROTO_SCHEMA, EMN_PROTO_SCHEMA } from "../proto-schemas";
 import { EmnFile } from "./types";
@@ -202,4 +203,66 @@ export function binaryToEmn(data: Uint8Array): EmnFile {
   }
 
   return emnFile;
+}
+
+/**
+ * Alias for emnToBinary. Encodes an EmnFile object into Protobuf binary (.emnb) bytes.
+ */
+export const convertEmnFileToBinData = emnToBinary;
+
+/**
+ * Alias for binaryToEmn. Decodes Protobuf binary (.emnb) bytes into an EmnFile object.
+ */
+export const convertBinDataToEmnFile = binaryToEmn;
+
+/**
+ * Encodes an EMN JSON string into Protobuf binary (.emnb) bytes.
+ */
+export function convertEmnJsonToBinData(emnJsonStr: string): Uint8Array {
+  const emnFile = JSON.parse(emnJsonStr) as EmnFile;
+  return convertEmnFileToBinData(emnFile);
+}
+
+/**
+ * Decodes Protobuf binary (.emnb) bytes into an EMN JSON string.
+ */
+export function convertBinDataToEmnJson(data: Uint8Array): string {
+  const emnFile = convertBinDataToEmnFile(data);
+  return JSON.stringify(emnFile, null, 2);
+}
+
+/**
+ * Converts an EMN JSON file to a serialized Protobuf binary (.emnb) file.
+ */
+export function convertEmnJsonToBin(emnJsonPath: string, outBinFilePath: string): void {
+  const jsonStr = fs.readFileSync(emnJsonPath, "utf8");
+  const binData = convertEmnJsonToBinData(jsonStr);
+  fs.writeFileSync(outBinFilePath, binData);
+}
+
+/**
+ * Converts a serialized Protobuf binary (.emnb) file to an EMN JSON string.
+ */
+export function convertBinToEmnJson(binFilePath: string): string {
+  const binData = fs.readFileSync(binFilePath);
+  return convertBinDataToEmnJson(binData);
+}
+
+/**
+ * Detects whether binary data is in EMN binary format (.emnb) by checking the magic byte header (0x02).
+ */
+export function detectEmnBinaryFormatFromData(data: Uint8Array): boolean {
+  return data.length > 0 && data[0] === MAGIC_BYTE_EMN;
+}
+
+/**
+ * Detects whether a binary file is in EMN binary format (.emnb) by reading its magic byte header (0x02).
+ */
+export function detectEmnBinaryFormat(filePath: string): boolean {
+  try {
+    const data = fs.readFileSync(filePath);
+    return detectEmnBinaryFormatFromData(data);
+  } catch {
+    return false;
+  }
 }

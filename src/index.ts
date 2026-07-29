@@ -22,3 +22,4 @@ export * from "./version";
 export { upgradeEgn } from "./cli-upgrade";
 export { hashBaselineEgn, convertToBaselineEgn } from "./cli-baseline-egn";
 export * as emn from "./emn";
+export * from "./emn";

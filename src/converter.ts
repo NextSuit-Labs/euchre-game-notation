@@ -21,9 +21,9 @@ import { COMMON_PROTO_SCHEMA, CONDENSED_PROTO_SCHEMA, EXPANDED_PROTO_SCHEMA } fr
 import { EgnFile } from "./types";
 import { validateEgn } from "./validator";
 
-// Magic bytes to identify binary format
 const MAGIC_BYTE_EXPANDED = 0x00;
 const MAGIC_BYTE_CONDENSED = 0x01;
+const MAGIC_BYTE_EMN = 0x02;
 const MAX_BINARY_DATA_BYTES = 8 * 1024 * 1024;
 
 let loadedCondensedRoot: protobuf.Root | null = null;

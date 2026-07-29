@@ -166,3 +166,7 @@ Every game in `games` contains a `playersOverride` array of **exactly 4 player I
 - **Player Name Resolution**: Replaces EMN master player IDs in the seat array with their master name registry strings during extraction.
 - **In-place Verification**: Automatically validates the extracted EGN files using EGN schema validation checks to ensure compliance and structure.
 
+### EMN Converter (`emn-match-convert` & `.emnb`)
+- **Binary Format (.emnb)**: Encodes `.emn` match series into Protobuf binary format (`.emnb`) prefixed with magic byte header `0x02`.
+- **Bidirectional Conversion**: Converts `.emn` JSON files to compact `.emnb` binary files and vice versa.
+

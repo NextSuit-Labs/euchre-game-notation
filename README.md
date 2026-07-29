@@ -16,9 +16,9 @@ For a comprehensive guide on gameplay, scoring, and card rankings, see the [Stan
 
 ## Latest Release
 
-- **Current npm package:** `1.4.1`
-- **Schema family:** `1.4`
-- **Highlights:** Added `num_deals` ruleset support for fixed-hand games, optional `finalScore` metadata, Euchre Match Notation (`.emn`) meta-specification, `emn-match-combine` CLI tool, and `emn-match-extract` CLI/API extractor.
+- **Current npm package:** `1.4.3`
+- **Schema family:** `1.4` (EGN) / `1.1` (EMN)
+- **Highlights:** Added Euchre Match Notation (`.emn` / `.emnb`) meta-specification, `emn-match-combine` CLI/API combiner, `emn-match-extract` CLI/API extractor, `emn-match-convert` binary converter CLI, and top-level package exports.
 
 See [changelog.md](changelog.md) for full release details.
 
@@ -495,6 +495,10 @@ const singleGameEgn: EgnFile = emn.extractEgnFromEmn(emnFile, 0);
 
 // 3. Extract all EGN games from an EMN file
 const allGamesEgns: EgnFile[] = emn.extractAllEgnsFromEmn(emnFile);
+
+// 4. Convert EMN match file to Protobuf binary (.emnb) and back
+const emnBinaryBytes: Uint8Array = emn.convertEmnFileToBinData(emnFile);
+const decodedEmnFile: emn.EmnFile = emn.convertBinDataToEmnFile(emnBinaryBytes);
 ```
 
 ### 🔒 Security & Safe Rendering Guidelines
