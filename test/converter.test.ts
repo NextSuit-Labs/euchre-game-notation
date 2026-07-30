@@ -21,12 +21,14 @@ import {
   convertEgnFileToBinData,
   convertEgnJsonToBin,
   detectBinaryFormatFromData,
+  unpackEgnFile,
+  packEgnFile,
 } from "../src/converter";
 import * as fs from "fs";
 import * as path from "path";
 import protobuf from "protobufjs";
 import { COMMON_PROTO_SCHEMA, EXPANDED_PROTO_SCHEMA } from "../src/proto-schemas";
-import { BiddingPhase, Deal, EgnFile } from "../src/types";
+import { BiddingPhase, Deal, EgnFile, UnpackedEgnFile } from "../src/types";
 import { VERSION } from "../src/version";
 
 const validMockData: EgnFile = {
@@ -568,6 +570,32 @@ describe("EGN Protobuf Converter Core", () => {
     const decodedPhase = decodedDeal.phases[0] as BiddingPhase;
     expect(decodedExpanded as any).toMatchObject(validMockData as any);
     expect(decodedPhase.callAnnotations).toEqual(expectedPhase.callAnnotations);
+  });
+
+  describe("unpackEgnFile & packEgnFile", () => {
+    it("should unpack an EgnFile containing condensed deal strings into an UnpackedEgnFile", () => {
+      // Create a condensed EGN file with a deal string
+      const packed = packEgnFile(validMockData);
+      expect(typeof packed.deals[0]).toBe("string");
+
+      // Unpack it
+      const unpacked: UnpackedEgnFile = unpackEgnFile(packed);
+      expect(typeof unpacked.deals[0]).toBe("object");
+      expect(unpacked.deals[0].dealNumber).toBe(0);
+      expect(unpacked.deals[0].initialState.upCard).toBe("Jd");
+    });
+
+    it("should pack an UnpackedEgnFile into a condensed EgnFile", () => {
+      const unpacked = unpackEgnFile(validMockData);
+      expect(typeof unpacked.deals[0]).toBe("object");
+
+      const repacked = packEgnFile(unpacked);
+      expect(typeof repacked.deals[0]).toBe("string");
+
+      // Verify repacked and unpacked roundtrip back to identical object
+      const roundtripped = unpackEgnFile(repacked);
+      expect(roundtripped.deals[0]).toEqual(unpacked.deals[0]);
+    });
   });
 });
 

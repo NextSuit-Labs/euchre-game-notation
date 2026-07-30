@@ -123,6 +123,13 @@ export interface EgnFile {
 }
 
 /**
+ * An EgnFile where all deals in the deals array are expanded Deal objects (no base64 strings).
+ */
+export interface UnpackedEgnFile extends Omit<EgnFile, "deals"> {
+  deals: Deal[];
+}
+
+/**
  * @deprecated Use {@link EgnFile} instead.
  */
 export type EGNFile = EgnFile;

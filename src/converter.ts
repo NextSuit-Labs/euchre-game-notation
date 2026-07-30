@@ -18,7 +18,7 @@ import * as fs from "fs";
 import protobuf from "protobufjs";
 import { packDeal, unpackDeal } from "./bitpacker";
 import { COMMON_PROTO_SCHEMA, CONDENSED_PROTO_SCHEMA, EXPANDED_PROTO_SCHEMA } from "./proto-schemas";
-import { EgnFile } from "./types";
+import { EgnFile, UnpackedEgnFile } from "./types";
 import { validateEgn } from "./validator";
 
 const MAGIC_BYTE_EXPANDED = 0x00;
@@ -510,4 +510,54 @@ export function convertEgnJsonToBin(egnJsonStr: string, outBinFilePath: string, 
 
 export function convertEgnJsonToBinData(egnJsonStr: string, condensed = true): Uint8Array {
   return convertEgnFileToBinData(JSON.parse(egnJsonStr) as EgnFile, condensed);
+}
+
+/**
+ * Unpacks all condensed base64 deal strings in an EGN file into full Deal objects.
+ * Returns an UnpackedEgnFile where the deals array consists entirely of Deal objects.
+ */
+export function unpackEgnFile(egnFile: EgnFile): UnpackedEgnFile {
+  assertValidEgnFile(egnFile, "Input EGN failed schema validation before unpacking");
+  const cloned: EgnFile = JSON.parse(JSON.stringify(egnFile));
+  if (Array.isArray(cloned.deals)) {
+    cloned.deals = cloned.deals.map((d, idx) => {
+      if (typeof d === "string") {
+        return unpackDeal(d, idx);
+      }
+      return d;
+    });
+  }
+  return cloned as UnpackedEgnFile;
+}
+
+/**
+ * Packs all Deal objects in an EGN file into condensed base64 deal strings.
+ * Returns an EgnFile where the deals array consists entirely of packed deal strings.
+ */
+export function packEgnFile(egnFile: EgnFile): EgnFile {
+  assertValidEgnFile(egnFile, "Input EGN failed schema validation before packing");
+  const cloned: EgnFile = JSON.parse(JSON.stringify(egnFile));
+  if (Array.isArray(cloned.deals)) {
+    const numPlayers = cloned.metadata?.ruleset?.num_players ?? 4;
+    const minRank = cloned.metadata?.ruleset?.min_rank ?? 9;
+    cloned.deals = cloned.deals.map((d) => {
+      if (typeof d === "object" && d !== null) {
+        const hasDefendAlone = d.phases?.some((p: any) => p.type === "EUCHRE_BIDDING" && p.aloneDefender !== undefined && p.aloneDefender !== -1);
+        const hasDiscard =
+          d.phases?.some((p: any) => p.type === "EUCHRE_BIDDING" && p.discard !== undefined)
+          || d.alternativeLines?.some((line: any) =>
+            line?.phases?.some((p: any) => p.type === "EUCHRE_BIDDING" && p.discard !== undefined));
+        const hasPlayerCards =
+          Array.isArray(d.initialState?.playerCards)
+          && d.initialState.playerCards.some((cards: any) => Array.isArray(cards) && cards.length > 0);
+        const dealer = d.initialState?.dealer ?? 0;
+        const needsV3 = hasDiscard || hasPlayerCards;
+        const needsV2 = numPlayers !== 4 || minRank !== 9 || hasDefendAlone || dealer >= 4;
+        const version: 1 | 2 | 3 = needsV3 ? 3 : (needsV2 ? 2 : 1);
+        return packDeal(d as any, { version, numPlayers, minRank });
+      }
+      return d;
+    });
+  }
+  return cloned;
 }

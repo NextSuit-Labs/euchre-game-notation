@@ -16,9 +16,9 @@ For a comprehensive guide on gameplay, scoring, and card rankings, see the [Stan
 
 ## Latest Release
 
-- **Current npm package:** `1.4.3`
+- **Current npm package:** `1.4.4`
 - **Schema family:** `1.4` (EGN) / `1.1` (EMN)
-- **Highlights:** Added Euchre Match Notation (`.emn` / `.emnb`) meta-specification, `emn-match-combine` CLI/API combiner, `emn-match-extract` CLI/API extractor, `emn-match-convert` binary converter CLI, and top-level package exports.
+- **Highlights:** Added `UnpackedEgnFile` type interface, `unpackEgnFile` and `packEgnFile` deal packing/unpacking helpers, Euchre Match Notation (`.emn` / `.emnb`) meta-specification, `emn-match-combine` CLI/API combiner, `emn-match-extract` CLI/API extractor, `emn-match-convert` binary converter CLI, and top-level package exports.
 
 See [changelog.md](changelog.md) for full release details.
 
