@@ -104,8 +104,9 @@ describe("EMN Extractor", () => {
     ]);
   });
 
-  it("should throw error when requesting non-existent index", () => {
-    expect(() => extractEgnFromEmn(mockEmn, 99)).toThrow();
+  it("should throw error when requesting non-existent index or out of bounds index", () => {
+    expect(() => extractEgnFromEmn(mockEmn, 99)).toThrow("Game index 99 out of bounds for match containing 2 games.");
+    expect(() => extractEgnFromEmn(mockEmn, -1)).toThrow("Game index -1 out of bounds for match containing 2 games.");
   });
 });
 

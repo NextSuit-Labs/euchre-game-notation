@@ -68,6 +68,9 @@ function extractSingle(
  * performing player name replacements based on the master players registry.
  */
 export function extractEgnFromEmn(emnFile: EmnFile, gameIndex: number): EgnFile {
+  if (gameIndex < 0 || gameIndex >= emnFile.games.length) {
+    throw new Error(`Game index ${gameIndex} out of bounds for match containing ${emnFile.games.length} games.`);
+  }
   const playerMap = buildPlayerMap(emnFile);
   return extractSingle(emnFile, gameIndex, playerMap);
 }

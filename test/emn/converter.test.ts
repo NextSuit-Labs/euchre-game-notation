@@ -26,8 +26,11 @@ import {
   convertBinToEmnJson,
   detectEmnBinaryFormatFromData,
   detectEmnBinaryFormat,
+  unpackEmnFile,
+  packEmnFile,
   MAGIC_BYTE_EMN,
-  EmnFile
+  EmnFile,
+  UnpackedEmnFile
 } from "../../src/emn";
 
 const mockSubEgn = {
@@ -166,5 +169,51 @@ describe("EMN Binary Converter (.emnb)", () => {
       expect(decodedEmn.games[idx].gameData.metadata.title).toBe(game.gameData.metadata.title);
       expect(decodedEmn.games[idx].gameData.deals).toHaveLength(game.gameData.deals.length);
     });
+  });
+
+  it("should automatically condense/bitpack embedded EGN deal objects when condenseGames is true (default)", () => {
+    const sampleEmnPath = path.join(__dirname, "../../examples/combination examples/MotE W5 Match.emn");
+    const rawJsonStr = fs.readFileSync(sampleEmnPath, "utf8");
+    const originalEmn: EmnFile = JSON.parse(rawJsonStr);
+
+    // Condensed encoding (default)
+    const condensedBytes = convertEmnFileToBinData(originalEmn, { condenseGames: true });
+    // Expanded encoding
+    const expandedBytes = convertEmnFileToBinData(originalEmn, { condenseGames: false });
+
+    // Condensed binary payload should be smaller than expanded payload
+    expect(condensedBytes.length).toBeLessThan(expandedBytes.length);
+
+    // Both should decode back to valid EmnFile objects
+    const decodedCondensed = convertBinDataToEmnFile(condensedBytes);
+    const decodedExpanded = convertBinDataToEmnFile(expandedBytes);
+
+    expect(decodedCondensed.games).toHaveLength(originalEmn.games.length);
+    expect(decodedExpanded.games).toHaveLength(originalEmn.games.length);
+
+    // Verify deals in decodedCondensed are condensed deal strings
+    expect(typeof decodedCondensed.games[0].gameData.deals[0]).toBe("string");
+  });
+
+  it("should unpack all embedded sub-game deals when unpackEmnFile or unpackGames is used", () => {
+    const sampleEmnPath = path.join(__dirname, "../../examples/combination examples/MotE W5 Match.emn");
+    const rawJsonStr = fs.readFileSync(sampleEmnPath, "utf8");
+    const originalEmn: EmnFile = JSON.parse(rawJsonStr);
+
+    // Create a bitpacked binary payload
+    const condensedBytes = convertEmnFileToBinData(originalEmn, { condenseGames: true });
+
+    // Decode with unpackGames: true
+    const unpackedEmn: UnpackedEmnFile = convertBinDataToEmnFile(condensedBytes, { unpackGames: true }) as UnpackedEmnFile;
+    expect(typeof unpackedEmn.games[0].gameData.deals[0]).toBe("object");
+    expect(unpackedEmn.games[0].gameData.deals[0].dealNumber).toBe(0);
+
+    // Test standalone unpackEmnFile
+    const packedEmn = packEmnFile(originalEmn);
+    expect(typeof packedEmn.games[0].gameData.deals[0]).toBe("string");
+
+    const manualUnpacked = unpackEmnFile(packedEmn);
+    expect(typeof manualUnpacked.games[0].gameData.deals[0]).toBe("object");
+    expect(manualUnpacked.games[0].gameData.deals[0].dealNumber).toBe(0);
   });
 });

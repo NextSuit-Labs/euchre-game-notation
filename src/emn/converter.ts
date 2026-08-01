@@ -17,11 +17,21 @@
 import * as fs from "fs";
 import protobuf from "protobufjs";
 import { COMMON_PROTO_SCHEMA, EMN_PROTO_SCHEMA } from "../proto-schemas";
-import { EmnFile } from "./types";
+import { EmnFile, UnpackedEmnFile } from "./types";
 import { validateEmn } from "./validator";
+import { packEgnFile, unpackEgnFile } from "../converter";
 
 export const MAGIC_BYTE_EMN = 0x02;
 const MAX_BINARY_DATA_BYTES = 16 * 1024 * 1024;
+
+export interface EmnBinaryOptions {
+  /**
+   * If true (default), automatically bitpacks embedded EGN sub-game deal objects into condensed
+   * base64 strings before Protobuf encoding, maximizing binary size reduction.
+   * If false, embeds gameData deals as-is.
+   */
+  condenseGames?: boolean;
+}
 
 let loadedEmnRoot: protobuf.Root | null = null;
 
@@ -47,8 +57,11 @@ function getMatchStatusEnum(): protobuf.Enum {
 
 /**
  * Encodes an EmnFile object into Protobuf binary bytes with magic byte header 0x02.
+ * @param emnFile The EMN file object to convert to binary.
+ * @param options Optional configuration (condenseGames defaults to true to bitpack deals).
  */
-export function emnToBinary(emnFile: EmnFile): Uint8Array {
+export function emnToBinary(emnFile: EmnFile, options?: EmnBinaryOptions): Uint8Array {
+  const condenseGames = options?.condenseGames ?? true;
   const validation = validateEmn(emnFile);
   if (!validation.isValid) {
     throw new Error(`Invalid EMN File: ${JSON.stringify(validation.errors)}`);
@@ -92,11 +105,14 @@ export function emnToBinary(emnFile: EmnFile): Uint8Array {
         }
         : undefined,
     },
-    games: emnFile.games.map((g) => ({
-      game_index: g.gameIndex,
-      players_override: g.playersOverride,
-      egn_json: JSON.stringify(g.gameData),
-    })),
+    games: emnFile.games.map((g) => {
+      const egnToSerialize = condenseGames ? packEgnFile(g.gameData) : g.gameData;
+      return {
+        game_index: g.gameIndex,
+        players_override: g.playersOverride,
+        egn_json: JSON.stringify(egnToSerialize),
+      };
+    }),
   };
 
   const err = MatchFileMsg.verify(protoObject);
@@ -117,7 +133,7 @@ export function emnToBinary(emnFile: EmnFile): Uint8Array {
 /**
  * Decodes Protobuf binary bytes (with magic byte 0x02) into an EmnFile object.
  */
-export function binaryToEmn(data: Uint8Array): EmnFile {
+export function binaryToEmn(data: Uint8Array, options?: { unpackGames?: boolean }): EmnFile {
   if (data.length > MAX_BINARY_DATA_BYTES) {
     throw new Error(`Data size exceeds limit of ${MAX_BINARY_DATA_BYTES} bytes`);
   }
@@ -202,7 +218,45 @@ export function binaryToEmn(data: Uint8Array): EmnFile {
     throw new Error(`Decoded EMN file failed validation: ${JSON.stringify(validation.errors)}`);
   }
 
+  if (options?.unpackGames) {
+    return unpackEmnFile(emnFile);
+  }
+
   return emnFile;
+}
+
+/**
+ * Unpacks all condensed base64 deal strings across all embedded gameData sub-games in an EMN file into full Deal objects.
+ * Returns an UnpackedEmnFile where every game's deals array consists entirely of Deal objects.
+ */
+export function unpackEmnFile(emnFile: EmnFile): UnpackedEmnFile {
+  const validation = validateEmn(emnFile);
+  if (!validation.isValid) {
+    throw new Error(`Invalid EMN File: ${JSON.stringify(validation.errors)}`);
+  }
+  const cloned: EmnFile = JSON.parse(JSON.stringify(emnFile));
+  cloned.games = cloned.games.map((g) => ({
+    ...g,
+    gameData: unpackEgnFile(g.gameData),
+  }));
+  return cloned as UnpackedEmnFile;
+}
+
+/**
+ * Bitpacks all Deal objects across all embedded gameData sub-games in an EMN file into condensed base64 deal strings.
+ * Returns an EmnFile where every game's deals array consists entirely of packed deal strings.
+ */
+export function packEmnFile(emnFile: EmnFile): EmnFile {
+  const validation = validateEmn(emnFile);
+  if (!validation.isValid) {
+    throw new Error(`Invalid EMN File: ${JSON.stringify(validation.errors)}`);
+  }
+  const cloned: EmnFile = JSON.parse(JSON.stringify(emnFile));
+  cloned.games = cloned.games.map((g) => ({
+    ...g,
+    gameData: packEgnFile(g.gameData),
+  }));
+  return cloned;
 }
 
 /**
@@ -217,35 +271,44 @@ export const convertBinDataToEmnFile = binaryToEmn;
 
 /**
  * Encodes an EMN JSON string into Protobuf binary (.emnb) bytes.
+ * @param emnJsonStr The EMN JSON string representation.
+ * @param options Optional configuration (condenseGames defaults to true to bitpack deals).
  */
-export function convertEmnJsonToBinData(emnJsonStr: string): Uint8Array {
+export function convertEmnJsonToBinData(emnJsonStr: string, options?: EmnBinaryOptions): Uint8Array {
   const emnFile = JSON.parse(emnJsonStr) as EmnFile;
-  return convertEmnFileToBinData(emnFile);
+  return convertEmnFileToBinData(emnFile, options);
 }
 
 /**
  * Decodes Protobuf binary (.emnb) bytes into an EMN JSON string.
+ * @param data Binary bytes.
+ * @param options Optional configuration (unpackGames: true expands all sub-game deal strings).
  */
-export function convertBinDataToEmnJson(data: Uint8Array): string {
-  const emnFile = convertBinDataToEmnFile(data);
+export function convertBinDataToEmnJson(data: Uint8Array, options?: { unpackGames?: boolean }): string {
+  const emnFile = convertBinDataToEmnFile(data, options);
   return JSON.stringify(emnFile, null, 2);
 }
 
 /**
  * Converts an EMN JSON file to a serialized Protobuf binary (.emnb) file.
+ * @param emnJsonPath Path to the input EMN JSON file.
+ * @param outBinFilePath Path where output binary file will be written.
+ * @param options Optional configuration (condenseGames defaults to true to bitpack deals).
  */
-export function convertEmnJsonToBin(emnJsonPath: string, outBinFilePath: string): void {
+export function convertEmnJsonToBin(emnJsonPath: string, outBinFilePath: string, options?: EmnBinaryOptions): void {
   const jsonStr = fs.readFileSync(emnJsonPath, "utf8");
-  const binData = convertEmnJsonToBinData(jsonStr);
+  const binData = convertEmnJsonToBinData(jsonStr, options);
   fs.writeFileSync(outBinFilePath, binData);
 }
 
 /**
  * Converts a serialized Protobuf binary (.emnb) file to an EMN JSON string.
+ * @param binFilePath Path to the input binary .emnb file.
+ * @param options Optional configuration (unpackGames: true expands all sub-game deal strings).
  */
-export function convertBinToEmnJson(binFilePath: string): string {
+export function convertBinToEmnJson(binFilePath: string, options?: { unpackGames?: boolean }): string {
   const binData = fs.readFileSync(binFilePath);
-  return convertBinDataToEmnJson(binData);
+  return convertBinDataToEmnJson(binData, options);
 }
 
 /**

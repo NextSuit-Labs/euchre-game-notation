@@ -32,8 +32,9 @@ Examples:
   emn-match-convert match.emnb match.emn
 
 Options:
-  --help, -h      Show this help message
-  --version, -v   Show version information
+  --expanded, --unpack, --no-condense  Expand/unpack embedded EGN game deals when converting
+  --help, -h                           Show this help message
+  --version, -v                        Show version information
 `);
 }
 
@@ -69,14 +70,15 @@ function main() {
 
   try {
     const isBinInput = inputPath.endsWith(".emnb") || detectEmnBinaryFormat(inputPath);
+    const isExpanded = flags.includes("--expanded") || flags.includes("--unpack") || flags.includes("--no-condense");
 
     if (isBinInput) {
-      console.log(`Converting binary EMN match "${inputPath}" to JSON "${outputPath}"...`);
-      const jsonStr = convertBinToEmnJson(inputPath);
+      console.log(`Converting binary EMN match "${inputPath}" to JSON "${outputPath}" (unpackGames=${isExpanded})...`);
+      const jsonStr = convertBinToEmnJson(inputPath, { unpackGames: isExpanded });
       fs.writeFileSync(outputPath, jsonStr, "utf8");
     } else {
-      console.log(`Converting JSON EMN match "${inputPath}" to binary "${outputPath}"...`);
-      convertEmnJsonToBin(inputPath, outputPath);
+      console.log(`Converting JSON EMN match "${inputPath}" to binary "${outputPath}" (condenseGames=${!isExpanded})...`);
+      convertEmnJsonToBin(inputPath, outputPath, { condenseGames: !isExpanded });
     }
     console.log("EMN Conversion completed successfully!");
   } catch (err: any) {

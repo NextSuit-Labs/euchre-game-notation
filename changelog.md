@@ -4,6 +4,17 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.5] - 2026-07-31
+
+### Added
+- **`UnpackedEmnFile` & `UnpackedEmnGameEntry` Types**: Added `UnpackedEmnFile` and `UnpackedEmnGameEntry` TypeScript interfaces (`src/emn/types.ts`) representing an `EmnFile` where all embedded sub-game `gameData` objects have fully expanded `Deal` arrays (`UnpackedEgnFile`).
+- **`unpackEmnFile` & `packEmnFile` Helpers**: Added `unpackEmnFile(emnFile)` and `packEmnFile(emnFile)` helper functions (`src/emn/converter.ts`) to expand or bitpack all deal strings across all embedded sub-games in an EMN match file.
+- **Automatic Deal Bitpacking & Unpacking in `.emnb`**: Added `EmnBinaryOptions` (`{ condenseGames?: boolean }`) to `emnToBinary`, `convertEmnFileToBinData`, `convertEmnJsonToBinData`, and `convertEmnJsonToBin` (defaults to `true` for maximum binary compression). Added `{ unpackGames?: boolean }` decoding options to `binaryToEmn`, `convertBinDataToEmnFile`, `convertBinDataToEmnJson`, and `convertBinToEmnJson`.
+- **`isEmnFile` Type Guard**: Added `isEmnFile(data: unknown): data is EmnFile` type guard in `src/emn/validator.ts` (re-exported at root).
+- **Package Subpath `exports` Map**: Configured `"exports"` in `package.json` mapping top-level `.` and `./emn` subpaths for clean ESM/CommonJS resolution across Node.js, Vite, Webpack 5, and Next.js.
+- **CLI Flags**: Updated `emn-match-convert` CLI to support `--expanded` / `--unpack` / `--no-condense` flags for controlling deal packing/unpacking during `.emn` $\leftrightarrow$ `.emnb` conversions.
+- **Out-of-Bounds Protection**: Added bounds validation in `extractEgnFromEmn` throwing descriptive errors if `gameIndex` is out of bounds or negative.
+
 ## [1.4.4] - 2026-07-29
 
 ### Added

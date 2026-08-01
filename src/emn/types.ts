@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EgnFile, PlayerObject, PlayerId } from "../types";
+import { EgnFile, UnpackedEgnFile, PlayerObject, PlayerId } from "../types";
 
 export type MatchType =
   | "BEST_OF_N"
@@ -68,4 +68,15 @@ export interface EmnFile {
   version: string;
   metadata: MatchMetadata;
   games: EmnGameEntry[];
+}
+
+export interface UnpackedEmnGameEntry extends Omit<EmnGameEntry, "gameData"> {
+  gameData: UnpackedEgnFile;
+}
+
+/**
+ * An EmnFile where all embedded gameData sub-games have fully expanded Deal objects (no base64 deal strings).
+ */
+export interface UnpackedEmnFile extends Omit<EmnFile, "games"> {
+  games: UnpackedEmnGameEntry[];
 }

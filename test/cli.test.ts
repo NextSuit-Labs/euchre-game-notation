@@ -22,7 +22,7 @@ import { collectAnalysisPropertyNames } from "../src/cli-baseline-egn";
 import { validateEgn } from "../src/validator";
 import { VERSION } from "../src/version";
 
-const cliPath = path.resolve(__dirname, "../dist/src/cli.js");
+const cliPath = path.resolve(__dirname, "../dist/src/cli-convert.js");
 const baselineEgnCliPath = path.resolve(__dirname, "../dist/src/cli-baseline-egn.js");
 const bitpackCliPath = path.resolve(__dirname, "../dist/src/cli-bitpack.js");
 const upgradeCliPath = path.resolve(__dirname, "../dist/src/cli-upgrade.js");
