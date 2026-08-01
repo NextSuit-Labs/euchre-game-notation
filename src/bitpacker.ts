@@ -15,29 +15,8 @@
  */
 
 import { Deal, BiddingPhase, TrickPlayPhase, Call, AlternativeLine, Phase } from "./types";
-
-const SUITS = ["s", "h", "c", "d"];
-
-// All ranks from lowest to highest (for deck building)
-const ALL_RANKS = ["6", "7", "8", "9", "T", "J", "Q", "K", "A"];
-
-// Min-rank to 2-bit code: 0=9 (24-card), 1=8 (28-card), 2=7 (32-card), 3=6 (36-card)
-const MIN_RANK_TO_CODE: Record<number, number> = { 9: 0, 8: 1, 7: 2, 6: 3 };
-const CODE_TO_MIN_RANK: number[] = [9, 8, 7, 6];
-
-/**
- * Builds the ordered deck for a given minimum rank.
- * @param minRank Lowest card rank in the deck (9, 8, 7, or 6). Default 9.
- */
-function buildDeck(minRank: number = 9): string[] {
-  const rankStr = String(minRank);
-  const startIdx = ALL_RANKS.indexOf(rankStr);
-  const ranks = startIdx >= 0 ? ALL_RANKS.slice(startIdx) : ALL_RANKS.slice(ALL_RANKS.indexOf("9"));
-  return ranks.flatMap((rank) => SUITS.map((suit) => rank + suit));
-}
-
-/** Standard 24-card deck (min_rank = 9) used by V0 and V1. */
-const STANDARD_DECK = buildDeck(9);
+import { SUITS, MIN_RANK_TO_CODE, CODE_TO_MIN_RANK, buildDeck, STANDARD_DECK, encodeCard, encodeCardFromDeck, encodeR1Call, encodeR2Call } from "./card-encoding";
+import { BitReader, encodeInteger, encodeBoolean, binaryStringToBase64Url, base64UrlToBinaryString, encodeString, decodeString } from "./bitstream";
 
 /**
  * Options for {@link packDeal}.
@@ -70,122 +49,7 @@ export interface PackOptions {
 // Primitive encoders / decoders
 // ---------------------------------------------------------------------------
 
-function encodeInteger(value: number, maxValue: number): string {
-  const bitLen = maxValue.toString(2).length;
-  return value.toString(2).padStart(bitLen, "0");
-}
-
-function encodeCard(card: string, cardsRemaining: string[]): string {
-  const index = cardsRemaining.indexOf(card);
-  if (index === -1) {
-    throw new Error(`Card ${card} not found in remaining cards.`);
-  }
-  return encodeInteger(index, cardsRemaining.length - 1);
-}
-
-function encodeCardFromDeck(card: string, deck: string[]): string {
-  const index = deck.indexOf(card);
-  if (index === -1) {
-    throw new Error(`Card ${card} not found in deck.`);
-  }
-  return encodeInteger(index, deck.length - 1);
-}
-
-function encodeR1Call(call: string): string {
-  return call === "Pass" ? "0" : "1";
-}
-
-function encodeR2Call(call: string, possibleSuits: string[]): string {
-  if (call === "Pass") {
-    return "00";
-  } else {
-    const char = call[0].toLowerCase();
-    const index = possibleSuits.indexOf(char) + 1;
-    return encodeInteger(index, 3);
-  }
-}
-
-function encodeBoolean(value: boolean): string {
-  return value ? "1" : "0";
-}
-
-export function binaryStringToBase64Url(binaryStr: string): string {
-  const paddedStr = binaryStr.padEnd(Math.ceil(binaryStr.length / 8) * 8, "0");
-  let byteString = "";
-  for (let i = 0; i < paddedStr.length; i += 8) {
-    const byte = parseInt(paddedStr.slice(i, i + 8), 2);
-    byteString += String.fromCharCode(byte);
-  }
-  const base64 = Buffer.from(byteString, "binary").toString("base64");
-  return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-
-export function base64UrlToBinaryString(base64Url: string): string {
-  let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-  const padding = base64.length % 4;
-  if (padding > 0) {
-    base64 += "=".repeat(4 - padding);
-  }
-  const buffer = Buffer.from(base64, "base64");
-  return Array.from(buffer)
-    .map((byte) => byte.toString(2).padStart(8, "0"))
-    .join("");
-}
-
-class BitReader {
-  private pos = 0;
-  constructor(private binaryStr: string) { }
-
-  readBits(numBits: number): string {
-    if (this.pos + numBits > this.binaryStr.length) {
-      throw new Error("Not enough bits to read");
-    }
-    const bits = this.binaryStr.slice(this.pos, this.pos + numBits);
-    this.pos += numBits;
-    return bits;
-  }
-
-  remainingBits(): number {
-    return this.binaryStr.length - this.pos;
-  }
-
-  readInteger(maxValue: number): number {
-    const bitLen = maxValue.toString(2).length;
-    const bits = this.readBits(bitLen);
-    return parseInt(bits, 2);
-  }
-
-  readBoolean(): boolean {
-    return this.readBits(1) === "1";
-  }
-
-  hasMoreBits(): boolean {
-    return this.pos < this.binaryStr.length;
-  }
-
-  peekRemaining(): string {
-    return this.binaryStr.slice(this.pos);
-  }
-}
-
-function encodeString(str: string): string {
-  const bytes = Buffer.from(str, "utf8");
-  let bitStr = encodeInteger(bytes.length, 65535); // 16 bits
-  for (const byte of bytes) {
-    bitStr += byte.toString(2).padStart(8, "0");
-  }
-  return bitStr;
-}
-
-function decodeString(reader: BitReader): string {
-  const len = reader.readInteger(65535); // 16 bits
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    const bits = reader.readBits(8);
-    bytes[i] = parseInt(bits, 2);
-  }
-  return Buffer.from(bytes).toString("utf8");
-}
+export { binaryStringToBase64Url, base64UrlToBinaryString };
 
 function encodeAnnotations(annotations: Record<number, string[]> | undefined): string {
   const keys = Object.keys(annotations || {})
@@ -826,7 +690,7 @@ function unpackDealV2(reader: BitReader, binaryString: string, dealNumber: numbe
         const phaseType = reader.readBits(1);
         if (phaseType === "0") {
           const biddingPhase = decodeBiddingPhase(reader, upCard, branchIndex, numPlayers, 2, deck);
-          biddingPhase.phaseNumber = branchIndex + p;
+          biddingPhase.phaseNumber = 0;
           altIsAlone = biddingPhase.isAlone ?? false;
           altHasDefendAlone = biddingPhase.aloneDefender !== undefined && biddingPhase.aloneDefender >= 0;
           phases.push(biddingPhase);
@@ -845,7 +709,7 @@ function unpackDealV2(reader: BitReader, binaryString: string, dealNumber: numbe
             }
           }
           const playPhase = decodePlayPhase(reader, altIsAlone, altCardsRemaining, numPlayers, firstTrickCards, altHasDefendAlone);
-          playPhase.phaseNumber = branchIndex + p;
+          playPhase.phaseNumber = 1;
           phases.push(playPhase);
         }
       }
@@ -923,7 +787,7 @@ function unpackDealV3(reader: BitReader, binaryString: string, dealNumber: numbe
         const phaseType = reader.readBits(1);
         if (phaseType === "0") {
           const biddingPhase = decodeBiddingPhase(reader, upCard, branchIndex, numPlayers, 3, deck);
-          biddingPhase.phaseNumber = branchIndex + p;
+          biddingPhase.phaseNumber = 0;
           altIsAlone = biddingPhase.isAlone ?? false;
           altHasDefendAlone = biddingPhase.aloneDefender !== undefined && biddingPhase.aloneDefender >= 0;
           phases.push(biddingPhase);
@@ -942,7 +806,7 @@ function unpackDealV3(reader: BitReader, binaryString: string, dealNumber: numbe
             }
           }
           const playPhase = decodePlayPhase(reader, altIsAlone, altCardsRemaining, numPlayers, firstTrickCards, altHasDefendAlone);
-          playPhase.phaseNumber = branchIndex + p;
+          playPhase.phaseNumber = 1;
           phases.push(playPhase);
         }
       }
@@ -1007,7 +871,7 @@ function unpackDealV1(reader: BitReader, binaryString: string, dealNumber: numbe
         const phaseType = reader.readBits(1);
         if (phaseType === "0") {
           const biddingPhase = decodeBiddingPhase(reader, upCard, branchIndex, 4, 1, STANDARD_DECK);
-          biddingPhase.phaseNumber = branchIndex + p;
+          biddingPhase.phaseNumber = 0;
           altIsAlone = biddingPhase.isAlone ?? false;
           phases.push(biddingPhase);
         } else {
@@ -1025,7 +889,7 @@ function unpackDealV1(reader: BitReader, binaryString: string, dealNumber: numbe
             }
           }
           const playPhase = decodePlayPhase(reader, altIsAlone, altCardsRemaining, 4, firstTrickCards);
-          playPhase.phaseNumber = branchIndex + p;
+          playPhase.phaseNumber = 1;
           phases.push(playPhase);
         }
       }

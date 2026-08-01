@@ -16,11 +16,32 @@
 
 import { describe, it, expect } from "@jest/globals";
 import { validateEgn } from "../src/validator";
-import { convertEgnJsonToBin, convertBinToEgnJson } from "../src/converter";
+import { convertEgnJsonToBin, convertBinToEgnJson, unpackEgnFile, packEgnFile } from "../src/converter";
+import { upgradeEgn } from "../src/cli-upgrade";
+import { validateEmn } from "../src/emn/validator";
+import { emnToBinary, binaryToEmn, unpackEmnFile, packEmnFile } from "../src/emn/converter";
+import { extractAllEgnsFromEmn } from "../src/emn/extractor";
+import { EgnFile, UnpackedEgnFile } from "../src/types";
+import { EmnFile, UnpackedEmnFile } from "../src/emn/types";
 import * as fs from "fs";
 import * as path from "path";
 
 const EXAMPLES_DIR = path.resolve(__dirname, "../examples");
+
+function getFilesRecursively(dir: string, fileExt: string): string[] {
+  const results: string[] = [];
+  const list = fs.readdirSync(dir);
+  for (const file of list) {
+    const filePath = path.join(dir, file);
+    const stat = fs.statSync(filePath);
+    if (stat && stat.isDirectory()) {
+      results.push(...getFilesRecursively(filePath, fileExt));
+    } else if (file.endsWith(fileExt)) {
+      results.push(filePath);
+    }
+  }
+  return results;
+}
 
 // Normalize helper to compare original JSON and roundtrips
 function normalizeEgnObj(obj: any, isCondensed = false, isRuleset = false): any {
@@ -46,18 +67,6 @@ function normalizeEgnObj(obj: any, isCondensed = false, isRuleset = false): any 
       // Ignore keys not preserved in condensed mode
       if (isCondensed && [
         "cardExchanges"
-      ].includes(key)) {
-        continue;
-      }
-
-      // Phase numbers can be 0-based or 1-based; sequence in array dictates order
-      if (key === "phaseNumber" || key === "phase_number") {
-        continue;
-      }
-
-      // Skip play phase properties that are invalid or legacy
-      if (isPlayPhase && [
-        "isAlone", "is_alone", "aloneDefender", "alone_defender"
       ].includes(key)) {
         continue;
       }
@@ -104,33 +113,59 @@ function normalizeEgnObj(obj: any, isCondensed = false, isRuleset = false): any 
   return obj;
 }
 
-describe("EGN Example Files Roundtrip Verification", () => {
-  const exampleFiles = fs.readdirSync(EXAMPLES_DIR)
-    .filter(file => file.endsWith(".egn"));
+describe("EGN All Example Files Roundtrip & Bitpacker Verification", () => {
+  const allEgnFiles = getFilesRecursively(EXAMPLES_DIR, ".egn");
 
-  it("should find example files to verify", () => {
-    expect(exampleFiles.length).toBeGreaterThan(0);
+  it("should find all example .egn files recursively across subdirectories", () => {
+    expect(allEgnFiles.length).toBeGreaterThanOrEqual(30);
   });
 
-  exampleFiles.forEach(fileName => {
-    describe(`Example: ${fileName}`, () => {
-      const filePath = path.join(EXAMPLES_DIR, fileName);
+  allEgnFiles.forEach(filePath => {
+    const relativePath = path.relative(EXAMPLES_DIR, filePath);
+    describe(`Example: ${relativePath}`, () => {
       const fileContent = fs.readFileSync(filePath, "utf8");
-      const originalObj = JSON.parse(fileContent);
+      const originalObj = JSON.parse(fileContent) as EgnFile;
 
-      it("should be valid according to the EGN JSON schema", () => {
+      it("should be valid according to the EGN JSON schema (or valid after upgrade)", () => {
         const result = validateEgn(originalObj);
         if (!result.isValid) {
-          console.error(`Validation failed for ${fileName}:`, result.errors);
+          // If legacy, verify that upgrade produces a valid EGN
+          const upgraded = upgradeEgn(originalObj);
+          expect(validateEgn(upgraded).isValid).toBe(true);
+        } else {
+          expect(result.isValid).toBe(true);
         }
-        expect(result.isValid).toBe(true);
       });
 
-      it("should roundtrip correctly in expanded mode", () => {
-        const tempBinPath = path.join(EXAMPLES_DIR, `${fileName}.expanded.temp.egnb`);
+      it("should successfully pack and unpack deal objects", () => {
+        const egnToTest = upgradeEgn(originalObj);
+        const unpacked: UnpackedEgnFile = unpackEgnFile(egnToTest);
+        expect(unpacked.fileType).toBe("Euchre Game Notation");
+
+        // Verify that deals are expanded objects
+        unpacked.deals.forEach(deal => {
+          expect(typeof deal).toBe("object");
+          expect(deal).toHaveProperty("dealNumber");
+        });
+
+        // Pack back to condensed EGN
+        const repacked: EgnFile = packEgnFile(unpacked);
+        repacked.deals.forEach(deal => {
+          expect(typeof deal).toBe("string");
+        });
+
+        // Roundtrip back to unpacked and assert equivalence
+        const roundtripped = unpackEgnFile(repacked);
+        expect(normalizeEgnObj(roundtripped.deals, true)).toEqual(normalizeEgnObj(unpacked.deals, true));
+      });
+
+      it("should roundtrip correctly in expanded mode Protobuf", () => {
+        const tempBinPath = path.join(path.dirname(filePath), `${path.basename(filePath)}.expanded.temp.egnb`);
+        const egnToTest = upgradeEgn(originalObj);
+        const jsonToConvert = JSON.stringify(egnToTest);
         try {
           // 1. Convert JSON to expanded binary Protobuf
-          convertEgnJsonToBin(fileContent, tempBinPath, false);
+          convertEgnJsonToBin(jsonToConvert, tempBinPath, false);
           expect(fs.existsSync(tempBinPath)).toBe(true);
 
           // 2. Convert binary Protobuf back to JSON
@@ -140,8 +175,8 @@ describe("EGN Example Files Roundtrip Verification", () => {
           // 3. Validate roundtripped EGN
           expect(validateEgn(backObj).isValid).toBe(true);
 
-          // 4. Assert content parity (using normalizeEgnObj to handle Protobuf default representations)
-          expect(normalizeEgnObj(backObj, false)).toEqual(normalizeEgnObj(originalObj, false));
+          // 4. Assert content parity
+          expect(normalizeEgnObj(backObj, false)).toEqual(normalizeEgnObj(egnToTest, false));
         } finally {
           if (fs.existsSync(tempBinPath)) {
             fs.unlinkSync(tempBinPath);
@@ -149,11 +184,13 @@ describe("EGN Example Files Roundtrip Verification", () => {
         }
       });
 
-      it("should roundtrip correctly in condensed mode", () => {
-        const tempBinPath = path.join(EXAMPLES_DIR, `${fileName}.temp.egnb`);
+      it("should roundtrip correctly in condensed mode Protobuf", () => {
+        const tempBinPath = path.join(path.dirname(filePath), `${path.basename(filePath)}.temp.egnb`);
+        const egnToTest = upgradeEgn(originalObj);
+        const jsonToConvert = JSON.stringify(egnToTest);
         try {
           // 1. Convert JSON to condensed binary Protobuf
-          convertEgnJsonToBin(fileContent, tempBinPath, true);
+          convertEgnJsonToBin(jsonToConvert, tempBinPath, true);
           expect(fs.existsSync(tempBinPath)).toBe(true);
 
           // 2. Convert binary Protobuf back to JSON
@@ -163,13 +200,66 @@ describe("EGN Example Files Roundtrip Verification", () => {
           // 3. Validate roundtripped EGN
           expect(validateEgn(backObj).isValid).toBe(true);
 
-          // 4. Assert content parity (ignoring cards/exchanges omitted by the bitpacker)
-          expect(normalizeEgnObj(backObj, true)).toEqual(normalizeEgnObj(originalObj, true));
+          // 4. Assert content parity (ignoring cardExchanges omitted by bitpacker)
+          expect(normalizeEgnObj(backObj, true)).toEqual(normalizeEgnObj(egnToTest, true));
         } finally {
           if (fs.existsSync(tempBinPath)) {
             fs.unlinkSync(tempBinPath);
           }
         }
+      });
+    });
+  });
+});
+
+describe("EMN Example Files Bitpacker & Binary Conversion Verification", () => {
+  const allEmnFiles = getFilesRecursively(EXAMPLES_DIR, ".emn");
+
+  it("should find example .emn files", () => {
+    expect(allEmnFiles.length).toBeGreaterThan(0);
+  });
+
+  allEmnFiles.forEach(filePath => {
+    const relativePath = path.relative(EXAMPLES_DIR, filePath);
+    describe(`EMN Match: ${relativePath}`, () => {
+      const fileContent = fs.readFileSync(filePath, "utf8");
+      const emnObj = JSON.parse(fileContent) as EmnFile;
+
+      it("should be valid according to the EMN schema", () => {
+        expect(validateEmn(emnObj).isValid).toBe(true);
+      });
+
+      it("should roundtrip through bitpacked Protobuf binary (.emnb) and unpack games", () => {
+        // 1. Convert EMN to bitpacked binary buffer
+        const binBuffer = emnToBinary(emnObj, { condenseGames: true });
+        expect(binBuffer.length).toBeGreaterThan(0);
+
+        // 2. Decode binary buffer to unpacked EMN
+        const decodedUnpacked = binaryToEmn(binBuffer, { unpackGames: true }) as UnpackedEmnFile;
+        expect(decodedUnpacked.fileType).toBe("Euchre Match Notation");
+
+        // Verify sub-games contain expanded Deal objects
+        decodedUnpacked.games.forEach(g => {
+          g.gameData.deals.forEach(deal => {
+            expect(typeof deal).toBe("object");
+          });
+        });
+
+        // 3. Re-pack unpacked EMN to standard EmnFile
+        const repackedEmn = packEmnFile(decodedUnpacked);
+        expect(validateEmn(repackedEmn).isValid).toBe(true);
+      });
+
+      it("should extract all embedded EGN games and verify each extracts properly", () => {
+        const egns = extractAllEgnsFromEmn(emnObj);
+        expect(egns.length).toBe(emnObj.games.length);
+
+        egns.forEach(egn => {
+          expect(validateEgn(egn).isValid).toBe(true);
+          const unpacked = unpackEgnFile(egn);
+          const repacked = packEgnFile(unpacked);
+          expect(normalizeEgnObj(unpackEgnFile(repacked).deals, true)).toEqual(normalizeEgnObj(unpacked.deals, true));
+        });
       });
     });
   });

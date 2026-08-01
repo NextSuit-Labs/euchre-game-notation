@@ -4,6 +4,15 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.7] - 2026-08-01
+
+### Fixed & Improved
+- **Phase 1 Internal Module Decoupling**: Decoupled core library infrastructure into dedicated files (`src/bitstream.ts`, `src/hashing.ts`, `src/card-encoding.ts`) in preparation for multi-game `@tgn/core` architecture while maintaining 100% backward compatibility for all top-level exports.
+- **Binary Decoding Phase Normalization**: Updated `convertBinDataToEgnFile` (`src/converter.ts`) to ensure decoded `.egnb` binary files automatically normalize phase numbers to standard 0-based values (`0` for bidding, `1` for play).
+- **Bitpacker `phaseNumber` Fix for Alternative Lines**: Fixed phase number calculation when unpacking alternative lines in `unpackDealV1`, `unpackDealV2`, and `unpackDealV3` (`src/bitpacker.ts`). Previously set `phaseNumber` to `branchIndex + p`; now correctly assigns standard 0-based phase numbers (`0` for bidding, `1` for trick play).
+- **`upgradeEgn` Alternative Line Phase Normalization**: Updated `upgradeEgn` (`src/cli-upgrade.ts`) to recursively normalize legacy 1-based phase numbers (1 $\rightarrow$ 0, 2 $\rightarrow$ 1) across both main `deal.phases` AND nested `deal.alternativeLines[i].phases`, as well as stripping non-schema legacy fields from `TRICK_PLAY` phases.
+- **Comprehensive Recursive Example Test Suite**: Updated `test/examples-roundtrip.test.ts` to recursively scan and verify all 42 `.egn` and `.emn` files across all subdirectories in `examples/`. Expanded deal bitpacking and Protobuf test coverage from 149 to **301 passed unit tests**.
+
 ## [1.4.6] - 2026-07-31
 
 ### Added

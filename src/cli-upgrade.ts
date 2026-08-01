@@ -140,6 +140,42 @@ function upgradeEgn(input: string | EgnFile): string | EgnFile {
   // Recursively upgrade all properties
   const upgraded = upgradeObject(parsed);
 
+  // Normalize 1-based legacy phase numbers (1 -> 0, 2 -> 1) across main deals and alternative lines
+  if (Array.isArray(upgraded.deals)) {
+    upgraded.deals.forEach((deal: any) => {
+      const normalizePhases = (phases: any[]) => {
+        if (Array.isArray(phases)) {
+          phases.forEach((ph: any, idx: number) => {
+            if (ph.type === "EUCHRE_BIDDING") {
+              ph.phaseNumber = 0;
+            } else if (ph.type === "TRICK_PLAY" || ph.type === "TRICK_PLAY_PHASE") {
+              ph.phaseNumber = 1;
+              delete ph.isAlone;
+              delete ph.is_alone;
+              delete ph.aloneDefender;
+              delete ph.alone_defender;
+              delete ph.initialLead;
+              delete ph.initial_lead;
+            } else if (typeof ph.phaseNumber === "number" && ph.phaseNumber > 0 && phases.length <= 2) {
+              ph.phaseNumber = idx;
+            }
+          });
+        }
+      };
+
+      if (deal && typeof deal === "object") {
+        normalizePhases(deal.phases);
+        if (Array.isArray(deal.alternativeLines)) {
+          deal.alternativeLines.forEach((alt: any) => {
+            if (alt && typeof alt === "object") {
+              normalizePhases(alt.phases);
+            }
+          });
+        }
+      }
+    });
+  }
+
   return typeof input === "string" ? JSON.stringify(upgraded, null, 2) : upgraded as EgnFile;
 }
 

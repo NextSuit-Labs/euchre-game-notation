@@ -640,5 +640,25 @@ describe("EGN Protobuf Converter Core", () => {
       expect(baselineHash).toBe(cleanBaselineHash);
     });
   });
+
+  describe("Binary Decoding Phase Number Normalization", () => {
+    it("should normalize legacy 1-based phaseNumbers to standard 0/1 during binary decoding", () => {
+      const unpackedMock = unpackEgnFile(validMockData);
+      const deal = unpackedMock.deals[0];
+      deal.phases[0].phaseNumber = 1 as any;
+      if (deal.phases[1]) {
+        deal.phases[1].phaseNumber = 2 as any;
+      }
+
+      const binData = convertEgnFileToBinData(unpackedMock as any, false);
+      const decoded = convertBinDataToEgnFile(binData, false);
+
+      const decodedDeal = decoded.deals[0] as Deal;
+      expect(decodedDeal.phases[0].phaseNumber).toBe(0);
+      if (decodedDeal.phases[1]) {
+        expect(decodedDeal.phases[1].phaseNumber).toBe(1);
+      }
+    });
+  });
 });
 

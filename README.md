@@ -16,9 +16,9 @@ For a comprehensive guide on gameplay, scoring, and card rankings, see the [Stan
 
 ## Latest Release
 
-- **Current npm package:** `1.4.6`
+- **Current npm package:** `1.4.7`
 - **Schema family:** `1.4` (EGN) / `1.1` (EMN)
-- **Highlights:** Added `hashEgn` / `hashFullEgn` canonical SHA-256 hash helpers for full EGN files, `UnpackedEmnFile` type, `unpackEmnFile`/`packEmnFile` helpers, automatic EMN deal bitpacking (`.emnb`), `isEmnFile` type guard, package subpath `exports` map, and bounds protection in `extractEgnFromEmn`.
+- **Highlights:** Phase 1 module decoupling (`src/bitstream.ts`, `src/hashing.ts`, `src/card-encoding.ts`), binary decoding phase normalization, alternative line phase number bitpacking fix, legacy upgrade phase normalization, and expanded 301-test recursive example suite.
 
 See [changelog.md](changelog.md) for full release details.
 

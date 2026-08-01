@@ -56,7 +56,7 @@
       ]
     },
     {
-      "dealNumber": 0,
+      "dealNumber": 1,
       "initialState": {
         "dealer": 0,
         "upCard": "Ah"

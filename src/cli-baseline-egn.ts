@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import * as crypto from "crypto";
 import * as fs from "fs";
 import * as path from "path";
 import egnSchema from "../schemas/egn-schema-v1.json";
@@ -23,6 +22,7 @@ import { convertBinToEgnJson, convertEgnJsonToBin } from "./converter";
 import { validateEgn } from "./validator";
 import { EgnFile } from "./types";
 import { PACKAGE_VERSION } from "./version";
+import { hashBaselineEgn } from "./hashing";
 
 function showHelp() {
   console.log(`
@@ -135,43 +135,7 @@ export function convertToBaselineEgn(value: unknown): unknown {
   return value;
 }
 
-function stableStringify(value: unknown): string {
-  if (Array.isArray(value)) {
-    return `[${value.map(stableStringify).join(",")}]`;
-  }
-
-  if (value && typeof value === "object") {
-    const entries = Object.entries(value as Record<string, unknown>)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([key, child]) => `${JSON.stringify(key)}:${stableStringify(child)}`);
-    return `{${entries.join(",")}}`;
-  }
-
-  return JSON.stringify(value);
-}
-
-/**
- * Generates a deterministic SHA-256 hex hash of the full EGN file (including all annotations,
- * alternative lines, and metadata). Uses key sorting for canonical hashing.
- */
-export function hashEgn(egn: EgnFile): string {
-  const canonical = stableStringify(egn);
-  return crypto.createHash("sha256").update(canonical).digest("hex");
-}
-
-/**
- * Alias for hashEgn. Generates a SHA-256 hash of the complete EGN file.
- */
-export const hashFullEgn = hashEgn;
-
-/**
- * Generates a SHA-256 hash of the baseline EGN (with all analysis annotations and alternative lines stripped).
- */
-export function hashBaselineEgn(egn: EgnFile): string {
-  const stripped = convertToBaselineEgn(egn) as Record<string, unknown>;
-  const canonical = stableStringify(stripped);
-  return crypto.createHash("sha256").update(canonical).digest("hex");
-}
+export { stableStringify, hashEgn, hashFullEgn, hashBaselineEgn } from "./hashing";
 
 function loadEgnFromInput(inputPath: string, condensed: boolean): EgnFile {
   const ext = path.extname(inputPath).toLowerCase();

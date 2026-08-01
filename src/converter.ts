@@ -457,6 +457,36 @@ export function convertBinDataToEgnFile(binData: Uint8Array, condensed?: boolean
     });
   }
 
+  // Ensure all decoded deals (expanded or condensed) use standard 0-based phase numbers (0 = bidding, 1 = play)
+  if (Array.isArray(mappedObj.deals)) {
+    mappedObj.deals.forEach((deal: any) => {
+      if (deal && typeof deal === "object") {
+        const normalizePhases = (phases: any[]) => {
+          if (Array.isArray(phases)) {
+            phases.forEach((ph: any, idx: number) => {
+              if (ph.type === "EUCHRE_BIDDING") {
+                ph.phaseNumber = 0;
+              } else if (ph.type === "TRICK_PLAY" || ph.type === "TRICK_PLAY_PHASE") {
+                ph.phaseNumber = 1;
+              } else if (typeof ph.phaseNumber === "number" && ph.phaseNumber > 0 && phases.length <= 2) {
+                ph.phaseNumber = idx;
+              }
+            });
+          }
+        };
+
+        normalizePhases(deal.phases);
+        if (Array.isArray(deal.alternativeLines)) {
+          deal.alternativeLines.forEach((alt: any) => {
+            if (alt && typeof alt === "object") {
+              normalizePhases(alt.phases);
+            }
+          });
+        }
+      }
+    });
+  }
+
   assertValidEgnFile(mappedObj, "Decoded binary failed EGN schema validation");
   return mappedObj;
 }
