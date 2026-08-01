@@ -4,6 +4,11 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.6] - 2026-07-31
+
+### Added
+- **`hashEgn` & `hashFullEgn` Functions**: Added `hashEgn(egn)` (and `hashFullEgn(egn)`) helper functions (`src/cli-baseline-egn.ts` & re-exported at top-level) to generate a deterministic SHA-256 hex hash of the complete EGN file (including all annotations, alternative lines, and metadata) using canonical key sorting.
+
 ## [1.4.5] - 2026-07-31
 
 ### Added

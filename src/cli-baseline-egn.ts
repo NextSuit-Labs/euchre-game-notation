@@ -95,7 +95,7 @@ function shouldStripProperty(key: string): boolean {
   return analysisPropertyNames.has(key);
 }
 
-function convertToBaselineEgn(value: unknown): unknown {
+export function convertToBaselineEgn(value: unknown): unknown {
   if (Array.isArray(value)) {
     return value
       .map((item) => convertToBaselineEgn(item))
@@ -150,7 +150,24 @@ function stableStringify(value: unknown): string {
   return JSON.stringify(value);
 }
 
-function hashBaselineEgn(egn: EgnFile): string {
+/**
+ * Generates a deterministic SHA-256 hex hash of the full EGN file (including all annotations,
+ * alternative lines, and metadata). Uses key sorting for canonical hashing.
+ */
+export function hashEgn(egn: EgnFile): string {
+  const canonical = stableStringify(egn);
+  return crypto.createHash("sha256").update(canonical).digest("hex");
+}
+
+/**
+ * Alias for hashEgn. Generates a SHA-256 hash of the complete EGN file.
+ */
+export const hashFullEgn = hashEgn;
+
+/**
+ * Generates a SHA-256 hash of the baseline EGN (with all analysis annotations and alternative lines stripped).
+ */
+export function hashBaselineEgn(egn: EgnFile): string {
   const stripped = convertToBaselineEgn(egn) as Record<string, unknown>;
   const canonical = stableStringify(stripped);
   return crypto.createHash("sha256").update(canonical).digest("hex");
@@ -258,5 +275,3 @@ function main() {
 if (require.main === module) {
   main();
 }
-
-export { hashBaselineEgn, convertToBaselineEgn };

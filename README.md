@@ -16,9 +16,9 @@ For a comprehensive guide on gameplay, scoring, and card rankings, see the [Stan
 
 ## Latest Release
 
-- **Current npm package:** `1.4.5`
+- **Current npm package:** `1.4.6`
 - **Schema family:** `1.4` (EGN) / `1.1` (EMN)
-- **Highlights:** Added `UnpackedEmnFile` type, `unpackEmnFile`/`packEmnFile` helpers, automatic EMN deal bitpacking (`.emnb`), `isEmnFile` type guard, package subpath `exports` map, and bounds protection in `extractEgnFromEmn`.
+- **Highlights:** Added `hashEgn` / `hashFullEgn` canonical SHA-256 hash helpers for full EGN files, `UnpackedEmnFile` type, `unpackEmnFile`/`packEmnFile` helpers, automatic EMN deal bitpacking (`.emnb`), `isEmnFile` type guard, package subpath `exports` map, and bounds protection in `extractEgnFromEmn`.
 
 See [changelog.md](changelog.md) for full release details.
 

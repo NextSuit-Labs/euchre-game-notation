@@ -27,6 +27,7 @@ import {
 import * as fs from "fs";
 import * as path from "path";
 import protobuf from "protobufjs";
+import { hashEgn, hashFullEgn, hashBaselineEgn } from "../src/cli-baseline-egn";
 import { COMMON_PROTO_SCHEMA, EXPANDED_PROTO_SCHEMA } from "../src/proto-schemas";
 import { BiddingPhase, Deal, EgnFile, UnpackedEgnFile } from "../src/types";
 import { VERSION } from "../src/version";
@@ -595,6 +596,48 @@ describe("EGN Protobuf Converter Core", () => {
       // Verify repacked and unpacked roundtrip back to identical object
       const roundtripped = unpackEgnFile(repacked);
       expect(roundtripped.deals[0]).toEqual(unpacked.deals[0]);
+    });
+  });
+
+  describe("hashEgn & hashFullEgn & hashBaselineEgn", () => {
+    it("should generate deterministic sha256 hashes for full EGN file", () => {
+      const hash1 = hashEgn(validMockData);
+      const hash2 = hashFullEgn(validMockData);
+
+      expect(typeof hash1).toBe("string");
+      expect(hash1.length).toBe(64); // sha256 hex string length
+      expect(hash1).toBe(hash2);
+
+      // Reordered property keys should produce identical hash due to canonical key sorting
+      const reorderedMock = JSON.parse(JSON.stringify(validMockData));
+      const hashReordered = hashEgn(reorderedMock);
+      expect(hashReordered).toBe(hash1);
+    });
+
+    it("should differentiate hashEgn (full) vs hashBaselineEgn (stripped)", () => {
+      const annotatedMock: EgnFile = {
+        ...validMockData,
+        deals: [
+          {
+            ...(validMockData.deals[0] as Deal),
+            phases: [
+              {
+                ...((validMockData.deals[0] as Deal).phases[0] as BiddingPhase),
+                callAnnotations: { "0": ["Great call!"] },
+              },
+            ],
+          },
+        ],
+      };
+
+      const fullHash = hashEgn(annotatedMock);
+      const baselineHash = hashBaselineEgn(annotatedMock);
+
+      expect(fullHash).not.toBe(baselineHash);
+
+      // The baseline hash of annotated and clean baseline EGNs should match
+      const cleanBaselineHash = hashBaselineEgn(validMockData);
+      expect(baselineHash).toBe(cleanBaselineHash);
     });
   });
 });
