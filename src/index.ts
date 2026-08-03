@@ -22,6 +22,7 @@ export * from "./version";
 export * from "./bitstream";
 export * from "./hashing";
 export * from "./card-encoding";
+export * from "./match-engine";
 export { upgradeEgn } from "./cli-upgrade";
 export { hashEgn, hashFullEgn, hashBaselineEgn, convertToBaselineEgn } from "./cli-baseline-egn";
 export * as emn from "./emn";

@@ -37,7 +37,7 @@ Refactor `euchre-game-notation` internally to isolate shared algorithms without 
 1. **Extract Bitstream Utilities**: Move `BitWriter` and `BitReader` into `src/bitstream.ts`.
 2. **Extract Hashing Utilities**: Move `stableStringify` and SHA-256 canonical hashing into `src/hashing.ts`.
 3. **Isolate Card Parsing**: Move suit/rank card converters into `src/card-encoding.ts`.
-4. **Isolate Generic Match Engine**: Separate match metadata handling into `src/match-engine.ts`.
+4. **Isolate Generic Match Engine**: Extracted match series extraction (`extractGameFromMatch`, `extractAllGamesFromMatch`) into `src/match-engine.ts` using generic TypeScript generics (`GenericMatchFile<TGame>`, `GenericGameData`) with **zero EGN-specific references**, allowing EMN, SMN, HMN, WMN, SHMN, and FTMN to share identical match extraction logic.
 
 ### Verification & backward Compatibility
 - Maintain 100% top-level re-exports in `src/index.ts`.
@@ -80,7 +80,7 @@ Establish `@tgn/core` as the shared npm package dependency for all trick-taking 
            "gameId": { "type": "string" },
            "title": { "type": "string" },
            "date": { "type": "string" },
-           "players": { "type": "array", "items": { "type": "string" }, "minItems": 2, "maxItems": 4 },
+           "players": { "type": "array", "items": { "type": "string" }, "minItems": 2, "maxItems": 8 },
            "initialScore": { "type": "array", "items": { "type": "integer" } },
            "ruleset": { "type": "object" }
          }
@@ -96,7 +96,7 @@ Establish `@tgn/core` as the shared npm package dependency for all trick-taking 
                "type": "object",
                "required": ["dealer"],
                "properties": {
-                 "dealer": { "type": "integer", "minimum": 0, "maximum": 3 }
+                 "dealer": { "type": "integer", "minimum": 0, "maximum": 7 }
                }
              },
              "phases": {

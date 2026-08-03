@@ -22,7 +22,7 @@ import { convertBinToEgnJson, convertEgnJsonToBin } from "./converter";
 import { validateEgn } from "./validator";
 import { EgnFile } from "./types";
 import { PACKAGE_VERSION } from "./version";
-import { hashBaselineEgn } from "./hashing";
+import { hashBaselineGame } from "./hashing";
 
 function showHelp() {
   console.log(`
@@ -135,7 +135,14 @@ export function convertToBaselineEgn(value: unknown): unknown {
   return value;
 }
 
-export { stableStringify, hashEgn, hashFullEgn, hashBaselineEgn } from "./hashing";
+/**
+ * Generates a SHA-256 hash of the baseline EGN (with all analysis annotations and alternative lines stripped).
+ */
+export function hashBaselineEgn(egn: EgnFile): string {
+  return hashBaselineGame(egn, convertToBaselineEgn);
+}
+
+export { stableStringify, hashEgn, hashFullEgn, convertToBaselineGame, hashGame, hashFullGame, hashBaselineGame } from "./hashing";
 
 function loadEgnFromInput(inputPath: string, condensed: boolean): EgnFile {
   const ext = path.extname(inputPath).toLowerCase();

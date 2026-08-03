@@ -5,6 +5,8 @@ This document outlines the architectural implementation plan for creating standa
 All four specifications (Euchre, Spades, Hearts, Whist) adhere to the same overarching **deterministic minimalism philosophy** and unified `deals` / `phases` schema hierarchy, enabling shared parser design, bitpacker algorithms, and replay engine visualization.
 
 > 📁 **See also:** [Phased Migration Plan](PHASED_MIGRATION_PLAN.md) for the step-by-step roadmap to extract `@tgn/core` and publish sibling game repositories.
+> 📁 **See also:** [Sheepshead Game Notation Plan](SHEEPSHEAD_GAME_NOTATION_PLAN.md) for 5-player Sheepshead and Called Ace mechanics.
+> 📁 **See also:** [French Tarot Game Notation Plan](FRENCH_TAROT_GAME_NOTATION_PLAN.md) for 78-card French Tarot and 5-player Called King mechanics.
 
 ---
 
@@ -38,7 +40,7 @@ Every game notation file shares the exact top-level JSON structure:
     "gameId": "unique-uuid",
     "title": "Evening Game #1",
     "date": "2026-08-01T12:00:00Z",
-    "players": ["Player A", "Player B", "Player C", "Player D"],
+    "players": ["Player A", "Player B", "Player C", "Player D"], // Supports 2 to 8 players depending on game type
     "initialScore": [0, 0],
     "ruleset": {}
   },
@@ -330,6 +332,8 @@ graph TD
 | **`spades-game-notation`** | Spades (`.sgn` / `.sgnb`) | 52-card 13-trick bitpacker, Nil/Blind Nil bidding validator | `npm install spades-game-notation` |
 | **`hearts-game-notation`** | Hearts (`.hgn` / `.hgnb`) | 3-card passing phase bitpacker, Shoot the Moon scoring engine | `npm install hearts-game-notation` |
 | **`whist-game-notation`** | Whist (`.wgn` / `.wgnb`) | Classic, Solo, & Minnesota Whist High/Low bidding | `npm install whist-game-notation` |
+| **`sheepshead-game-notation`** | Sheepshead (`.shgn` / `.shgnb`) | 32-card 6-trick 5-player bitpacker, Called Ace & Secret Partner mechanics | `npm install sheepshead-game-notation` |
+| **`french-tarot-game-notation`** | French Tarot (`.ftgn` / `.ftgnb`) | 78-card 18/15-trick bitpacker, 4-player & 5-player Called King formats | `npm install french-tarot-game-notation` |
 
 ---
 

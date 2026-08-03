@@ -4,6 +4,14 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.8] - 2026-08-02
+
+### Fixed & Improved
+- **Decoupled Generic Hashing Module (`src/hashing.ts`)**: Refactored `src/hashing.ts` to expose game-agnostic functions (`hashGame`, `hashFullGame`, `hashBaselineGame`, `convertToBaselineGame`) decoupled from `cli-baseline-egn.ts` and `egn-schema-v1.json` via injectable `BaselineConverterFn` callbacks. Re-exported EGN aliases (`hashEgn`, `hashFullEgn`, `hashBaselineEgn`) for 100% backward compatibility.
+- **Generic Match Engine (`src/match-engine.ts`)**: Extracted generic match series extraction (`extractGameFromMatch`, `extractAllGamesFromMatch`) into `src/match-engine.ts` using generic TypeScript interfaces (`GenericMatchFile<TGame>`, `GenericGameData`) with zero EGN-specific references, allowing EMN, SMN, HMN, WMN, SHMN, and FTMN to share identical match extraction logic.
+- **French Tarot & Cavalier Card Encoding**: Added `ALL_RANKS_WITH_CAVALIER`, `TRIUMPHS`, and `FULL_78_CARD_DECK` to `src/card-encoding.ts` and made `buildDeck(minRank, includeCavalier, includeTriumphs)` fully extensible for 78-card French Tarot decks.
+- **Multi-Game Architecture Specifications**: Added detailed implementation plans in `future/` for 5-Player Sheepshead (`SHEEPSHEAD_GAME_NOTATION_PLAN.md`) and 78-card French Tarot (`FRENCH_TAROT_GAME_NOTATION_PLAN.md`), including `red_suits_reverse_pip_order` ruleset options for traditional Tarot variants.
+
 ## [1.4.7] - 2026-08-01
 
 ### Fixed & Improved
