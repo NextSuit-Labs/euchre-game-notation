@@ -4,7 +4,7 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.8] - 2026-08-02
+## [1.4.8] - 2026-08-03
 
 ### Fixed & Improved
 - **Decoupled Generic Hashing Module (`src/hashing.ts`)**: Refactored `src/hashing.ts` to expose game-agnostic functions (`hashGame`, `hashFullGame`, `hashBaselineGame`, `convertToBaselineGame`) decoupled from `cli-baseline-egn.ts` and `egn-schema-v1.json` via injectable `BaselineConverterFn` callbacks. Re-exported EGN aliases (`hashEgn`, `hashFullEgn`, `hashBaselineEgn`) for 100% backward compatibility.
