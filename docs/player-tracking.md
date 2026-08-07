@@ -2,7 +2,7 @@
 
 ## Overview
 
-EGN supports rich player tracking through **Player Objects**, enabling unified player identification across multiple platforms and systems. This is essential for competitive Euchre, where players may participate in games across Euchre.com, tournament systems, communities, or custom platforms.
+EGN supports rich player tracking through **Player Objects**, enabling unified player identification across multiple platforms and systems. This is essential for competitive Euchre, where players may participate in games across Euchre websites, tournament systems, communities, or custom platforms.
 
 ## Basic Usage
 
@@ -145,7 +145,7 @@ Track players across communites with different player ids and external platforms
 
 When capturing games, include external IDs for players:
 
-1. **Euchre.com imports**: Automatically populate `playerIds` from Euchre.com user accounts
+1. **Euchre.site imports**: If supported, could automatically populate `playerIds` from that euchre.site user's account
 2. **Manual entry**: Provide UI fields for players to specify their account IDs on multiple platforms
 3. **Tournament mode**: Auto-populate from tournament registration data
 
