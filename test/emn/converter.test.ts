@@ -35,7 +35,7 @@ import {
 
 const mockSubEgn = {
   fileType: "Euchre Game Notation",
-  version: "1.4",
+  version: "1.5",
   metadata: {
     title: "Game 1",
     players: ["Alice", "Bob", "Charlie", "David"],

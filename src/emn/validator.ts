@@ -56,7 +56,7 @@ export function validateEmn(data: unknown): EmnValidationResult {
   if (emnData.version && !isSupportedEmnSchemaVersion(emnData.version)) {
     customErrors.push({
       instancePath: "/version",
-      message: `Unsupported EMN version '${emnData.version}'. Supported version is '1.1'.`,
+      message: `Unsupported EMN version '${emnData.version}'. Supported versions are '1.1' and '1.2'.`,
     });
   }
 

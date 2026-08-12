@@ -17,7 +17,7 @@
     },
     "version": {
       "type": "string",
-      "pattern": "^1\\.[1](?:\\.\\d+)?$"
+      "pattern": "^1\\.[12](?:\\.\\d+)?$"
     },
     "metadata": {
       "type": "object",
@@ -40,7 +40,18 @@
         },
         "date": {
           "type": "string",
-          "maxLength": 64
+          "maxLength": 64,
+          "anyOf": [
+            {
+              "format": "date-time"
+            },
+            {
+              "format": "date"
+            },
+            {
+              "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}([T ]\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?)?$"
+            }
+          ]
         },
         "players": {
           "type": "array",

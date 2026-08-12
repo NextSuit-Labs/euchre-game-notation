@@ -23,7 +23,7 @@ import { EgnFile } from "../../src/types";
 
 const mockSubEgn: EgnFile = {
   fileType: "Euchre Game Notation",
-  version: "1.4",
+  version: "1.5",
   metadata: {
     gameId: "game_01",
     title: "Game 1",
@@ -150,13 +150,13 @@ describe("EMN Combine Utility", () => {
   it("combines multiple EGN files into a single valid EMN file", () => {
     const g1: EgnFile = {
       fileType: "Euchre Game Notation",
-      version: "1.4",
+      version: "1.5",
       metadata: { players: ["Alice", "Bob", "Charlie", "David"], initialScore: [0, 0] },
       deals: [],
     };
     const g2: EgnFile = {
       fileType: "Euchre Game Notation",
-      version: "1.4",
+      version: "1.5",
       metadata: { players: ["Alice", "Charlie", "Bob", "Eve"], initialScore: [0, 0] },
       deals: [],
     };
@@ -208,7 +208,7 @@ describe("EMN Combine Utility", () => {
   it("automatically infers metadata.result when sub-EGN files contain finalScore", () => {
     const g1: EgnFile = {
       fileType: "Euchre Game Notation",
-      version: "1.4",
+      version: "1.5",
       metadata: {
         players: ["Alice", "Bob", "Charlie", "David"],
         initialScore: [0, 0],
@@ -218,7 +218,7 @@ describe("EMN Combine Utility", () => {
     };
     const g2: EgnFile = {
       fileType: "Euchre Game Notation",
-      version: "1.4",
+      version: "1.5",
       metadata: {
         players: ["Alice", "Bob", "Charlie", "David"],
         initialScore: [0, 0],
@@ -247,7 +247,7 @@ describe("EMN Combine Utility", () => {
   it("calculates individual cumulative points for PROGRESSIVE format", () => {
     const g1: EgnFile = {
       fileType: "Euchre Game Notation",
-      version: "1.4",
+      version: "1.5",
       metadata: {
         players: ["Alice", "Bob", "Charlie", "David"],
         initialScore: [0, 0],
@@ -257,7 +257,7 @@ describe("EMN Combine Utility", () => {
     };
     const g2: EgnFile = {
       fileType: "Euchre Game Notation",
-      version: "1.4",
+      version: "1.5",
       metadata: {
         players: ["Alice", "Charlie", "Bob", "David"],
         initialScore: [0, 0],
@@ -287,5 +287,51 @@ describe("EMN Combine Utility", () => {
       "p-04": 17,
     });
     expect(combined.metadata.result?.winner).toEqual(["p-03"]);
+  });
+
+  it("validates EMN files with date-only and blank dates in match metadata and gameData", () => {
+    const emnDateOnly: EmnFile = {
+      ...validEmnMock,
+      metadata: {
+        ...validEmnMock.metadata,
+        date: "2026-08-11",
+      },
+      games: [
+        {
+          gameIndex: 0,
+          playersOverride: ["p-01", "p-02", "p-03", "p-04"],
+          gameData: {
+            ...mockSubEgn,
+            metadata: {
+              ...mockSubEgn.metadata,
+              date: "2026-08-11",
+            },
+          },
+        },
+      ],
+    };
+    expect(validateEmn(emnDateOnly).isValid).toBe(true);
+
+    const emnBlankDate: EmnFile = {
+      ...validEmnMock,
+      metadata: {
+        ...validEmnMock.metadata,
+        date: "",
+      },
+      games: [
+        {
+          gameIndex: 0,
+          playersOverride: ["p-01", "p-02", "p-03", "p-04"],
+          gameData: {
+            ...mockSubEgn,
+            metadata: {
+              ...mockSubEgn.metadata,
+              date: "",
+            },
+          },
+        },
+      ],
+    };
+    expect(validateEmn(emnBlankDate).isValid).toBe(true);
   });
 });

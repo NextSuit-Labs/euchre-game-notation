@@ -16,7 +16,7 @@
 
 var vwec1 = {
   "fileType": "Euchre Game Notation",
-  "version": "1.4",
+  "version": "1.5",
   "metadata": {
     "title": "VWEC Finals - Hand 1",
     "description": "First deal of the Virtual World Euchre Championship Finals. Standard order-up.",
@@ -98,7 +98,7 @@ var vwec1 = {
 
 var vwec2 = {
   "fileType": "Euchre Game Notation",
-  "version": "1.4",
+  "version": "1.5",
   "metadata": {
     "title": "VWEC Finals - Hand 2",
     "description": "Second deal of the VWEC Finals. All pass on Round 1, called Clubs in Round 2.",
@@ -181,7 +181,7 @@ var vwec2 = {
 
 var vwec8 = {
   "fileType": "Euchre Game Notation",
-  "version": "1.4",
+  "version": "1.5",
   "metadata": {
     "title": "VWEC Finals - Hand 8",
     "description": "Eighth deal of the VWEC Finals. Llama goes alone on Spades.",
@@ -258,7 +258,7 @@ var vwec8 = {
 
 var meAndBears = {
   "fileType": "Euchre Game Notation",
-  "version": "1.4",
+  "version": "1.5",
   "metadata": {
     "title": "WWMM and Bears",
     "description": "",
@@ -1254,7 +1254,7 @@ var moteW5Match = {
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.4",
+        "version": "1.5",
         "metadata": {
           "title": "MotE W5 G1",
           "description": "",
@@ -1973,7 +1973,7 @@ var moteW5Match = {
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.4",
+        "version": "1.5",
         "metadata": {
           "title": "MotE W5 G2",
           "description": "",
@@ -2745,7 +2745,7 @@ var moteW5Match = {
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.4",
+        "version": "1.5",
         "metadata": {
           "title": "MotE W5 G3",
           "description": "",
@@ -3461,7 +3461,7 @@ var moteW5Match = {
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.4",
+        "version": "1.5",
         "metadata": {
           "title": "MotE W5 G4",
           "description": "",
@@ -4292,7 +4292,7 @@ var moteW5Match = {
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.4",
+        "version": "1.5",
         "metadata": {
           "title": "MotE W5 G5",
           "description": "",
@@ -4929,7 +4929,7 @@ var moteW5Match = {
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.4",
+        "version": "1.5",
         "metadata": {
           "title": "MotE W5 G6",
           "description": "",

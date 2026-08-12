@@ -14,11 +14,26 @@ For a comprehensive guide on gameplay, scoring, and card rankings, see the [Stan
 
 ---
 
+## 🃏 What is the purpose of creating an open-source Euchre Game Notation standard?
+
+Just as **PGN (Portable Game Notation)** revolutionized chess commentary, study, and software tools—and **Hand History** standards enabled advanced analytics and broadcast overlays for poker—**Euchre Game Notation (EGN)** was created to establish a universal, open standard for Euchre.
+
+EGN provides a shared, machine-readable game format that enables seamless cross-communication across an entire ecosystem of tools:
+
+- 🎮 **Web & Desktop Replayers**: Step through hands, study historical matches, and explore alternative "what-if" strategic lines.
+- 📊 **Analyzers & Engine Solvers**: Evaluate bidding decisions, trick play efficiency, and EV (expected value) of various decisions.
+- 🎬 **Video Overlay Renderers**: Automatically convert logged matches into broadcast-quality visual overlays for YouTube videos, live streams, and tournament broadcasts.
+- 🏆 **Tournament & League Platforms**: Standardize match reporting, player standings, and hand archival across clubs, leagues, and online platforms.
+
+By bridging digital apps, analysis tools, and video rendering pipelines under a unified standard, EGN aims to elevate Euchre content, commentary, and competitive play to the next level and bring the rich analytical depth enjoyed by games like Chess and Poker to the world of Euchre.
+
+---
+
 ## Latest Release
 
-- **Current npm package:** `1.4.8`
-- **Schema family:** `1.4` (EGN) / `1.1` (EMN)
-- **Highlights:** Generic game hashing (`src/hashing.ts`), generic match engine (`src/match-engine.ts`), French Tarot 78-card encoding (`src/card-encoding.ts`), Sheepshead and French Tarot multi-game architecture plans.
+- **Current npm package:** `1.5.0`
+- **Schema family:** `1.5` (EGN) / `1.2` (EMN)
+- **Highlights:** Flexible metadata date formats (date-only `YYYY-MM-DD` and blank `""` strings).
 
 See [changelog.md](changelog.md) for full release details.
 
@@ -36,14 +51,14 @@ An `.egn` file purposefully strips out easily calculated metrics—such as trick
 
 ---
 
-## 🛠️ File Structure Example (EGN v1.4)
+## 🛠️ File Structure Example (EGN v1.5)
 
 Under the hood, an `.egn` file utilizes human-readable, web-native JSON structural primitives:
 
 ```json
 {
   "fileType": "Euchre Game Notation",
-  "version": "1.4",
+  "version": "1.5",
   "metadata": {
     "gameId": "egn_m_20260528_01",
     "title": "WEC Finals",
@@ -72,7 +87,7 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
           "isAlone": false,
           "discard": "9s",
           "callAnnotations": {
-            "3": ["[!]Strong order by Dealer"]
+            "3": ["[?]Should go alone here although it wouldn't have worked this time."]
           }
         },
         {
@@ -84,23 +99,6 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
             ["Jd", "9d", "Ad", "Kd"],
             ["Jh", "Td", "Ks", "Ts"],
             ["Qc", "Qs", "Js", "Jc"]
-          ],
-          "playAnnotations": {
-            "2": ["[?]Mistake here by Seat 2."]
-          }
-        }
-      ],
-      "alternativeLines": [
-        {
-          "branchIndex": 0,
-          "phases": [
-            {
-              "phaseNumber": 0,
-              "type": "EUCHRE_BIDDING",
-              "calls": ["Pass", "Pass", "Pass", "Pass", "Pass", "s"],
-              "isAlone": true,
-              "discard": "9s"
-            }
           ]
         }
       ]
@@ -128,7 +126,10 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
             ["Jh", "Jc", "Th"],
             ["Jd", "Qs", "Qh"],
             ["As", "Js", "Ts"]
-          ]
+          ],
+          "playAnnotations": {
+            "0": ["[!!]Brillian lead of next here on the S3 loner. Only way to stop it!"]
+          }
         }
       ]
     },
@@ -140,24 +141,53 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
       },
       "phases": [
         {
-          "phaseNumber": 3,
+          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
-          "calls": ["Pass", "Pass", "d"],
-          "isAlone": false
+          "calls": [
+            "Pass", "Pass", "Pass", "Pass", "c"
+          ],
+          "isAlone": false,
+          "callAnnotations": {
+            "4": ["[!!]Amazing next call here for the march!"]
+          }
         },
         {
           "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
-            ["Ac", "Tc", "9c", "Kc"],
-            ["Qc", "Qd", "Ad", "Ts"],
-            ["Ah", "Kh", "9h", "Kd"],
-            ["Jd", "9d", "Qh", "Ks"],
-            ["Td", "Jh", "Th", "Qs"]
+            ["Ac","Tc","9c","Kc"],
+            ["9h","Jh","Ah","Th"],
+            ["Ad","Ts","Qs","Td"],
+            ["Jh","Qh","Qc","Qd"],
+            ["Ks","Kd","9d","Kh"]
+          ]
+        }
+      ],
+      "alternativeLines": [
+        {
+          "branchIndex": 4,
+          "phases": [
+            {
+              "phaseNumber": 0,
+              "type": "EUCHRE_BIDDING",
+              "calls": ["Pass", "d"],
+              "isAlone": false
+            },
+            {
+              "phaseNumber": 1,
+              "type": "TRICK_PLAY",
+              "tricks": [
+                ["Ac", "Tc", "9c", "Kc"],
+                ["Qc", "Qd", "Ad", "Ts"],
+                ["Ah", "Th", "9h", "Td"],
+                ["Jd", "9d", "Qh", "Qs"],
+                ["Td", "Jh", "Kh", "Ks"]
+              ]
+            }
           ]
         }
       ]
-     }
+    }
   ]
 }
 ```
@@ -217,7 +247,7 @@ When implementing or parsing EGN, keep the following details in mind:
      }
      ```
      This format supports any number of external ID systems, allowing for unified player identification across Euchre websites, tournament registrations, chat community IDs, or custom platform identifiers. See [docs/player-tracking.md](docs/player-tracking.md) for implementation details.
-   * **Flexible Date Formats**: The `date` property supports ISO-8601 date-time strings either with a timezone offset (e.g., `2026-05-17T19:00:00Z` or `+05:30`) or in local timezone-less formats (e.g., `2026-05-30T03:51` or `2026-06-02 19:02`).
+   * **Flexible Date Formats**: The `date` property supports date-only strings (e.g., `2026-08-11`), ISO-8601 date-time strings with a timezone offset (e.g., `2026-05-17T19:00:00Z` or `+05:30`), or local timezone-less formats (e.g., `2026-05-30T03:51` or `2026-06-02 19:02`).
 
 6. **Variant Rulesets**: For extensive documentation on alternate rules and regional variations supported in EGN, see [docs/alternate-rules.md](docs/alternate-rules.md).
 
@@ -262,6 +292,7 @@ In condensed mode, the `deals` list is replaced by an array of Base64URL-encoded
 For detailed bit-level specifications of all format versions, version detection logic, and encoding examples, see [docs/binary-format.md](docs/binary-format.md).
 
 ### 🔍 Expanded Mode
+
 In expanded mode, the entire EGN JSON structure (including metadata, annotations, and alternative lines) is serialized directly into binary using Protobuf for maximum compatibility and ease of integration with other systems.
 
 ---
@@ -357,7 +388,7 @@ egn-baseline game.egn --hash
 For details on baseline EGNs and their use cases, see [docs/determinism-of-egn.md](docs/determinism-of-egn.md).
 
 ### `egn-upgrade` — Version Migration
-Upgrades older EGN files to the current v1.4 format by automatically renaming snake_case properties to camelCase, removing redundant fields, and updating the version string.
+Upgrades older EGN files to the current v1.5 format by automatically renaming snake_case properties to camelCase, removing redundant fields, and updating the version string.
 
 ```bash
 # Upgrade in-place

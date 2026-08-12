@@ -1,6 +1,6 @@
 # Euchre Match Notation (.emn) Specification
 
-**Version:** 1.1  
+**Version:** 1.2  
 **License:** Apache-2.0  
 
 Euchre Match Notation (EMN) is a meta-specification for representing multi-game series, tournaments, and social club sessions played by a common pool of players.
@@ -25,7 +25,7 @@ While Euchre Game Notation (EGN) defines the structure of individual games, EMN 
 ```json
 {
   "fileType": "Euchre Match Notation",
-  "version": "1.1",
+  "version": "1.2",
   "metadata": {
     "matchId": "emn_m_20260719_finals",
     "title": "NextSuit League 2026 Finals",
@@ -79,7 +79,7 @@ While Euchre Game Notation (EGN) defines the structure of individual games, EMN 
       "playersOverride": ["p-01", "p-02", "p-03", "p-04"],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.4",
+        "version": "1.5",
         "metadata": { "initialScore": [0, 0] },
         "deals": []
       }
@@ -89,7 +89,7 @@ While Euchre Game Notation (EGN) defines the structure of individual games, EMN 
       "playersOverride": ["p-01", "p-03", "p-02", "p-04"],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.4",
+        "version": "1.5",
         "metadata": { "initialScore": [0, 0] },
         "deals": []
       }
@@ -99,7 +99,7 @@ While Euchre Game Notation (EGN) defines the structure of individual games, EMN 
       "playersOverride": ["p-01", "p-02", "p-05", "p-04"],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.4",
+        "version": "1.5",
         "metadata": { "initialScore": [0, 0] },
         "deals": []
       }

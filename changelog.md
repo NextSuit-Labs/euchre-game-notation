@@ -4,6 +4,12 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-08-11
+
+### Added & Improved
+- **EGN Schema 1.5 Specification**: Added support for date-only formats (e.g., `2026-08-11`) and empty string dates (`""`) in metadata via `{ "format": "date" }` and regex pattern `^$|^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d+)?)?)?$`.
+- **EMN Schema 1.2 Specification**: Added support for date-only formats (e.g., `2026-08-11`) and empty string dates (`""`) in match metadata and gameData via `{ "format": "date" }` and regex pattern `^$|^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d+)?)?)?$`.
+
 ## [1.4.8] - 2026-08-03
 
 ### Fixed & Improved

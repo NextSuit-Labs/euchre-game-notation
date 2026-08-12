@@ -11,7 +11,7 @@
     },
     "version": {
       "type": "string",
-      "pattern": "^1\\.[234](?:\\.\\d+)?$"
+      "pattern": "^1\\.[2345](?:\\.\\d+)?$"
     },
     "metadata": {
       "type": "object",
@@ -69,7 +69,10 @@
               "format": "date-time"
             },
             {
-              "pattern": "^\\d{4}-\\d{2}-\\d{2}[T ]\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?$"
+              "format": "date"
+            },
+            {
+              "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}([T ]\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?)?$"
             }
           ],
           "description": "Date and time when the game was played."

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-export const EMN_SCHEMA_VERSION = "1.1";
+export const EMN_SCHEMA_VERSION = "1.2";
 
-export const SUPPORTED_EMN_SCHEMA_VERSION_RE = /^1\.1(?:\.\d+)?$/;
+export const SUPPORTED_EMN_SCHEMA_VERSION_RE = /^1\.[12](?:\.\d+)?$/;
 
 export function isSupportedEmnSchemaVersion(version: string): boolean {
   return SUPPORTED_EMN_SCHEMA_VERSION_RE.test(version);

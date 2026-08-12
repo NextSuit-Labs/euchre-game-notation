@@ -403,10 +403,19 @@ describe("EGN Validator", () => {
     m6.metadata.date = "not-a-date";
     expect(validateEgn(m6).isValid).toBe(false);
 
-    // Invalid local date-time format (missing time)
+    // Valid date-only format (YYYY-MM-DD e.g. 2026-08-11 or 2026-05-29)
     const m7 = cloneMock();
-    m7.metadata.date = "2026-05-29";
-    expect(validateEgn(m7).isValid).toBe(false);
+    m7.metadata.date = "2026-08-11";
+    expect(validateEgn(m7).isValid).toBe(true);
+
+    const m8 = cloneMock();
+    m8.metadata.date = "2026-05-29";
+    expect(validateEgn(m8).isValid).toBe(true);
+
+    // Valid blank date format ("")
+    const m9 = cloneMock();
+    m9.metadata.date = "";
+    expect(validateEgn(m9).isValid).toBe(true);
   });
 
   it("should validate deal properties and phases", () => {
