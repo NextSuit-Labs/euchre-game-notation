@@ -4,6 +4,12 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2026-08-12
+
+### Fixed & Improved
+- **Website Landing Page (`index.html`)**: Fully integrated high-level information and specifications for Euchre Match Notation (EMN) to document tournament, series, seat rotations, and CLI features.
+- **Card Preview Syntax Fix**: Added required `phaseNumber` field to the hero section's EGN JSON preview card to align with schema requirements.
+
 ## [1.5.0] - 2026-08-11
 
 ### Added & Improved

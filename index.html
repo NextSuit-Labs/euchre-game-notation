@@ -24,8 +24,8 @@
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="description"
-    content="Euchre Game Notation (EGN) - The open, deterministic, platform-agnostic standard for recording and sharing competitive Euchre game data by NextSuit Labs.">
-  <title>EGN | Euchre Game Notation Specification</title>
+    content="Euchre Game Notation (EGN) &amp; Euchre Match Notation (EMN) - The open, deterministic, platform-agnostic standard for recording and sharing competitive Euchre game and match data by NextSuit Labs.">
+  <title>EGN &amp; EMN | Euchre Game &amp; Match Notation Specification</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -49,7 +49,7 @@
             stroke-linejoin="round" />
           <line x1="11" y1="15" x2="18" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
         </svg>
-        <span class="logo-text">NextSuit <span class="accent-text">Labs</span></span>
+        <span class="logo-text">NextSuit</span>
       </a>
       <nav id="navbar">
         <ul>
@@ -70,14 +70,13 @@
   <!-- Hero Section -->
   <section id="hero">
     <div class="hero-content">
-      <div class="tagline-badge" id="hero-badge">EGN Specification v1.5</div>
+      <div class="tagline-badge" id="hero-badge">EGN v1.5 &amp; EMN v1.2 Specifications</div>
       <h1 class="hero-title" id="hero-title">
         The Open Standard for <br>
-        <span class="gradient-text">Euchre Game Data</span>
+        <span class="gradient-text">Euchre Game &amp; Match Data</span>
       </h1>
       <p class="hero-subtitle" id="hero-subtitle">
-        Euchre Game Notation (.egn) is a platform-agnostic, human-readable, and machine-optimized file format designed
-        to record the complete chronological play of competitive Euchre games.
+        Euchre Game Notation (.egn) and Euchre Match Notation (.emn) are platform-agnostic, human-readable, and machine-optimized open standards designed to record individual games and complete multi-game match series.
       </p>
       <div class="hero-buttons">
         <a href="#rationale" class="btn btn-primary" id="btn-explore">Explore Rationale</a>
@@ -109,6 +108,7 @@
       },
       <span class="json-key">"phases"</span>: [
         {
+          <span class="json-key">"phaseNumber"</span>: <span class="json-number">0</span>,
           <span class="json-key">"type"</span>: <span class="json-string">"EUCHRE_BIDDING"</span>,
           <span class="json-key">"calls"</span>: [<span class="json-string">"Pass"</span>, <span class="json-string">"Pass"</span>, <span class="json-string">"Order"</span>]
         }
@@ -125,7 +125,7 @@
     <div class="container">
       <div class="section-header">
         <h2 id="rationale-heading">Why a Standard Notation?</h2>
-        <p class="section-subheader">The Euchre ecosystem has historically suffered from fragmentation. EGN establishes
+        <p class="section-subheader">The Euchre ecosystem has historically suffered from fragmentation. EGN &amp; EMN establish
           a common language for players, developers, and platforms.</p>
       </div>
       <div class="grid-3">
@@ -138,8 +138,8 @@
             </svg>
           </div>
           <h3>Platform Interoperability</h3>
-          <p>Different digital Euchre sites use custom database rows or raw log configurations. EGN acts as a bridge,
-            allowing games played on any client to be exported, shared, and evaluated on a unified engine.</p>
+          <p>Different digital Euchre sites use custom database rows or raw log configurations. EGN &amp; EMN act as a bridge,
+            allowing games and match series played on any client to be exported, shared, and evaluated on a unified engine.</p>
         </div>
         <div class="glass-card feature-card" id="rat-neutrality">
           <div class="feature-icon">
@@ -177,8 +177,8 @@
       <div class="philosophy-text">
         <div class="section-header align-left">
           <h2 id="philosophy-heading">Deterministic Minimalism</h2>
-          <p class="section-subheader">EGN is built on a simple rule: store only the raw, unpredictable actions of a
-            game, and let the parser calculate the rest.</p>
+          <p class="section-subheader">EGN &amp; EMN are built on a simple rule: store only the raw, unpredictable actions of a
+            game or match, and let the parser calculate the rest.</p>
         </div>
         <div class="philosophy-body">
           <p>Unlike verbose database schemas that duplicate real-time player points, trick counts, or whose turn it is
@@ -187,8 +187,13 @@
             <li><strong>Initial Environment:</strong> The dealer seat index and the revealed up-card.</li>
             <li><strong>Bidding Calls:</strong> Sequential decisions made clockwise from the dealer's left.</li>
             <li><strong>Play Stream:</strong> The chronological card drops exactly as they hit the table.</li>
-            <li><strong>Annotations:</strong> Human commentaries, events like misdeals, or alternate branching lines
-            </li>
+          </ul>
+          <p>Additional metadata items are also supported for:</p>
+          <ul class="styled-list"></ul>
+          <li><strong>Annotations:</strong> For rating the play decision as great [!] or a mistake [?] or for events
+            like misdeals / renegs</li>
+          <li><strong>Alternative Lines:</strong> For adding different bid/play lines to show what would have happened
+            if different decisions were made.</li>
           </ul>
           <p>By relying on a deterministic rules engine, parsers reconstruct the exact game state dynamically. This
             guarantees 100% data integrity while stripping out unnecessary data bloating.</p>
@@ -199,8 +204,8 @@
           <div class="workflow-step">
             <span class="step-num">01</span>
             <div class="step-content">
-              <h4>Minimal Input (.egn)</h4>
-              <p>Contains Dealer, Up-Card, Calls, Plays, and Ruleset rules.</p>
+              <h4>Minimal Input (.egn / .emn)</h4>
+              <p>Contains environment, calls, card drops, rulesets, and player registries.</p>
             </div>
           </div>
           <div class="workflow-arrow">
@@ -237,8 +242,8 @@
     <div class="container">
       <div class="section-header">
         <h2 id="spec-heading">Specification Reference</h2>
-        <p class="section-subheader">Quick guide to the EGN v1.5 vocabulary and standard card representations. View
-          the JSON schema on <a href="https://github.com/NextSuit-Labs/euchre-game-notation" target="_blank"
+        <p class="section-subheader">Quick guide to the EGN v1.5 / EMN v1.2 vocabulary and standard card representations. View
+          the JSON schemas on <a href="https://github.com/NextSuit-Labs/euchre-game-notation" target="_blank"
             rel="noopener noreferrer" class="text-link">GitHub</a>.</p>
       </div>
 
@@ -373,6 +378,12 @@
           </div>
         </div>
       </div>
+
+      <!-- Match Notation (EMN) -->
+      <div class="rules-box glass-card" id="spec-emn" style="margin-top: 40px;">
+        <h3>Euchre Match Notation (EMN) Support</h3>
+        <p>EMN wraps multiple EGN games into a single <code>.emn</code> match file, standardizing match progression formats (e.g. Best-of-N, Target Score), centralized player registries to track statistics across games, and team seat rotations or player substitutions.</p>
+      </div>
     </div>
   </section>
 
@@ -381,29 +392,26 @@
     <div class="container">
       <div class="section-header">
         <h2 id="serialization-heading">Space-Optimized Serialization</h2>
-        <p class="section-subheader">EGN supports multiple formats to fit different application demands, from human
+        <p class="section-subheader">EGN &amp; EMN support multiple formats to fit different application demands, from human
           debugging to production network transfer.</p>
       </div>
       <div class="grid-3">
         <div class="glass-card format-card" id="fmt-json">
           <div class="format-badge json">JSON</div>
-          <h3>Standard JSON (.egn)</h3>
-          <p>Highly readable, structured, and easy to edit. Perfect for game logging databases, human analysis notes,
-            and sharing on github repos.</p>
+          <h3>Standard JSON (.egn / .emn)</h3>
+          <p>Highly readable, structured, and easy to edit. Perfect for single game databases and multi-game match histories shared on GitHub repositories.</p>
           <div class="size-estimate">~ 15.0 KB</div>
         </div>
         <div class="glass-card format-card" id="fmt-condensed">
           <div class="format-badge condensed">Condensed</div>
           <h3>Condensed Bitpack</h3>
-          <p>Replaces the verbose JSON arrays with base64URL bitpacked strings. Encodes bids, dealer, cards, commentary,
-            and alternative lines into tiny bitstreams.</p>
+          <p>Replaces verbose JSON arrays with base64URL bitpacked strings. Encodes bids, cards, annotations, and matches (.emnb) with automatic deal compression.</p>
           <div class="size-estimate">~ 800 Bytes</div>
         </div>
         <div class="glass-card format-card" id="fmt-expanded">
           <div class="format-badge expanded">Protobuf</div>
           <h3>Expanded Binary</h3>
-          <p>Serialized binary format powered by Google Protobuf schema. Provides strong types, speed, and compatibility
-            for enterprise backend integration.</p>
+          <p>Serialized binary format powered by Google Protobuf schemas. Provides strong typing, speed, and compatibility for enterprise backend integration.</p>
           <div class="size-estimate">~ 1.5 KB</div>
         </div>
       </div>
@@ -411,11 +419,10 @@
       <!-- CLI Utility -->
       <div class="cli-box glass-card" id="cli-utility">
         <div class="cli-header">
-          <h3>CLI Utility: <code>egn-convert</code></h3>
+          <h3>CLI Utilities: <code>egn-convert</code> &amp; <code>emn-match-combine</code></h3>
           <span class="cli-badge">npm package</span>
         </div>
-        <p>Convert seamlessly between human-readable JSON files and condensed/expanded binary representations using our
-          Node CLI.</p>
+        <p>Convert single games, or combine multiple games into a unified match (.emn) and extract them using our Node CLI utilities.</p>
         <div class="code-terminal">
           <div class="terminal-bar">
             <span>bash</span>
@@ -426,8 +433,11 @@
 <span class="term-comment"># Convert EGN JSON to condensed binary bitpack</span>
 <span class="term-cmd">egn-convert game.egn game.egnb</span>
 
-<span class="term-comment"># Convert condensed binary back to human JSON</span>
-<span class="term-cmd">egn-convert game.egnb restored.egn</span></code></pre>
+<span class="term-comment"># Combine multiple EGN games into a single EMN match file</span>
+<span class="term-cmd">emn-match-combine game1.egn game2.egn -o series.emn</span>
+
+<span class="term-comment"># Extract individual EGN games back out from an EMN match file</span>
+<span class="term-cmd">emn-match-extract series.emn -o ./extracted_games</span></code></pre>
         </div>
       </div>
     </div>
@@ -437,9 +447,9 @@
   <section id="applications" class="section-padding">
     <div class="container">
       <div class="section-header">
-        <h2 id="apps-heading">Powered by EGN</h2>
-        <p class="section-subheader">NextSuit Labs develops a companion application suite leveraging the EGN standard to
-          analyze, render, and capture Euchre games.</p>
+        <h2 id="apps-heading">Powered by EGN &amp; EMN</h2>
+        <p class="section-subheader">NextSuit Labs develops a suite of companion applications leveraging the EGN and EMN
+          standards to analyze, render, and capture Euchre games and matches.</p>
       </div>
 
       <div class="apps-grid">
@@ -455,9 +465,9 @@
             <h3><a href="https://nextsuitlabs.com/replayer.html" target="_blank" rel="noopener noreferrer"
                 class="app-link">Interactive Replayer / Analyzer
                 &rarr;</a></h3>
-            <p>A desktop-grade analysis web app. Allows users to load EGN files, scrub through plays step-by-step, view
-              annotations, switch perspective focus to any player's seat, and analyze alternative branching gameplay
-              lines.</p>
+            <p>A desktop-grade analysis web app. Allows users to load EGN and EMN files, scrub through plays step-by-step, view
+              annotations, switch perspective focus to any player's seat, analyze alternative branching gameplay
+              lines, and navigate full match series.</p>
             <span class="tech-tag">React + Vite</span>
           </div>
         </div>
@@ -474,10 +484,10 @@
           </div>
           <div class="app-info">
             <h3><a href="https://nextsuitlabs.com/logger.html" target="_blank" rel="noopener noreferrer"
-                class="app-link">EGN Game Logger
+                class="app-link">EGN Game &amp; Match Logger
                 &rarr;</a></h3>
-            <p>Manual game loggers built for real-time game logging. Provides button-based entry for live
-              game recording, saving directly to clean EGN format without the need manual code formatting.</p>
+            <p>Manual loggers built for real-time game and match logging. Provides button-based entry for live
+              recording, saving directly to clean EGN and EMN formats without the need for manual code formatting.</p>
             <span class="tech-tag">React + TypeScript</span>
           </div>
         </div>
@@ -528,7 +538,7 @@
     <div class="container">
       <div class="footer-bottom">
         <p>Copyright &copy; 2026 Write Words - Make Magic LLC. All rights reserved.</p>
-        <p>EGN is an open specification published under the <a href="LICENSE" target="_blank" rel="noopener noreferrer"
+        <p>EGN &amp; EMN are open specifications published under the <a href="LICENSE" target="_blank" rel="noopener noreferrer"
             id="footer-license-link">Apache License 2.0</a> on <a
             href="https://github.com/NextSuit-Labs/euchre-game-notation" target="_blank" rel="noopener noreferrer"
             id="footer-github-link">GitHub</a>.</p>

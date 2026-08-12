@@ -31,7 +31,7 @@ By bridging digital apps, analysis tools, and video rendering pipelines under a 
 
 ## Latest Release
 
-- **Current npm package:** `1.5.0`
+- **Current npm package:** `1.5.1`
 - **Schema family:** `1.5` (EGN) / `1.2` (EMN)
 - **Highlights:** Flexible metadata date formats (date-only `YYYY-MM-DD` and blank `""` strings).
 
