@@ -1,6 +1,6 @@
 {
   "name": "euchre-game-notation",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Euchre Game Notation (EGN) file format specification, JSON schemas, and TypeScript utilities.",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -54,6 +54,7 @@
   "author": "NextSuit Labs <rob@writewordsmakemagic.com>",
   "license": "Apache-2.0",
   "dependencies": {
+    "@noble/hashes": "^1.8.0",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "protobufjs": "^8.6.4"

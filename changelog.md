@@ -4,6 +4,11 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.2] - 2026-08-13
+
+### Fixed
+- **Browser-Compatible SHA-256 Hashing**: Replaced the `import * as crypto from "crypto"` Node.js built-in in `src/hashing.ts` with [`@noble/hashes`](https://github.com/paulmillr/noble-hashes) (`sha2` module). The hashing API (`hashGame`, `hashFullGame`, `hashBaselineGame`, `hashEgn`, `hashFullEgn`, `hashBaselineEgn`) is unchanged and produces **byte-for-byte identical** SHA-256 output — verified against all FIPS 180-4 test vectors and real EGN payloads. This allows the library to be imported in browser environments (Vite, Webpack, etc.) without `crypto.createHash is not a function` errors.
+
 ## [1.5.1] - 2026-08-12
 
 ### Fixed & Improved

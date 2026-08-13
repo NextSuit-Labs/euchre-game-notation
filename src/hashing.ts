@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import * as crypto from "crypto";
+import { sha256 as nobleSha256 } from "@noble/hashes/sha2";
+import { bytesToHex } from "@noble/hashes/utils.js";
+
+/** SHA-256 hex digest — works in both Node.js and browser environments. */
+const sha256 = (message: string): string => bytesToHex(nobleSha256(message));
 
 /** Standard TGN analysis/annotation property names stripped during baseline conversion */
 export const DEFAULT_TGN_ANALYSIS_KEYS = new Set<string>([
@@ -108,7 +112,7 @@ export function convertToBaselineGame(
  */
 export function hashGame(gameObj: unknown): string {
   const canonical = stableStringify(gameObj);
-  return crypto.createHash("sha256").update(canonical).digest("hex");
+  return sha256(canonical);
 }
 
 /**
@@ -126,7 +130,7 @@ export function hashBaselineGame(
 ): string {
   const baselineObj = converter(gameObj);
   const canonical = stableStringify(baselineObj);
-  return crypto.createHash("sha256").update(canonical).digest("hex");
+  return sha256(canonical);
 }
 
 /** EGN-specific aliases for backward compatibility */
