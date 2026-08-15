@@ -4,7 +4,11 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.5.2] - 2026-08-13
+## [1.5.2] - 2026-08-14
+
+### Added & Improved
+- **Dynamic Bitpacker Version Auto-Detection**: Refactored `packDeal` in `src/bitpacker.ts` to automatically detect and select the most compact compatible serialization format (V1, V2, or V3) if `options.version` is omitted. It selects Version 3 only when required by advanced features (non-empty `playerCards` or non-empty `discard` fields), Version 2 for custom rulesets (variable player counts, alternate deck sizes, dealer index $\ge 4$, or defend-alone), and Version 1 otherwise.
+- **Auto-Detection Unit Tests**: Added comprehensive test coverage in `test/bitpacker.test.ts` verifying all auto-detection logic paths and correctness of version boundaries.
 
 ### Fixed
 - **Browser-Compatible SHA-256 Hashing**: Replaced the `import * as crypto from "crypto"` Node.js built-in in `src/hashing.ts` with [`@noble/hashes`](https://github.com/paulmillr/noble-hashes) (`sha2` module). The hashing API (`hashGame`, `hashFullGame`, `hashBaselineGame`, `hashEgn`, `hashFullEgn`, `hashBaselineEgn`) is unchanged and produces **byte-for-byte identical** SHA-256 output — verified against all FIPS 180-4 test vectors and real EGN payloads. This allows the library to be imported in browser environments (Vite, Webpack, etc.) without `crypto.createHash is not a function` errors.

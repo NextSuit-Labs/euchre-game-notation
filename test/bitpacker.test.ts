@@ -1217,4 +1217,66 @@ describe("V2 Bitpacker — backward compatibility", () => {
     expect(bp.calls).toEqual(["Pass", "Pass", "Pass", "Order"]);
     expect(bp.isAlone).toBe(false);
   });
+
+  describe("packDeal version auto-detection", () => {
+    it("should auto-detect Version 1 for a standard deal with no advanced features", () => {
+      const deal: Deal = {
+        dealNumber: 0,
+        initialState: { dealer: 0, upCard: "Jd" },
+        phases: [{ phaseNumber: 0, type: "EUCHRE_BIDDING", calls: ["Pass"], isAlone: false }],
+      };
+      const binary = packDeal(deal, { asBinary: true });
+      expect(binary.startsWith("0001")).toBe(true);
+    });
+
+    it("should auto-detect Version 2 for dealer >= 4 or custom player count", () => {
+      const deal: Deal = {
+        dealNumber: 0,
+        initialState: { dealer: 4, upCard: "Jd" },
+        phases: [],
+      };
+      const binary = packDeal(deal, { asBinary: true });
+      expect(binary.startsWith("0010")).toBe(true);
+    });
+
+    it("should auto-detect Version 3 when discard is defined and non-empty", () => {
+      const deal: Deal = {
+        dealNumber: 0,
+        initialState: { dealer: 0, upCard: "Jd" },
+        phases: [{ phaseNumber: 0, type: "EUCHRE_BIDDING", calls: ["Order"], discard: "9d" }],
+      };
+      const binary = packDeal(deal, { asBinary: true });
+      expect(binary.startsWith("0011")).toBe(true);
+    });
+
+    it("should auto-detect Version 1 when discard is empty string or undefined", () => {
+      const dealWithEmptyDiscard: Deal = {
+        dealNumber: 0,
+        initialState: { dealer: 0, upCard: "Jd" },
+        phases: [{ phaseNumber: 0, type: "EUCHRE_BIDDING", calls: ["Pass"], discard: "" }],
+      };
+      const binary = packDeal(dealWithEmptyDiscard, { asBinary: true });
+      expect(binary.startsWith("0001")).toBe(true);
+    });
+
+    it("should auto-detect Version 3 when playerCards is defined and non-empty", () => {
+      const deal: Deal = {
+        dealNumber: 0,
+        initialState: { dealer: 0, upCard: "Jd", playerCards: [["Ah"], [], [], []] },
+        phases: [],
+      };
+      const binary = packDeal(deal, { asBinary: true });
+      expect(binary.startsWith("0011")).toBe(true);
+    });
+
+    it("should auto-detect Version 1 when playerCards is empty or contains empty arrays", () => {
+      const deal: Deal = {
+        dealNumber: 0,
+        initialState: { dealer: 0, upCard: "Jd", playerCards: [[], [], [], []] },
+        phases: [],
+      };
+      const binary = packDeal(deal, { asBinary: true });
+      expect(binary.startsWith("0001")).toBe(true);
+    });
+  });
 });

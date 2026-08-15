@@ -409,10 +409,20 @@ function getCardsRemainingAtActionIndex(
  * Encodes/bitpacks an EgnDeal object to a Base64URL string.
  *
  * @param deal The Deal object to encode.
- * @param options Encoding options. Defaults to Version 1 (4-player, standard 24-card deck).
+ * @param options Encoding options. If options.version is omitted, the version (1, 2, or 3) is automatically detected to select the most compact compatible format.
  * @returns The Base64URL representation.
  *
- * ### Version 1 (default)
+ * ### Version Auto-Detection (default)
+ * - **Version 3** is chosen if the deal contains player starting hands (`playerCards`) or discards.
+ * - **Version 2** is chosen if the deal has non-standard player counts, alternate deck sizes, dealer >= 4, or defend-alone bidding.
+ * - **Version 1** is chosen otherwise to achieve the most compact size.
+ *
+ * ### Version 3
+ * Extended encoding supporting variable player counts (4–11), alternate deck sizes
+ * (min_rank 9/8/7/6), defend-alone, optional discard and optional initial playerCards preservation.
+ * Header: `[0011][dealer:3bits][numPlayers-4:3bits][minRankCode:2bits][upCard:Nbits]...`
+ *
+ * ### Version 1
  * Standard 4-player, 24-card (9s and up) encoding. Compact and widely supported.
  * Header: `[0001][dealer:2bits][upCard:5bits]...`
  *
@@ -422,7 +432,27 @@ function getCardsRemainingAtActionIndex(
  * Header: `[0010][dealer:3bits][numPlayers-4:3bits][minRankCode:2bits][upCard:Nbits]...`
  */
 export function packDeal(deal: Deal, options?: PackOptions): string {
-  const version = options?.version ?? 1;
+  let version = options?.version;
+  if (version === undefined) {
+    const numPlayers = options?.numPlayers ?? 4;
+    const minRank = options?.minRank ?? 9;
+    const dealer = deal.initialState.dealer ?? 0;
+
+    const hasDefendAlone = deal.phases?.some((p) => p.type === "EUCHRE_BIDDING" && p.aloneDefender !== undefined && p.aloneDefender !== -1);
+    const hasDiscard =
+      deal.phases?.some((p) => p.type === "EUCHRE_BIDDING" && p.discard !== undefined && p.discard.length > 0)
+      || deal.alternativeLines?.some((line) =>
+        line.phases?.some((p) => p.type === "EUCHRE_BIDDING" && p.discard !== undefined && p.discard.length > 0));
+    const hasPlayerCards =
+      Array.isArray(deal.initialState.playerCards)
+      && deal.initialState.playerCards.some((cards) => Array.isArray(cards) && cards.length > 0);
+
+    const needsV3 = hasDiscard || hasPlayerCards;
+    const needsV2 = numPlayers !== 4 || minRank !== 9 || hasDefendAlone || dealer >= 4;
+
+    version = needsV3 ? 3 : (needsV2 ? 2 : 1);
+  }
+
   const binaryString = version === 3
     ? packDealV3(deal, options)
     : version === 2
