@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect } from "@jest/globals";
-import { validateEgn, isEgnFile, validateEGN, isEGNFile } from "../src/validator";
+import { validateEgn, isEgnFile, validateEGN, isEGNFile, validateDeal, isDeal } from "../src/validator";
 import { convertBinToEgnJson, convertEgnJsonToBin } from "../src/converter";
 import { packDeal, unpackDeal } from "../src/bitpacker";
 import { BiddingPhase, TrickPlayPhase } from "../src/types";
@@ -635,5 +635,24 @@ describe("EgnDeal Bitpacker", () => {
 
     expect(playPhase.type).toBe("TRICK_PLAY");
     expect(playPhase.tricks).toEqual(origPlay.tricks);
+  });
+
+  describe("validateDeal & isDeal", () => {
+    it("should return valid result and true for conformant Deal object", () => {
+      const deal = validMockData.deals[0];
+      const result = validateDeal(deal);
+      expect(result.isValid).toBe(true);
+      expect(isDeal(deal)).toBe(true);
+    });
+
+    it("should return invalid result and false for malformed Deal object", () => {
+      const invalidDeal = {
+        dealNumber: "not-a-number",
+        initialState: {}
+      };
+      const result = validateDeal(invalidDeal);
+      expect(result.isValid).toBe(false);
+      expect(isDeal(invalidDeal)).toBe(false);
+    });
   });
 });

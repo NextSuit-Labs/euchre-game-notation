@@ -15,13 +15,9 @@
  */
 
 import { describe, it, expect } from "@jest/globals";
-import {
-  packDeal,
-  unpackDeal,
-  binaryStringToBase64Url,
-  base64UrlToBinaryString,
-  PackOptions,
-} from "../src/bitpacker";
+import { packDeal, unpackDeal, binaryStringToBase64Url, base64UrlToBinaryString } from "../src/bitpacker";
+import { BitReader, encodeString, decodeString } from "../src/bitstream";
+import { isGenericMatchFile } from "../src/match-engine";
 import { BiddingPhase, Deal, TrickPlayPhase } from "../src/types";
 
 describe("EGN Bitpacker Helpers", () => {
@@ -1277,6 +1273,41 @@ describe("V2 Bitpacker — backward compatibility", () => {
       };
       const binary = packDeal(deal, { asBinary: true });
       expect(binary.startsWith("0001")).toBe(true);
+    });
+  });
+
+  describe("Bitstream universal UTF-8 & bounds checking", () => {
+    it("should encode and decode UTF-8 strings correctly across environments", () => {
+      const testString = "Euchre Match Notation 🃏 2026";
+      const bitStr = encodeString(testString);
+      const reader = new BitReader(bitStr);
+      const decoded = decodeString(reader);
+      expect(decoded).toBe(testString);
+    });
+
+    it("should throw when BitReader readInteger exceeds maxValue", () => {
+      // 2-bit value "11" (3) with maxValue 2 should throw
+      const reader = new BitReader("11");
+      expect(() => reader.readInteger(2)).toThrow("exceeds maximum allowed value");
+    });
+  });
+
+  describe("Generic Match Engine helpers", () => {
+    it("should validate generic match file structure with isGenericMatchFile", () => {
+      const validMatch = {
+        fileType: "Euchre Match Notation",
+        version: "1.2",
+        metadata: { matchId: "m1", players: [] },
+        games: []
+      };
+      expect(isGenericMatchFile(validMatch)).toBe(true);
+
+      const invalidMatch = {
+        fileType: "Euchre Match Notation",
+        // missing version, metadata, games
+      };
+      expect(isGenericMatchFile(invalidMatch)).toBe(false);
+      expect(isGenericMatchFile(null)).toBe(false);
     });
   });
 });

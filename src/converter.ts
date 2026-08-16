@@ -404,20 +404,8 @@ function normalizeEgnForEncoding(egnFile: EgnFile, condensed: boolean): any {
       const numPlayers = jsonObj.metadata?.ruleset?.num_players ?? 4;
       const minRank = jsonObj.metadata?.ruleset?.min_rank ?? 9;
       jsonObj.deals = jsonObj.deals.map((d: any) => {
-        if (typeof d === "object") {
-          const hasDefendAlone = d.phases?.some((p: any) => p.type === "EUCHRE_BIDDING" && p.aloneDefender !== undefined && p.aloneDefender !== -1);
-          const hasDiscard =
-            d.phases?.some((p: any) => p.type === "EUCHRE_BIDDING" && p.discard !== undefined)
-            || d.alternativeLines?.some((line: any) =>
-              line?.phases?.some((p: any) => p.type === "EUCHRE_BIDDING" && p.discard !== undefined));
-          const hasPlayerCards =
-            Array.isArray(d.initialState?.playerCards)
-            && d.initialState.playerCards.some((cards: any) => Array.isArray(cards) && cards.length > 0);
-          const dealer = d.initialState?.dealer ?? 0;
-          const needsV3 = hasDiscard || hasPlayerCards;
-          const needsV2 = numPlayers !== 4 || minRank !== 9 || hasDefendAlone || dealer >= 4;
-          const version: 1 | 2 | 3 = needsV3 ? 3 : (needsV2 ? 2 : 1);
-          return packDeal(d, { version, numPlayers, minRank });
+        if (typeof d === "object" && d !== null) {
+          return packDeal(d, { numPlayers, minRank });
         }
         return d;
       });
@@ -572,19 +560,7 @@ export function packEgnFile(egnFile: EgnFile): EgnFile {
     const minRank = cloned.metadata?.ruleset?.min_rank ?? 9;
     cloned.deals = cloned.deals.map((d) => {
       if (typeof d === "object" && d !== null) {
-        const hasDefendAlone = d.phases?.some((p: any) => p.type === "EUCHRE_BIDDING" && p.aloneDefender !== undefined && p.aloneDefender !== -1);
-        const hasDiscard =
-          d.phases?.some((p: any) => p.type === "EUCHRE_BIDDING" && p.discard !== undefined)
-          || d.alternativeLines?.some((line: any) =>
-            line?.phases?.some((p: any) => p.type === "EUCHRE_BIDDING" && p.discard !== undefined));
-        const hasPlayerCards =
-          Array.isArray(d.initialState?.playerCards)
-          && d.initialState.playerCards.some((cards: any) => Array.isArray(cards) && cards.length > 0);
-        const dealer = d.initialState?.dealer ?? 0;
-        const needsV3 = hasDiscard || hasPlayerCards;
-        const needsV2 = numPlayers !== 4 || minRank !== 9 || hasDefendAlone || dealer >= 4;
-        const version: 1 | 2 | 3 = needsV3 ? 3 : (needsV2 ? 2 : 1);
-        return packDeal(d as any, { version, numPlayers, minRank });
+        return packDeal(d as any, { numPlayers, minRank });
       }
       return d;
     });

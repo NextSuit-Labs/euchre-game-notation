@@ -49,6 +49,23 @@ export interface GenericMatchFile<TGame = GenericGameData> {
 }
 
 /**
+ * Type guard validating basic structure of a GenericMatchFile.
+ */
+export function isGenericMatchFile<TGame extends GenericGameData = GenericGameData>(
+  data: unknown
+): data is GenericMatchFile<TGame> {
+  if (!data || typeof data !== "object" || data === null) return false;
+  const candidate = data as Record<string, unknown>;
+  return (
+    typeof candidate.fileType === "string" &&
+    typeof candidate.version === "string" &&
+    typeof candidate.metadata === "object" &&
+    candidate.metadata !== null &&
+    Array.isArray(candidate.games)
+  );
+}
+
+/**
  * Extracts a single game from a match series file by game index (0-based),
  * resolving player seat IDs back to master player names.
  */

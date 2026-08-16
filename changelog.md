@@ -4,6 +4,16 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.3] - 2026-08-15
+
+### Added & Improved
+- **DRY Converter Bitpacking**: Updated `src/converter.ts` (`convertEgnFileToProtoObject` and `packEgnFile`) to directly leverage `packDeal`'s auto-detection rather than duplicating version selection conditions.
+- **Universal Browser-Compatible Bitstream (`src/bitstream.ts`)**: Replaced Node.js `Buffer` usage with standard web `Uint8Array`, `TextEncoder`, `TextDecoder`, `btoa`, and `atob` with cross-runtime fallbacks, making bitstream and Base64URL encoding/decoding fully portable in Vite, Webpack, and browser environments.
+- **Canonical Hashing Speedup (`src/hashing.ts`)**: Accelerated `stableStringify` by replacing `localeCompare` with fast lexicographical sorting for ASCII JSON keys.
+- **Defensive Bitstream Bounds-Checking**: Added bounds assertions to `BitReader.readInteger` and `decodePlayerCards` (`src/bitpacker.ts`) to immediately throw descriptive errors on malformed or corrupted bitstreams.
+- **Developer Utilities**: Added and exported `validateDeal`, `isDeal` (`src/validator.ts`), and `isGenericMatchFile` (`src/match-engine.ts`) for validating individual deals and match series structures.
+- **Test Suite Expansion**: Added unit tests covering all version auto-detection paths, bitstream UTF-8 encoding, bounds checking, and new validation guards (313 total passed tests).
+
 ## [1.5.2] - 2026-08-14
 
 ### Added & Improved

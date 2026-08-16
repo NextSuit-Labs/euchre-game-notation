@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
-import { execSync } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
+import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
+import { execSync } from "child_process";
 import { collectAnalysisPropertyNames } from "../src/cli-baseline-egn";
 import { validateEgn } from "../src/validator";
 import { VERSION } from "../src/version";

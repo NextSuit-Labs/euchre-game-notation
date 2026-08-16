@@ -24,7 +24,7 @@ export const SCHEMA_VERSION = "1.5";
 /**
  * Current npm package version for CLI/library releases.
  */
-export const PACKAGE_VERSION = "1.5.2";
+export const PACKAGE_VERSION = "1.5.3";
 
 /**
  * Backward-compatible alias used across existing code/tests.

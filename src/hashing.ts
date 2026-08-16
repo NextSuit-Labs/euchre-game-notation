@@ -49,7 +49,7 @@ export function stableStringify(value: unknown): string {
 
   if (value && typeof value === "object" && value !== null) {
     const entries = Object.entries(value as Record<string, unknown>)
-      .sort(([a], [b]) => a.localeCompare(b))
+      .sort(([a], [b]) => (a === b ? 0 : a < b ? -1 : 1))
       .map(([key, child]) => `${JSON.stringify(key)}:${stableStringify(child)}`);
     return `{${entries.join(",")}}`;
   }

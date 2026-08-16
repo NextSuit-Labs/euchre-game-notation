@@ -17,11 +17,18 @@
 import Ajv, { ErrorObject } from "ajv";
 import addFormats from "ajv-formats";
 import egnSchema from "../schemas/egn-schema-v1.json";
-import { EgnFile } from "./types";
+import { Deal, EgnFile } from "./types";
 
 const ajv = new Ajv();
 addFormats(ajv);
 const validate = ajv.compile(egnSchema);
+
+const dealSchema = {
+  $schema: "http://json-schema.org/draft-07/schema#",
+  definitions: (egnSchema as any).definitions,
+  ...(egnSchema as any).properties.deals.items.oneOf[0],
+};
+const validateDealSchema = ajv.compile(dealSchema);
 
 export interface ValidationResult {
   isValid: boolean;
@@ -43,10 +50,31 @@ export function validateEgn(data: unknown): ValidationResult {
 }
 
 /**
+ * Validates a single deal object against the EGN Deal Schema.
+ *
+ * @param data The parsed Deal JSON object to validate.
+ * @returns A ValidationResult indicating success and containing any schema errors.
+ */
+export function validateDeal(data: unknown): ValidationResult {
+  const isValid = validateDealSchema(data);
+  return {
+    isValid,
+    errors: validateDealSchema.errors,
+  };
+}
+
+/**
  * Type guard that validates if an unknown object is a conformant EgnFile.
  */
 export function isEgnFile(data: unknown): data is EgnFile {
   return validate(data);
+}
+
+/**
+ * Type guard that validates if an unknown object is a conformant Deal.
+ */
+export function isDeal(data: unknown): data is Deal {
+  return validateDealSchema(data);
 }
 
 /**

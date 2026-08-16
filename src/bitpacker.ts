@@ -260,6 +260,9 @@ function decodePlayerCards(reader: BitReader, deck: string[], numPlayers: number
   const playerCards: string[][] = [];
   for (let seat = 0; seat < numPlayers; seat++) {
     const handLen = reader.readInteger(15);
+    if (handLen > deck.length || handLen > 5) {
+      throw new Error(`Invalid player hand length ${handLen} in bitpacked player cards.`);
+    }
     const hand: string[] = [];
     for (let i = 0; i < handLen; i++) {
       const cardIndex = reader.readInteger(deck.length - 1);
