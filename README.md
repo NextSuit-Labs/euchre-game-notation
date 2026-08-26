@@ -31,9 +31,9 @@ By bridging digital apps, analysis tools, and video rendering pipelines under a 
 
 ## Latest Release
 
-- **Current npm package:** `1.5.1`
-- **Schema family:** `1.5` (EGN) / `1.2` (EMN)
-- **Highlights:** Flexible metadata date formats (date-only `YYYY-MM-DD` and blank `""` strings).
+- **Current npm package:** `1.6.0`
+- **Schema family:** `1.6` (EGN) / `1.2` (EMN)
+- **Highlights:** Converted `phaseNumber` to optional across deal phases, canonical baseline hash preservation, and added gameplay validation engine.
 
 See [changelog.md](changelog.md) for full release details.
 
@@ -51,19 +51,20 @@ An `.egn` file purposefully strips out easily calculated metrics—such as trick
 
 ---
 
-## 🛠️ File Structure Example (EGN v1.5)
+## 🛠️ File Structure Example (EGN v1.6)
 
 Under the hood, an `.egn` file utilizes human-readable, web-native JSON structural primitives:
 
 ```json
 {
   "fileType": "Euchre Game Notation",
-  "version": "1.5",
+  "version": "1.6",
   "metadata": {
     "gameId": "egn_m_20260528_01",
     "title": "WEC Finals",
     "description": "Championship bracket game recorded live from local venue stream.",
     "date": "2026-05-17T19:00:00Z",
+    "teamNames": ["Midwest Aces", "Great Lakes Loners"],
     "players": ["Player0", "Player1", "Player2", "Player3"],
     "initialScore": [0, 0],
     "ruleset": {
@@ -81,7 +82,6 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": ["Pass", "Pass", "Pass", "Order"],
           "isAlone": false,
@@ -91,7 +91,6 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
           }
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             ["Ac", "Tc", "9c", "Kc"],
@@ -111,14 +110,12 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": ["Pass", "Pass", "Order"],
           "isAlone": true,
           "discard": "Kd"
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             ["9d", "Ad", "Ah"],
@@ -141,7 +138,6 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass", "Pass", "Pass", "Pass", "c"
@@ -152,7 +148,6 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
           }
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             ["Ac","Tc","9c","Kc"],
@@ -168,13 +163,11 @@ Under the hood, an `.egn` file utilizes human-readable, web-native JSON structur
           "branchIndex": 4,
           "phases": [
             {
-              "phaseNumber": 0,
               "type": "EUCHRE_BIDDING",
               "calls": ["Pass", "d"],
               "isAlone": false
             },
             {
-              "phaseNumber": 1,
               "type": "TRICK_PLAY",
               "tricks": [
                 ["Ac", "Tc", "9c", "Kc"],
@@ -247,7 +240,14 @@ When implementing or parsing EGN, keep the following details in mind:
      }
      ```
      This format supports any number of external ID systems, allowing for unified player identification across Euchre websites, tournament registrations, chat community IDs, or custom platform identifiers. See [docs/player-tracking.md](docs/player-tracking.md) for implementation details.
-   * **Flexible Date Formats**: The `date` property supports date-only strings (e.g., `2026-08-11`), ISO-8601 date-time strings with a timezone offset (e.g., `2026-05-17T19:00:00Z` or `+05:30`), or local timezone-less formats (e.g., `2026-05-30T03:51` or `2026-06-02 19:02`).
+    * **Team Names & Partnerships (`teamNames`)**: An optional 2-element tuple of strings (`[Team 0/2 Name, Team 1/3 Name]`) defining custom team names for the North/South and East/West partnerships:
+      ```json
+      {
+        "teamNames": ["Midwest Aces", "Great Lakes Loners"],
+        "players": ["Alice", "Bob", "Cheryl", "David"]
+      }
+      ```
+    * **Flexible Date Formats**: The `date` property supports date-only strings (e.g., `2026-08-11`), ISO-8601 date-time strings with a timezone offset (e.g., `2026-05-17T19:00:00Z` or `+05:30`), or local timezone-less formats (e.g., `2026-05-30T03:51` or `2026-06-02 19:02`).
 
 6. **Variant Rulesets**: For extensive documentation on alternate rules and regional variations supported in EGN, see [docs/alternate-rules.md](docs/alternate-rules.md).
 
@@ -388,7 +388,7 @@ egn-baseline game.egn --hash
 For details on baseline EGNs and their use cases, see [docs/determinism-of-egn.md](docs/determinism-of-egn.md).
 
 ### `egn-upgrade` — Version Migration
-Upgrades older EGN files to the current v1.5 format by automatically renaming snake_case properties to camelCase, removing redundant fields, and updating the version string.
+Upgrades older EGN files to the current v1.6 format by automatically renaming snake_case properties to camelCase, removing redundant fields, and updating the version string.
 
 ```bash
 # Upgrade in-place
@@ -532,6 +532,60 @@ const allGamesEgns: EgnFile[] = emn.extractAllEgnsFromEmn(emnFile);
 // 4. Convert EMN match file to Protobuf binary (.emnb) and back
 const emnBinaryBytes: Uint8Array = emn.convertEmnFileToBinData(emnFile);
 const decodedEmnFile: emn.EmnFile = emn.convertBinDataToEmnFile(emnBinaryBytes);
+```
+
+### 4. Rules, Scoring & Gameplay Validation Engine (Web & Node)
+
+Simulate game flows, determine trick winners, calculate score changes, verify gameplay legality (reneges, duplicates, sit-out plays), and compute final match outcomes:
+
+```typescript
+import { 
+  calculateFinalScore, 
+  addFinalScoreToEgn, 
+  calculateDealScoreChange, 
+  compileDealSteps,
+  determineTrump,
+  determineMaker,
+  determineLeadSeat,
+  validateGameplay,
+  validateDealGameplay
+} from "euchre-game-notation";
+
+// 1. Calculate the cumulative final score across all deals:
+const finalScore = calculateFinalScore(egnFile); // e.g. [10, 9]
+
+// 2. Inject or update metadata.finalScore:
+const updatedEgn = addFinalScoreToEgn(egnFile);
+
+// 3. Validate gameplay rules (reneges, duplicate cards, sit-out plays, trick sizes):
+const validation = validateGameplay(egnFile);
+if (!validation.isValid) {
+  console.error("Gameplay rule violations:", validation.violations);
+}
+
+// 4. Calculate score delta for a single deal:
+const [team0Delta, team1Delta] = calculateDealScoreChange(deal, egnFile.metadata);
+
+// 5. Compile chronological step-by-step table card states:
+const steps = compileDealSteps(deal, egnFile.metadata);
+```
+
+#### CLI Utility: `egn-engine`
+
+The package includes a built-in CLI tool to play through deals, verify gameplay legality, and add or verify `finalScore`:
+
+```bash
+# Display calculated game score
+npx egn-engine game.egn
+
+# Update the file in-place with the finalScore
+npx egn-engine game.egn --in-place
+
+# Check if existing finalScore matches simulated play result
+npx egn-engine game.egn --check
+
+# Validate gameplay rules (reneges, duplicate cards, trick counts)
+npx egn-engine game.egn --validate-gameplay
 ```
 
 ### 🔒 Security & Safe Rendering Guidelines

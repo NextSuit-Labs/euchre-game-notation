@@ -4,6 +4,27 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-08-23
+
+### Added & Improved
+- **Team Names Support in EGN & EMN**:
+  - Added optional `teamNames: [string, string]` 2-tuple property to EGN metadata schema (`schemas/egn-schema-v1.json`, `src/types.ts`) for partnership names (`[Team 0/2 Name, Team 1/3 Name]`).
+  - Added optional `teams: MatchTeam[]` array property to EMN metadata schema (`schemas/emn/emn-schema-v1.json`, `src/emn/types.ts`) with `id`, `name`, optional `playerIds`, and optional `color`.
+  - Added Protobuf serialization/deserialization for `team_names` in `schemas/egn-common.proto` (`.egnb`) and `MatchTeam` in `schemas/emn/emn.proto` (`.emnb`).
+  - Added semantic validation in `src/emn/validator.ts` ensuring unique team IDs and valid master player ID references.
+- **Optional `phaseNumber` (EGN Schema 1.6)**:
+  - Removed `phaseNumber` from the required properties of `biddingPhase` and `trickPlayPhase` in `schemas/egn-schema-v1.json`.
+  - Updated TypeScript definitions (`src/types.ts`) with optional `phaseNumber?: number;` on `BiddingPhase` and `TrickPlayPhase`.
+  - Upgraded canonical schema version to `1.6` with regex pattern `^1\.[23456](?:\.\d+)?$`.
+- **Deterministic Baseline Hash Preservation**:
+  - Updated `convertToBaselineEgn` (`src/cli-baseline-egn.ts`) and `convertToBaselineGame` (`src/hashing.ts`) to canonically populate `phaseNumber` (`0` for `EUCHRE_BIDDING`, `1` for `TRICK_PLAY`) during baseline conversion.
+  - Guarantees byte-for-byte identical SHA-256 baseline hashes whether files are written with or without explicit `phaseNumber` properties.
+- **Dedicated Gameplay & Semantic Rule Validation (`src/engine/validation.ts`)**:
+  - Implemented `validateDealGameplay` and `validateGameplay` to detect reneges (with Left Bower dynamic suit resolution), duplicate dealt/played cards, illegal round 2 bid suits, trick count mismatches, and sit-out violations (for lone callers and defending alone).
+- **EGN Engine CLI (`egn-engine`)**:
+  - Renamed CLI tool to `src/cli-engine.ts` executable as `egn-engine`.
+  - Added `--validate-gameplay` flag to check game integrity.
+
 ## [1.5.3] - 2026-08-15
 
 ### Added & Improved

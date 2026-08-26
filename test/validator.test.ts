@@ -14,12 +14,47 @@
  * limitations under the License.
  */
 
+import * as fs from "fs";
 import { describe, it, expect } from "@jest/globals";
 import { validateEgn, isEgnFile, validateEGN, isEGNFile, validateDeal, isDeal } from "../src/validator";
 import { convertBinToEgnJson, convertEgnJsonToBin } from "../src/converter";
 import { packDeal, unpackDeal } from "../src/bitpacker";
 import { BiddingPhase, TrickPlayPhase } from "../src/types";
 import { VERSION } from "../src/version";
+
+function deleteFileSync(filePath: string) {
+  if (!fs.existsSync(filePath)) return;
+  for (let i = 0; i < 5; i++) {
+    try {
+      fs.unlinkSync(filePath);
+      return;
+    } catch (err: any) {
+      if (err.code === "EBUSY" || err.code === "EPERM") {
+        const end = Date.now() + 50;
+        while (Date.now() < end) { }
+      } else {
+        throw err;
+      }
+    }
+  }
+}
+
+function removeDirSync(dirPath: string) {
+  if (!fs.existsSync(dirPath)) return;
+  for (let i = 0; i < 5; i++) {
+    try {
+      fs.rmdirSync(dirPath);
+      return;
+    } catch (err: any) {
+      if (err.code === "EBUSY" || err.code === "ENOTEMPTY" || err.code === "EPERM") {
+        const end = Date.now() + 50;
+        while (Date.now() < end) { }
+      } else {
+        throw err;
+      }
+    }
+  }
+}
 
 const validMockData = {
   "fileType": "Euchre Game Notation",
@@ -575,7 +610,6 @@ describe("EGN Protobuf Converter", () => {
   });
 
   it("should convert JSON to binary and back to JSON exactly using expanded mode (condensed = false)", () => {
-    const fs = require("fs");
     const path = require("path");
     const tempDir = path.resolve(__dirname, "../temp_test_dir_expanded");
     if (!fs.existsSync(tempDir)) {
@@ -597,12 +631,8 @@ describe("EGN Protobuf Converter", () => {
       const result = validateEgn(backObj);
       expect(result.isValid).toBe(true);
     } finally {
-      if (fs.existsSync(tempBinFilePath)) {
-        fs.unlinkSync(tempBinFilePath);
-      }
-      if (fs.existsSync(tempDir)) {
-        fs.rmdirSync(tempDir);
-      }
+      deleteFileSync(tempBinFilePath);
+      removeDirSync(tempDir);
     }
   });
 });
@@ -645,6 +675,48 @@ describe("EgnDeal Bitpacker", () => {
       expect(isDeal(deal)).toBe(true);
     });
 
+    it("should validate successfully when phaseNumber is omitted in phases", () => {
+      const dealWithoutPhaseNumbers = {
+        dealNumber: 1,
+        initialState: {
+          dealer: 0,
+          upCard: "Js"
+        },
+        phases: [
+          {
+            type: "EUCHRE_BIDDING",
+            calls: ["Pass", "Pass", "Order", "Pass"]
+          },
+          {
+            type: "TRICK_PLAY",
+            tricks: [
+              ["As", "Ks", "Qs", "Ts"],
+              ["Ah", "Kh", "Qh", "Jh"],
+              ["Ad", "Kd", "Qd", "Jd"],
+              ["Ac", "Kc", "Qc", "Jc"],
+              ["9s", "9h", "9d", "9c"]
+            ]
+          }
+        ]
+      };
+      const result = validateDeal(dealWithoutPhaseNumbers);
+      expect(result.isValid).toBe(true);
+      expect(isDeal(dealWithoutPhaseNumbers)).toBe(true);
+
+      const egnFileWithoutPhaseNumbers = {
+        fileType: "Euchre Game Notation",
+        version: "1.6",
+        metadata: {
+          players: ["North", "East", "South", "West"],
+          initialScore: [0, 0]
+        },
+        deals: [dealWithoutPhaseNumbers]
+      };
+      const fileResult = validateEgn(egnFileWithoutPhaseNumbers);
+      expect(fileResult.isValid).toBe(true);
+      expect(isEgnFile(egnFileWithoutPhaseNumbers)).toBe(true);
+    });
+
     it("should return invalid result and false for malformed Deal object", () => {
       const invalidDeal = {
         dealNumber: "not-a-number",
@@ -653,6 +725,37 @@ describe("EgnDeal Bitpacker", () => {
       const result = validateDeal(invalidDeal);
       expect(result.isValid).toBe(false);
       expect(isDeal(invalidDeal)).toBe(false);
+    });
+  });
+
+  describe("Metadata teamNames support", () => {
+    it("should accept valid teamNames 2-tuple array", () => {
+      const dataWithTeams = JSON.parse(JSON.stringify(validMockData));
+      dataWithTeams.metadata.teamNames = ["Red Dragons", "Blue Jays"];
+      const result = validateEgn(dataWithTeams);
+      expect(result.isValid).toBe(true);
+      expect(isEgnFile(dataWithTeams)).toBe(true);
+    });
+
+    it("should reject teamNames with fewer than 2 items", () => {
+      const dataWithTeams = JSON.parse(JSON.stringify(validMockData));
+      dataWithTeams.metadata.teamNames = ["Red Dragons"];
+      const result = validateEgn(dataWithTeams);
+      expect(result.isValid).toBe(false);
+    });
+
+    it("should reject teamNames with more than 2 items", () => {
+      const dataWithTeams = JSON.parse(JSON.stringify(validMockData));
+      dataWithTeams.metadata.teamNames = ["Team 1", "Team 2", "Team 3"];
+      const result = validateEgn(dataWithTeams);
+      expect(result.isValid).toBe(false);
+    });
+
+    it("should reject non-string items in teamNames", () => {
+      const dataWithTeams = JSON.parse(JSON.stringify(validMockData));
+      dataWithTeams.metadata.teamNames = ["Team 1", 123];
+      const result = validateEgn(dataWithTeams);
+      expect(result.isValid).toBe(false);
     });
   });
 });

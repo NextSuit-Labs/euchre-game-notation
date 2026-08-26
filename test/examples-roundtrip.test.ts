@@ -28,6 +28,23 @@ import * as path from "path";
 
 const EXAMPLES_DIR = path.resolve(__dirname, "../examples");
 
+function deleteFileSync(filePath: string) {
+  if (!fs.existsSync(filePath)) return;
+  for (let i = 0; i < 5; i++) {
+    try {
+      fs.unlinkSync(filePath);
+      return;
+    } catch (err: any) {
+      if (err.code === "EBUSY" || err.code === "EPERM") {
+        const end = Date.now() + 50;
+        while (Date.now() < end) {}
+      } else {
+        throw err;
+      }
+    }
+  }
+}
+
 function getFilesRecursively(dir: string, fileExt: string): string[] {
   const results: string[] = [];
   const list = fs.readdirSync(dir);
@@ -88,6 +105,11 @@ function normalizeEgnObj(obj: any, isCondensed = false, isRuleset = false): any 
     if (isBiddingPhase) {
       res.isAlone = res.isAlone ?? res.is_alone ?? false;
       delete res.is_alone; // Clean up casing duplicate
+      if (res.phaseNumber === undefined) res.phaseNumber = 0;
+    }
+
+    if (isPlayPhase) {
+      if (res.phaseNumber === undefined) res.phaseNumber = 1;
     }
 
     if (isRulesetObj) {
@@ -178,9 +200,7 @@ describe("EGN All Example Files Roundtrip & Bitpacker Verification", () => {
           // 4. Assert content parity
           expect(normalizeEgnObj(backObj, false)).toEqual(normalizeEgnObj(egnToTest, false));
         } finally {
-          if (fs.existsSync(tempBinPath)) {
-            fs.unlinkSync(tempBinPath);
-          }
+          deleteFileSync(tempBinPath);
         }
       });
 
@@ -203,9 +223,7 @@ describe("EGN All Example Files Roundtrip & Bitpacker Verification", () => {
           // 4. Assert content parity (ignoring cardExchanges omitted by bitpacker)
           expect(normalizeEgnObj(backObj, true)).toEqual(normalizeEgnObj(egnToTest, true));
         } finally {
-          if (fs.existsSync(tempBinPath)) {
-            fs.unlinkSync(tempBinPath);
-          }
+          deleteFileSync(tempBinPath);
         }
       });
     });

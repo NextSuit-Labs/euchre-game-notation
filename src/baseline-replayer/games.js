@@ -16,7 +16,7 @@
 
 var vwec1 = {
   "fileType": "Euchre Game Notation",
-  "version": "1.5",
+  "version": "1.6",
   "metadata": {
     "title": "VWEC Finals - Hand 1",
     "description": "First deal of the Virtual World Euchre Championship Finals. Standard order-up.",
@@ -45,7 +45,6 @@ var vwec1 = {
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -56,7 +55,6 @@ var vwec1 = {
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -98,7 +96,7 @@ var vwec1 = {
 
 var vwec2 = {
   "fileType": "Euchre Game Notation",
-  "version": "1.5",
+  "version": "1.6",
   "metadata": {
     "title": "VWEC Finals - Hand 2",
     "description": "Second deal of the VWEC Finals. All pass on Round 1, called Clubs in Round 2.",
@@ -127,7 +125,6 @@ var vwec2 = {
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -139,7 +136,6 @@ var vwec2 = {
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -181,7 +177,7 @@ var vwec2 = {
 
 var vwec8 = {
   "fileType": "Euchre Game Notation",
-  "version": "1.5",
+  "version": "1.6",
   "metadata": {
     "title": "VWEC Finals - Hand 8",
     "description": "Eighth deal of the VWEC Finals. Llama goes alone on Spades.",
@@ -210,7 +206,6 @@ var vwec8 = {
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -221,7 +216,6 @@ var vwec8 = {
           "isAlone": true
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -258,7 +252,7 @@ var vwec8 = {
 
 var meAndBears = {
   "fileType": "Euchre Game Notation",
-  "version": "1.5",
+  "version": "1.6",
   "metadata": {
     "title": "WWMM and Bears",
     "description": "",
@@ -288,7 +282,6 @@ var meAndBears = {
       },
       "phases": [
         {
-          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -299,7 +292,6 @@ var meAndBears = {
           "isAlone": false
         },
         {
-          "phaseNumber": 2,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -345,7 +337,6 @@ var meAndBears = {
       },
       "phases": [
         {
-          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -357,7 +348,6 @@ var meAndBears = {
           "discard": "Qc"
         },
         {
-          "phaseNumber": 2,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -403,7 +393,6 @@ var meAndBears = {
       },
       "phases": [
         {
-          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -413,7 +402,6 @@ var meAndBears = {
           "isAlone": false
         },
         {
-          "phaseNumber": 2,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -459,7 +447,6 @@ var meAndBears = {
       },
       "phases": [
         {
-          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -468,7 +455,6 @@ var meAndBears = {
           "isAlone": false
         },
         {
-          "phaseNumber": 2,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -514,7 +500,6 @@ var meAndBears = {
       },
       "phases": [
         {
-          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Order"
@@ -522,7 +507,6 @@ var meAndBears = {
           "isAlone": true
         },
         {
-          "phaseNumber": 2,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -559,7 +543,6 @@ var meAndBears = {
           "branchIndex": 0,
           "phases": [
             {
-              "phaseNumber": 1,
               "type": "EUCHRE_BIDDING",
               "calls": [
                 "Pass",
@@ -571,7 +554,6 @@ var meAndBears = {
               "isAlone": true
             },
             {
-              "phaseNumber": 2,
               "type": "TRICK_PLAY",
               "tricks": [
                 [
@@ -614,7 +596,6 @@ var meAndBears = {
       },
       "phases": [
         {
-          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -626,7 +607,6 @@ var meAndBears = {
           "isAlone": false
         },
         {
-          "phaseNumber": 2,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -668,7 +648,6 @@ var meAndBears = {
           "branchIndex": 4,
           "phases": [
             {
-              "phaseNumber": 1,
               "type": "EUCHRE_BIDDING",
               "calls": [
                 "Pass",
@@ -677,7 +656,6 @@ var meAndBears = {
               "isAlone": false
             },
             {
-              "phaseNumber": 2,
               "type": "TRICK_PLAY",
               "tricks": [
                 [
@@ -719,7 +697,6 @@ var meAndBears = {
           "branchIndex": 5,
           "phases": [
             {
-              "phaseNumber": 1,
               "type": "TRICK_PLAY",
               "tricks": [
                 [
@@ -767,7 +744,6 @@ var meAndBears = {
       },
       "phases": [
         {
-          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Order"
@@ -775,7 +751,6 @@ var meAndBears = {
           "isAlone": false
         },
         {
-          "phaseNumber": 2,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -821,7 +796,6 @@ var meAndBears = {
       },
       "phases": [
         {
-          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -830,7 +804,6 @@ var meAndBears = {
           "isAlone": false
         },
         {
-          "phaseNumber": 2,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -872,7 +845,6 @@ var meAndBears = {
           "branchIndex": 4,
           "phases": [
             {
-              "phaseNumber": 1,
               "type": "TRICK_PLAY",
               "tricks": [
                 [
@@ -918,7 +890,6 @@ var meAndBears = {
       },
       "phases": [
         {
-          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -929,7 +900,6 @@ var meAndBears = {
           "isAlone": false
         },
         {
-          "phaseNumber": 2,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -975,7 +945,6 @@ var meAndBears = {
       },
       "phases": [
         {
-          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -987,7 +956,6 @@ var meAndBears = {
           "discard": "Tc"
         },
         {
-          "phaseNumber": 2,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -1029,7 +997,6 @@ var meAndBears = {
           "branchIndex": 3,
           "phases": [
             {
-              "phaseNumber": 1,
               "type": "EUCHRE_BIDDING",
               "calls": [
                 "Pass",
@@ -1038,7 +1005,6 @@ var meAndBears = {
               "isAlone": false
             },
             {
-              "phaseNumber": 2,
               "type": "TRICK_PLAY",
               "tricks": [
                 [
@@ -1086,7 +1052,6 @@ var meAndBears = {
       },
       "phases": [
         {
-          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -1097,7 +1062,6 @@ var meAndBears = {
           "isAlone": true
         },
         {
-          "phaseNumber": 2,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -1138,7 +1102,6 @@ var meAndBears = {
       },
       "phases": [
         {
-          "phaseNumber": 1,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -1149,7 +1112,6 @@ var meAndBears = {
           "isAlone": false
         },
         {
-          "phaseNumber": 2,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -1254,7 +1216,7 @@ var moteW5Match = {
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.5",
+        "version": "1.6",
         "metadata": {
           "title": "MotE W5 G1",
           "description": "",
@@ -1290,7 +1252,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1299,7 +1260,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1350,7 +1310,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1362,7 +1321,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1413,7 +1371,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1425,7 +1382,6 @@ var moteW5Match = {
                 "discard": "Qs"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1476,7 +1432,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1490,7 +1445,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1541,7 +1495,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1555,7 +1508,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1606,7 +1558,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -1614,7 +1565,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1665,7 +1615,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1677,7 +1626,6 @@ var moteW5Match = {
                 "discard": "9c"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1728,7 +1676,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -1736,7 +1683,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1793,7 +1739,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1804,7 +1749,6 @@ var moteW5Match = {
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1850,7 +1794,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1862,7 +1805,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1913,7 +1855,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1923,7 +1864,6 @@ var moteW5Match = {
                 "discard": "Kh"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1973,7 +1913,7 @@ var moteW5Match = {
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.5",
+        "version": "1.6",
         "metadata": {
           "title": "MotE W5 G2",
           "description": "",
@@ -2009,7 +1949,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2022,7 +1961,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2073,7 +2011,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2085,7 +2022,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2136,7 +2072,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2147,7 +2082,6 @@ var moteW5Match = {
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2193,7 +2127,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2206,7 +2139,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2257,7 +2189,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2270,7 +2201,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2321,7 +2251,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2331,7 +2260,6 @@ var moteW5Match = {
                 "discard": "Jh"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2382,7 +2310,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2393,7 +2320,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2444,7 +2370,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2455,7 +2380,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2506,7 +2430,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2515,7 +2438,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2566,7 +2488,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2578,7 +2499,6 @@ var moteW5Match = {
                 "discard": "Td"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2624,7 +2544,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2633,7 +2552,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2684,7 +2602,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2695,7 +2612,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2745,7 +2661,7 @@ var moteW5Match = {
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.5",
+        "version": "1.6",
         "metadata": {
           "title": "MotE W5 G3",
           "description": "",
@@ -2781,7 +2697,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2793,7 +2708,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2844,7 +2758,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2855,7 +2768,6 @@ var moteW5Match = {
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2901,7 +2813,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2913,7 +2824,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2964,7 +2874,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2977,7 +2886,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3028,7 +2936,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3040,7 +2947,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3091,7 +2997,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3104,7 +3009,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3155,7 +3059,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3167,7 +3070,6 @@ var moteW5Match = {
                 "discard": "9h"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3218,7 +3120,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3227,7 +3128,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3278,7 +3178,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3289,7 +3188,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3340,7 +3238,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -3348,7 +3245,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3399,7 +3295,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3411,7 +3306,6 @@ var moteW5Match = {
                 "discard": "9d"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3461,7 +3355,7 @@ var moteW5Match = {
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.5",
+        "version": "1.6",
         "metadata": {
           "title": "MotE W5 G4",
           "description": "",
@@ -3497,7 +3391,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3510,7 +3403,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3561,7 +3453,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3573,7 +3464,6 @@ var moteW5Match = {
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3619,7 +3509,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3630,7 +3519,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3681,7 +3569,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3693,7 +3580,6 @@ var moteW5Match = {
                 "discard": "Qd"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3739,7 +3625,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3752,7 +3637,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3803,7 +3687,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3815,7 +3698,6 @@ var moteW5Match = {
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3861,7 +3743,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3870,7 +3751,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3921,7 +3801,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3932,7 +3811,6 @@ var moteW5Match = {
                 "discard": "Jh"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3983,7 +3861,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3993,7 +3870,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4044,7 +3920,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4056,7 +3931,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4107,7 +3981,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4118,7 +3991,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4169,7 +4041,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -4178,7 +4049,6 @@ var moteW5Match = {
                 "discard": "Ac"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4229,7 +4099,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4242,7 +4111,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4292,7 +4160,7 @@ var moteW5Match = {
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.5",
+        "version": "1.6",
         "metadata": {
           "title": "MotE W5 G5",
           "description": "",
@@ -4328,7 +4196,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4340,7 +4207,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4391,7 +4257,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -4399,7 +4264,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4450,7 +4314,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4459,7 +4322,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4510,7 +4372,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4522,7 +4383,6 @@ var moteW5Match = {
                 "discard": "9d"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4568,7 +4428,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4580,7 +4439,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4637,7 +4495,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4652,7 +4509,6 @@ var moteW5Match = {
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4698,7 +4554,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4709,7 +4564,6 @@ var moteW5Match = {
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4755,7 +4609,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4765,7 +4618,6 @@ var moteW5Match = {
                 "discard": "9s"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4816,7 +4668,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -4824,7 +4675,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4875,7 +4725,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4884,7 +4733,6 @@ var moteW5Match = {
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4929,7 +4777,7 @@ var moteW5Match = {
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.5",
+        "version": "1.6",
         "metadata": {
           "title": "MotE W5 G6",
           "description": "",
@@ -4965,7 +4813,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4977,7 +4824,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -5028,7 +4874,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -5040,7 +4885,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -5091,7 +4935,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -5102,7 +4945,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -5153,7 +4995,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -5166,7 +5007,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -5217,7 +5057,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -5230,7 +5069,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -5281,7 +5119,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -5292,7 +5129,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -5343,7 +5179,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -5351,7 +5186,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -5402,7 +5236,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -5412,7 +5245,6 @@ var moteW5Match = {
                 "discard": "Qh"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -5463,7 +5295,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -5472,7 +5303,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -5529,7 +5359,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -5540,7 +5369,6 @@ var moteW5Match = {
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -5586,7 +5414,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -5597,7 +5424,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -5648,7 +5474,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -5661,7 +5486,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -5712,7 +5536,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -5720,7 +5543,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -5771,7 +5593,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -5779,7 +5600,6 @@ var moteW5Match = {
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -5825,7 +5645,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -5834,7 +5653,6 @@ var moteW5Match = {
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -5885,7 +5703,6 @@ var moteW5Match = {
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -5897,7 +5714,6 @@ var moteW5Match = {
                 "discard": "Js"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [

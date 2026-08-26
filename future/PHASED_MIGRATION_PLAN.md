@@ -103,7 +103,7 @@ Establish `@tgn/core` as the shared npm package dependency for all trick-taking 
                "type": "array",
                "items": {
                  "type": "object",
-                 "required": ["phaseNumber", "type"],
+                 "required": ["type"],
                  "properties": {
                    "phaseNumber": { "type": "integer", "minimum": 0 },
                    "type": { "type": "string" }

@@ -37,6 +37,7 @@ message Metadata {
   repeated int32 final_score = 8;
   optional string date = 6; // ISO 8601 formatted date-time string
   Ruleset ruleset = 7;
+  repeated string team_names = 9;
 }
 
 message Player {

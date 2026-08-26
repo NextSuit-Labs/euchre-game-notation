@@ -31,6 +31,20 @@ While Euchre Game Notation (EGN) defines the structure of individual games, EMN 
     "title": "NextSuit League 2026 Finals",
     "description": "Best of 3 championship series with seat rotations.",
     "date": "2026-07-19T19:00:00Z",
+    "teams": [
+      {
+        "id": "team-a",
+        "name": "Midwest Aces",
+        "playerIds": ["p-01", "p-04"],
+        "color": "#E53E3E"
+      },
+      {
+        "id": "team-b",
+        "name": "Great Lakes Loners",
+        "playerIds": ["p-02", "p-03"],
+        "color": "#3182CE"
+      }
+    ],
     "players": [
       {
         "id": "p-01",
@@ -79,7 +93,7 @@ While Euchre Game Notation (EGN) defines the structure of individual games, EMN 
       "playersOverride": ["p-01", "p-02", "p-03", "p-04"],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.5",
+        "version": "1.6",
         "metadata": { "initialScore": [0, 0] },
         "deals": []
       }
@@ -89,7 +103,7 @@ While Euchre Game Notation (EGN) defines the structure of individual games, EMN 
       "playersOverride": ["p-01", "p-03", "p-02", "p-04"],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.5",
+        "version": "1.6",
         "metadata": { "initialScore": [0, 0] },
         "deals": []
       }
@@ -99,7 +113,7 @@ While Euchre Game Notation (EGN) defines the structure of individual games, EMN 
       "playersOverride": ["p-01", "p-02", "p-05", "p-04"],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.5",
+        "version": "1.6",
         "metadata": { "initialScore": [0, 0] },
         "deals": []
       }

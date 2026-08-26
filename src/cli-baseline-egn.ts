@@ -129,6 +129,13 @@ export function convertToBaselineEgn(value: unknown): unknown {
 
       stripped[key] = strippedChild;
     }
+
+    if (stripped.type === "EUCHRE_BIDDING") {
+      stripped.phaseNumber = typeof stripped.phaseNumber === "number" ? stripped.phaseNumber : 0;
+    } else if (stripped.type === "TRICK_PLAY") {
+      stripped.phaseNumber = typeof stripped.phaseNumber === "number" ? stripped.phaseNumber : 1;
+    }
+
     return stripped;
   }
 

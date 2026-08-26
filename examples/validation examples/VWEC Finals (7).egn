@@ -1,6 +1,6 @@
 {
   "fileType": "Euchre Game Notation",
-  "version": "1.5",
+  "version": "1.6",
   "metadata": {
     "title": "VWEC Finals",
     "description": "Finals of the Virtual World Euchre Championship on Euchre.com",
@@ -30,7 +30,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -41,7 +40,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -86,7 +84,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -98,7 +95,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -143,7 +139,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -154,7 +149,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -199,7 +193,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -210,7 +203,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -255,7 +247,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -268,7 +259,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -313,7 +303,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -324,7 +313,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -369,7 +357,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -380,7 +367,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -425,7 +411,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -436,7 +421,6 @@
           "isAlone": true
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -476,7 +460,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -487,7 +470,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -533,7 +515,6 @@
           "branchIndex": 12,
           "phases": [
             {
-              "phaseNumber": 1,
               "type": "TRICK_PLAY",
               "tricks": [
                 [
@@ -573,7 +554,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Order"
@@ -581,7 +561,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -626,7 +605,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -637,7 +615,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -682,7 +659,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Order"
@@ -695,7 +671,6 @@
           }
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [
@@ -740,7 +715,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -751,7 +725,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [

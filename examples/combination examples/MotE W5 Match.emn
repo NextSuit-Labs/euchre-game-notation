@@ -4,6 +4,26 @@
   "metadata": {
     "title": "MotE Week 5 Match",
     "date": "2026-07-21T03:47:33.103Z",
+    "teams": [
+      {
+        "id": "team-01",
+        "name": "Midwest Aces",
+        "playerIds": [
+          "p-01",
+          "p-03"
+        ],
+        "color": "#E53E3E"
+      },
+      {
+        "id": "team-02",
+        "name": "Great Lakes Loners",
+        "playerIds": [
+          "p-02",
+          "p-04"
+        ],
+        "color": "#3182CE"
+      }
+    ],
     "players": [
       {
         "id": "p-01",
@@ -62,7 +82,7 @@
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.5",
+        "version": "1.6",
         "metadata": {
           "title": "MotE W5 G1",
           "description": "",
@@ -98,7 +118,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -107,7 +126,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -158,7 +176,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -170,7 +187,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -221,7 +237,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -233,7 +248,6 @@
                 "discard": "Qs"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -284,7 +298,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -298,7 +311,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -349,7 +361,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -363,7 +374,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -414,7 +424,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -422,7 +431,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -473,7 +481,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -485,7 +492,6 @@
                 "discard": "9c"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -536,7 +542,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -544,7 +549,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -601,7 +605,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -612,7 +615,6 @@
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -658,7 +660,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -670,7 +671,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -721,7 +721,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -731,7 +730,6 @@
                 "discard": "Kh"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -781,7 +779,7 @@
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.5",
+        "version": "1.6",
         "metadata": {
           "title": "MotE W5 G2",
           "description": "",
@@ -817,7 +815,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -830,7 +827,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -881,7 +877,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -893,7 +888,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -944,7 +938,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -955,7 +948,6 @@
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1001,7 +993,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1014,7 +1005,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1065,7 +1055,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1078,7 +1067,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1129,7 +1117,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1139,7 +1126,6 @@
                 "discard": "Jh"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1190,7 +1176,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1201,7 +1186,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1252,7 +1236,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1263,7 +1246,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1314,7 +1296,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1323,7 +1304,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1374,7 +1354,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1386,7 +1365,6 @@
                 "discard": "Td"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1432,7 +1410,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1441,7 +1418,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1492,7 +1468,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1503,7 +1478,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1553,7 +1527,7 @@
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.5",
+        "version": "1.6",
         "metadata": {
           "title": "MotE W5 G3",
           "description": "",
@@ -1589,7 +1563,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1601,7 +1574,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1652,7 +1624,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1663,7 +1634,6 @@
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1709,7 +1679,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1721,7 +1690,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1772,7 +1740,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1785,7 +1752,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1836,7 +1802,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1848,7 +1813,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1899,7 +1863,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1912,7 +1875,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -1963,7 +1925,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -1975,7 +1936,6 @@
                 "discard": "9h"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2026,7 +1986,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2035,7 +1994,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2086,7 +2044,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2097,7 +2054,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2148,7 +2104,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -2156,7 +2111,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2207,7 +2161,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2219,7 +2172,6 @@
                 "discard": "9d"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2269,7 +2221,7 @@
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.5",
+        "version": "1.6",
         "metadata": {
           "title": "MotE W5 G4",
           "description": "",
@@ -2305,7 +2257,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2318,7 +2269,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2369,7 +2319,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2381,7 +2330,6 @@
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2427,7 +2375,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2438,7 +2385,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2489,7 +2435,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2501,7 +2446,6 @@
                 "discard": "Qd"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2547,7 +2491,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2560,7 +2503,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2611,7 +2553,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2623,7 +2564,6 @@
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2669,7 +2609,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2678,7 +2617,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2729,7 +2667,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2740,7 +2677,6 @@
                 "discard": "Jh"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2791,7 +2727,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2801,7 +2736,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2852,7 +2786,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2864,7 +2797,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2915,7 +2847,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -2926,7 +2857,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -2977,7 +2907,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -2986,7 +2915,6 @@
                 "discard": "Ac"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3037,7 +2965,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3050,7 +2977,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3100,7 +3026,7 @@
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.5",
+        "version": "1.6",
         "metadata": {
           "title": "MotE W5 G5",
           "description": "",
@@ -3136,7 +3062,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3148,7 +3073,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3199,7 +3123,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -3207,7 +3130,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3258,7 +3180,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3267,7 +3188,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3318,7 +3238,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3330,7 +3249,6 @@
                 "discard": "9d"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3376,7 +3294,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3388,7 +3305,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3445,7 +3361,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3460,7 +3375,6 @@
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3506,7 +3420,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3517,7 +3430,6 @@
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3563,7 +3475,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3573,7 +3484,6 @@
                 "discard": "9s"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3624,7 +3534,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -3632,7 +3541,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3683,7 +3591,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3692,7 +3599,6 @@
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3737,7 +3643,7 @@
       ],
       "gameData": {
         "fileType": "Euchre Game Notation",
-        "version": "1.5",
+        "version": "1.6",
         "metadata": {
           "title": "MotE W5 G6",
           "description": "",
@@ -3773,7 +3679,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3785,7 +3690,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3836,7 +3740,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3848,7 +3751,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3899,7 +3801,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3910,7 +3811,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -3961,7 +3861,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -3974,7 +3873,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4025,7 +3923,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4038,7 +3935,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4089,7 +3985,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4100,7 +3995,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4151,7 +4045,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -4159,7 +4052,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4210,7 +4102,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4220,7 +4111,6 @@
                 "discard": "Qh"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4271,7 +4161,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4280,7 +4169,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4337,7 +4225,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4348,7 +4235,6 @@
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4394,7 +4280,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4405,7 +4290,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4456,7 +4340,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4469,7 +4352,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4520,7 +4402,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -4528,7 +4409,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4579,7 +4459,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Order"
@@ -4587,7 +4466,6 @@
                 "isAlone": true
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4633,7 +4511,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4642,7 +4519,6 @@
                 "isAlone": false
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [
@@ -4693,7 +4569,6 @@
             },
             "phases": [
               {
-                "phaseNumber": 0,
                 "type": "EUCHRE_BIDDING",
                 "calls": [
                   "Pass",
@@ -4705,7 +4580,6 @@
                 "discard": "Js"
               },
               {
-                "phaseNumber": 1,
                 "type": "TRICK_PLAY",
                 "tricks": [
                   [

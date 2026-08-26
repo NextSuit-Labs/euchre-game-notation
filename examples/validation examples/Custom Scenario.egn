@@ -1,6 +1,6 @@
 {
   "fileType": "Euchre Game Notation",
-  "version": "1.5",
+  "version": "1.6",
   "metadata": {
     "title": "Custom Scenario",
     "description": "Reshuffled Euchre Scenario",
@@ -59,7 +59,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -71,7 +70,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "tricks": [
             [

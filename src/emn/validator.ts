@@ -73,6 +73,31 @@ export function validateEmn(data: unknown): EmnValidationResult {
     }
   });
 
+  // Verify team IDs are unique and referenced playerIds exist
+  if (emnData.metadata.teams) {
+    const teamIds = new Set<string>();
+    emnData.metadata.teams.forEach((team, tIdx) => {
+      if (teamIds.has(team.id)) {
+        customErrors.push({
+          instancePath: `/metadata/teams/${tIdx}/id`,
+          message: `Duplicate team ID '${team.id}' in metadata.teams`,
+        });
+      } else {
+        teamIds.add(team.id);
+      }
+      if (team.playerIds) {
+        team.playerIds.forEach((pId, pIdx) => {
+          if (!masterPlayerIds.has(pId)) {
+            customErrors.push({
+              instancePath: `/metadata/teams/${tIdx}/playerIds/${pIdx}`,
+              message: `Player ID '${pId}' in team '${team.id}' not found in metadata.players`,
+            });
+          }
+        });
+      }
+    });
+  }
+
   // 2. Verify games[i].playersOverride IDs exist in master player pool and are unique within each game
   emnData.games.forEach((game, gameIdx) => {
     if (!game.playersOverride || game.playersOverride.length !== 4) {

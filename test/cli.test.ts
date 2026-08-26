@@ -26,6 +26,7 @@ const cliPath = path.resolve(__dirname, "../dist/src/cli-convert.js");
 const baselineEgnCliPath = path.resolve(__dirname, "../dist/src/cli-baseline-egn.js");
 const bitpackCliPath = path.resolve(__dirname, "../dist/src/cli-bitpack.js");
 const upgradeCliPath = path.resolve(__dirname, "../dist/src/cli-upgrade.js");
+const engineCliPath = path.resolve(__dirname, "../dist/src/cli-engine.js");
 
 function deleteFileSync(filePath: string) {
   if (!fs.existsSync(filePath)) return;
@@ -317,6 +318,23 @@ describe("EGN Converter CLI", () => {
       execSync(`node "${cliPath}" "${baselineJsonPath}" "${expandedBinPath}" --expanded`).toString();
       const expandedHash = execSync(`node "${baselineEgnCliPath}" "${expandedBinPath}" --hash --expanded`).toString().trim();
       expect(expandedHash).toBe(jsonHash);
+
+      // Verify that omitting phaseNumber yields the EXACT same baseline hash
+      const noPhaseNumberJsonPath = path.join(tempDir, "no_phase_number.egn");
+      const baseEgnNoPhaseNum = {
+        ...baseEgn,
+        deals: baseEgn.deals.map((d: any) => ({
+          ...d,
+          phases: d.phases.map((p: any) => {
+            const { phaseNumber, ...rest } = p;
+            return rest;
+          }),
+        })),
+      };
+      fs.writeFileSync(noPhaseNumberJsonPath, JSON.stringify(baseEgnNoPhaseNum), "utf8");
+      const noPhaseNumHash = execSync(`node "${baselineEgnCliPath}" "${noPhaseNumberJsonPath}" --hash`).toString().trim();
+      expect(noPhaseNumHash).toBe(jsonHash);
+      deleteFileSync(noPhaseNumberJsonPath);
     } finally {
       deleteFileSync(inputJsonPath);
       deleteFileSync(baselineJsonPath);
@@ -455,7 +473,7 @@ describe("EGN Converter CLI", () => {
         expect(originalValidation.errors[0].message).toMatch(/must match pattern|must NOT have additional properties|must have required property/);
       }
 
-      // 2. Run upgrade tool to convert to v1.5 format
+      // 2. Run upgrade tool to convert to v1.6 format
       execSync(`node "${upgradeCliPath}" "${testEgnPath}" "${upgradedPath}"`).toString();
       expect(fs.existsSync(upgradedPath)).toBe(true);
 
@@ -592,5 +610,71 @@ describe("EGN Deal Bitpacker CLI", () => {
       deleteFileSync(testJsonPath);
     }
   });
+
+  describe("EGN Engine CLI (egn-engine)", () => {
+    it("should show help with --help", () => {
+      const stdout = execSync(`node "${engineCliPath}" --help`).toString();
+      expect(stdout).toContain("Euchre Game Notation (EGN) Engine Utility CLI");
+      expect(stdout).toContain("Usage:");
+      expect(stdout).toContain("egn-engine <input-file>");
+    });
+
+    it("should show version with --version", () => {
+      const stdout = execSync(`node "${engineCliPath}" --version`).toString().trim();
+      expect(stdout).toContain("EGN Engine Utility v");
+    });
+
+    it("should display score evaluation when given an input file", () => {
+      const examplePath = path.resolve(__dirname, "../examples/Six Points in Two Hands.egn");
+      const stdout = execSync(`node "${engineCliPath}" "${examplePath}"`).toString();
+      expect(stdout).toContain("Six Points in Two Hands");
+      expect(stdout).toContain("Initial Score: [4, 9]");
+      expect(stdout).toContain("Final Score:   [10, 9]");
+    });
+
+    it("should output formatted JSON with --stdout", () => {
+      const examplePath = path.resolve(__dirname, "../examples/Six Points in Two Hands.egn");
+      const stdout = execSync(`node "${engineCliPath}" "${examplePath}" --stdout`).toString();
+      const parsed = JSON.parse(stdout);
+      expect(parsed.metadata.finalScore).toEqual([10, 9]);
+    });
+
+    it("should write to a target output file", () => {
+      const examplePath = path.resolve(__dirname, "../examples/Six Points in Two Hands.egn");
+      const outputPath = path.join(tempDir, "scored_output.egn");
+
+      try {
+        execSync(`node "${engineCliPath}" "${examplePath}" "${outputPath}"`);
+        expect(fs.existsSync(outputPath)).toBe(true);
+        const parsed = JSON.parse(fs.readFileSync(outputPath, "utf8"));
+        expect(parsed.metadata.finalScore).toEqual([10, 9]);
+      } finally {
+        deleteFileSync(outputPath);
+      }
+    });
+
+    it("should support --check flag", () => {
+      const examplePath = path.resolve(__dirname, "../examples/Six Points in Two Hands.egn");
+      const testJsonPath = path.join(tempDir, "check_test.egn");
+
+      const egn = JSON.parse(fs.readFileSync(examplePath, "utf8"));
+      egn.metadata.finalScore = [10, 9];
+      fs.writeFileSync(testJsonPath, JSON.stringify(egn), "utf8");
+
+      try {
+        const stdout = execSync(`node "${engineCliPath}" "${testJsonPath}" --check`).toString();
+        expect(stdout).toContain("matches computed game result");
+      } finally {
+        deleteFileSync(testJsonPath);
+      }
+    });
+
+    it("should support --validate-gameplay flag", () => {
+      const examplePath = path.resolve(__dirname, "../examples/Six Points in Two Hands.egn");
+      const stdout = execSync(`node "${engineCliPath}" "${examplePath}" --validate-gameplay`).toString();
+      expect(stdout).toContain("Gameplay validation passed");
+    });
+  });
 });
+
 

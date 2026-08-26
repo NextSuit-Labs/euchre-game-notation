@@ -47,11 +47,19 @@ export interface MatchPlayer extends PlayerObject {
   playerIds?: PlayerId[];
 }
 
+export interface MatchTeam {
+  id: string; // Authoritative master team ID (e.g. "t-01" or "teamA")
+  name: string;
+  playerIds?: string[];
+  color?: string;
+}
+
 export interface MatchMetadata {
   matchId?: string;
   title?: string;
   description?: string;
   date?: string;
+  teams?: MatchTeam[];
   players: MatchPlayer[];
   matchFormat?: MatchFormat;
   result?: MatchResult;

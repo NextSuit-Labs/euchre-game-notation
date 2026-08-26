@@ -38,7 +38,7 @@ const mockEmn: EmnFile = {
       playersOverride: ["p-01", "p-02", "p-03", "p-04"],
       gameData: {
         fileType: "Euchre Game Notation",
-        version: "1.5",
+        version: "1.6",
         metadata: {
           gameId: "g1",
           players: ["Alice Old", "Bob Old", "Charlie Old", "David Old"],
@@ -52,7 +52,7 @@ const mockEmn: EmnFile = {
       playersOverride: ["p-04", "p-03", "p-02", "p-01"],
       gameData: {
         fileType: "Euchre Game Notation",
-        version: "1.5",
+        version: "1.6",
         metadata: {
           gameId: "g2",
           players: ["David Old", "Charlie Old", "Bob Old", "Alice Old"],
@@ -125,7 +125,7 @@ describe("EMN Roundtrip for Combination Examples", () => {
       const filePath = path.join(examplesDir, `MotE W5 G${i}.egn`);
       const raw = fs.readFileSync(filePath, "utf8");
       const json = JSON.parse(raw) as EgnFile;
-      // We upgrade the original first to v1.5 format
+      // We upgrade the original first to v1.6 format
       const upgraded = upgradeEgn(json);
       egnFiles.push(upgraded);
       upgradedOriginals.push(upgraded);

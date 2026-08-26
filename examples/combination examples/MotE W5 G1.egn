@@ -41,7 +41,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -50,7 +49,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "initialLead": 1,
           "tricks": [
@@ -107,7 +105,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -119,7 +116,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "initialLead": 2,
           "tricks": [
@@ -176,7 +172,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -188,7 +183,6 @@
           "discard": "Qs"
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "initialLead": 3,
           "tricks": [
@@ -245,7 +239,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -259,7 +252,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "initialLead": 0,
           "tricks": [
@@ -316,7 +308,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -330,7 +321,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "initialLead": 1,
           "tricks": [
@@ -387,7 +377,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Order"
@@ -395,7 +384,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "initialLead": 2,
           "tricks": [
@@ -452,7 +440,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -464,7 +451,6 @@
           "discard": "9c"
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "initialLead": 3,
           "tricks": [
@@ -521,7 +507,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Order"
@@ -529,7 +514,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "initialLead": 0,
           "tricks": [
@@ -592,7 +576,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -603,7 +586,6 @@
           "isAlone": true
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "initialLead": 1,
           "tricks": [
@@ -655,7 +637,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -667,7 +648,6 @@
           "isAlone": false
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "initialLead": 2,
           "tricks": [
@@ -724,7 +704,6 @@
       },
       "phases": [
         {
-          "phaseNumber": 0,
           "type": "EUCHRE_BIDDING",
           "calls": [
             "Pass",
@@ -734,7 +713,6 @@
           "discard": "Kh"
         },
         {
-          "phaseNumber": 1,
           "type": "TRICK_PLAY",
           "initialLead": 3,
           "tricks": [

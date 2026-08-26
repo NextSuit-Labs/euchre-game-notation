@@ -1,6 +1,6 @@
 {
   "name": "euchre-game-notation",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "Euchre Game Notation (EGN) file format specification, JSON schemas, and TypeScript utilities.",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -20,6 +20,7 @@
     "egn-bitpack-deal": "./dist/src/cli-bitpack.js",
     "egn-baseline": "./dist/src/cli-baseline-egn.js",
     "egn-upgrade": "./dist/src/cli-upgrade.js",
+    "egn-engine": "./dist/src/cli-engine.js",
     "emn-match-combine": "./dist/src/emn/cli-combine.js",
     "emn-match-extract": "./dist/src/emn/cli-extract.js",
     "emn-match-convert": "./dist/src/emn/cli-convert.js"
@@ -38,9 +39,10 @@
   "homepage": "https://github.com/NextSuit-Labs/euchre-game-notation#readme",
   "scripts": {
     "generate:proto-schemas": "node generate-proto-schemas.js",
-    "prebuild": "npm run generate:proto-schemas",
+    "generate:replayer-rules": "node generate-replayer-rules.js",
+    "prebuild": "npm run generate:proto-schemas && npm run generate:replayer-rules",
     "build": "tsc",
-    "pretest": "npm run generate:proto-schemas",
+    "pretest": "npm run generate:proto-schemas && npm run generate:replayer-rules",
     "test": "jest",
     "prepublishOnly": "npm run build && npm test"
   },

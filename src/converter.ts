@@ -115,6 +115,7 @@ function assertNumericAnnotationKeys(value: unknown): void {
 const protoToJsonKeyMap: Record<string, string> = {
   file_type: "fileType",
   game_id: "gameId",
+  team_names: "teamNames",
   initial_score: "initialScore",
   final_score: "finalScore",
   deal_number: "dealNumber",
@@ -130,6 +131,7 @@ const protoToJsonKeyMap: Record<string, string> = {
 const jsonToProtoKeyMap: Record<string, string> = {
   fileType: "file_type",
   gameId: "game_id",
+  teamNames: "team_names",
   initialScore: "initial_score",
   finalScore: "final_score",
   dealNumber: "deal_number",
@@ -157,6 +159,11 @@ function mapProtoToEgn(protoObj: any): any {
 
       // Skip empty finalScore array if not present in original metadata
       if (mappedKey === "finalScore" && Array.isArray(val) && val.length === 0) {
+        continue;
+      }
+
+      // Skip empty teamNames array if not present in original metadata
+      if (mappedKey === "teamNames" && Array.isArray(val) && val.length === 0) {
         continue;
       }
 

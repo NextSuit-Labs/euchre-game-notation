@@ -22,10 +22,12 @@ export interface GenericMatchPlayer {
 
 export interface GenericGameData {
   fileType: string;
+  version?: string;
   metadata?: {
     players?: any[];
     [key: string]: unknown;
   };
+  deals?: any[];
   [key: string]: unknown;
 }
 

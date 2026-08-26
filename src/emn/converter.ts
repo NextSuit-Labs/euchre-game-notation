@@ -86,6 +86,12 @@ export function emnToBinary(emnFile: EmnFile, options?: EmnBinaryOptions): Uint8
       title: emnFile.metadata.title,
       description: emnFile.metadata.description,
       date: emnFile.metadata.date,
+      teams: emnFile.metadata.teams?.map((t) => ({
+        id: t.id,
+        name: t.name,
+        player_ids: t.playerIds || [],
+        color: t.color,
+      })),
       players: emnFile.metadata.players.map((p) => ({
         id: p.id,
         name: p.name,
@@ -174,6 +180,14 @@ export function binaryToEmn(data: Uint8Array, options?: { unpackGames?: boolean 
       title: decodedObject.metadata?.title || undefined,
       description: decodedObject.metadata?.description || undefined,
       date: decodedObject.metadata?.date || undefined,
+      teams: (decodedObject.metadata?.teams && decodedObject.metadata.teams.length > 0)
+        ? decodedObject.metadata.teams.map((t: any) => ({
+          id: t.id,
+          name: t.name,
+          playerIds: (t.player_ids && t.player_ids.length > 0) ? t.player_ids : undefined,
+          color: t.color || undefined,
+        }))
+        : undefined,
       players: (decodedObject.metadata?.players || []).map((p: any) => ({
         id: p.id,
         name: p.name,

@@ -16,7 +16,7 @@
 
 /**
  * Core TypeScript definitions for Euchre Game Notation (EGN).
- * Maps directly to the EGN schema v1.5 family.
+ * Maps directly to the EGN schema v1.6 family.
  */
 
 export type Card = string; // Pattern: ^([78N9TJQKAX][SsHhCcDdxtngh]|[LRB])$
@@ -50,6 +50,7 @@ export interface Metadata {
   gameId?: string;
   title?: string;
   description?: string;
+  teamNames?: [string, string];
   players: Player[];
   initialScore: [number, number];
   finalScore?: [number, number];
@@ -84,7 +85,7 @@ export interface CardExchange {
 export type Annotations = Record<number, string[]>;
 
 export interface BiddingPhase {
-  phaseNumber: number;
+  phaseNumber?: number;
   type: "EUCHRE_BIDDING";
   calls: Call[];
   isAlone?: boolean;
@@ -95,7 +96,7 @@ export interface BiddingPhase {
 }
 
 export interface TrickPlayPhase {
-  phaseNumber: number;
+  phaseNumber?: number;
   type: "TRICK_PLAY";
   tricks: Card[][];
   playAnnotations?: Annotations;

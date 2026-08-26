@@ -23,7 +23,7 @@ import { EgnFile } from "../../src/types";
 
 const mockSubEgn: EgnFile = {
   fileType: "Euchre Game Notation",
-  version: "1.5",
+  version: "1.6",
   metadata: {
     gameId: "game_01",
     title: "Game 1",
@@ -150,13 +150,13 @@ describe("EMN Combine Utility", () => {
   it("combines multiple EGN files into a single valid EMN file", () => {
     const g1: EgnFile = {
       fileType: "Euchre Game Notation",
-      version: "1.5",
+      version: "1.6",
       metadata: { players: ["Alice", "Bob", "Charlie", "David"], initialScore: [0, 0] },
       deals: [],
     };
     const g2: EgnFile = {
       fileType: "Euchre Game Notation",
-      version: "1.5",
+      version: "1.6",
       metadata: { players: ["Alice", "Charlie", "Bob", "Eve"], initialScore: [0, 0] },
       deals: [],
     };
@@ -208,7 +208,7 @@ describe("EMN Combine Utility", () => {
   it("automatically infers metadata.result when sub-EGN files contain finalScore", () => {
     const g1: EgnFile = {
       fileType: "Euchre Game Notation",
-      version: "1.5",
+      version: "1.6",
       metadata: {
         players: ["Alice", "Bob", "Charlie", "David"],
         initialScore: [0, 0],
@@ -218,7 +218,7 @@ describe("EMN Combine Utility", () => {
     };
     const g2: EgnFile = {
       fileType: "Euchre Game Notation",
-      version: "1.5",
+      version: "1.6",
       metadata: {
         players: ["Alice", "Bob", "Charlie", "David"],
         initialScore: [0, 0],
@@ -247,7 +247,7 @@ describe("EMN Combine Utility", () => {
   it("calculates individual cumulative points for PROGRESSIVE format", () => {
     const g1: EgnFile = {
       fileType: "Euchre Game Notation",
-      version: "1.5",
+      version: "1.6",
       metadata: {
         players: ["Alice", "Bob", "Charlie", "David"],
         initialScore: [0, 0],
@@ -257,7 +257,7 @@ describe("EMN Combine Utility", () => {
     };
     const g2: EgnFile = {
       fileType: "Euchre Game Notation",
-      version: "1.5",
+      version: "1.6",
       metadata: {
         players: ["Alice", "Charlie", "Bob", "David"],
         initialScore: [0, 0],
@@ -333,5 +333,54 @@ describe("EMN Combine Utility", () => {
       ],
     };
     expect(validateEmn(emnBlankDate).isValid).toBe(true);
+  });
+
+  describe("EMN teams metadata validation", () => {
+    it("validates EMN with valid teams metadata", () => {
+      const emnWithTeams: EmnFile = {
+        ...validEmnMock,
+        metadata: {
+          ...validEmnMock.metadata,
+          teams: [
+            { id: "team-a", name: "Red Dragons", playerIds: ["p-01", "p-03"], color: "#FF0000" },
+            { id: "team-b", name: "Blue Jays", playerIds: ["p-02", "p-04"], color: "#0000FF" },
+          ],
+        },
+      };
+      const res = validateEmn(emnWithTeams);
+      expect(res.isValid).toBe(true);
+      expect(isEmnFile(emnWithTeams)).toBe(true);
+    });
+
+    it("fails validation if duplicate team IDs exist", () => {
+      const emnWithDuplicateTeams: EmnFile = {
+        ...validEmnMock,
+        metadata: {
+          ...validEmnMock.metadata,
+          teams: [
+            { id: "team-a", name: "Team 1" },
+            { id: "team-a", name: "Team 2" },
+          ],
+        },
+      };
+      const res = validateEmn(emnWithDuplicateTeams);
+      expect(res.isValid).toBe(false);
+      expect(res.errors?.some((e) => e.message?.includes("Duplicate team ID"))).toBe(true);
+    });
+
+    it("fails validation if team references non-existent master player ID", () => {
+      const emnWithInvalidPlayerRef: EmnFile = {
+        ...validEmnMock,
+        metadata: {
+          ...validEmnMock.metadata,
+          teams: [
+            { id: "team-a", name: "Team 1", playerIds: ["p-99"] },
+          ],
+        },
+      };
+      const res = validateEmn(emnWithInvalidPlayerRef);
+      expect(res.isValid).toBe(false);
+      expect(res.errors?.some((e) => e.message?.includes("not found in metadata.players"))).toBe(true);
+    });
   });
 });

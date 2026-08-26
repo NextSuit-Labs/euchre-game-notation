@@ -32,6 +32,40 @@ import { COMMON_PROTO_SCHEMA, EXPANDED_PROTO_SCHEMA } from "../src/proto-schemas
 import { BiddingPhase, Deal, EgnFile, UnpackedEgnFile } from "../src/types";
 import { VERSION } from "../src/version";
 
+function deleteFileSync(filePath: string) {
+  if (!fs.existsSync(filePath)) return;
+  for (let i = 0; i < 5; i++) {
+    try {
+      fs.unlinkSync(filePath);
+      return;
+    } catch (err: any) {
+      if (err.code === "EBUSY" || err.code === "EPERM") {
+        const end = Date.now() + 50;
+        while (Date.now() < end) {}
+      } else {
+        throw err;
+      }
+    }
+  }
+}
+
+function removeDirSync(dirPath: string) {
+  if (!fs.existsSync(dirPath)) return;
+  for (let i = 0; i < 5; i++) {
+    try {
+      fs.rmdirSync(dirPath);
+      return;
+    } catch (err: any) {
+      if (err.code === "EBUSY" || err.code === "ENOTEMPTY" || err.code === "EPERM") {
+        const end = Date.now() + 50;
+        while (Date.now() < end) {}
+      } else {
+        throw err;
+      }
+    }
+  }
+}
+
 const validMockData: EgnFile = {
   "fileType": "Euchre Game Notation",
   "version": VERSION,
@@ -98,12 +132,8 @@ describe("EGN Protobuf Converter Core", () => {
       const decodedObj = JSON.parse(convertBinToEgnJson(tempBinFilePath, false));
       expect(decodedObj.metadata.players).toEqual(playersData.metadata.players);
     } finally {
-      if (fs.existsSync(tempBinFilePath)) {
-        fs.unlinkSync(tempBinFilePath);
-      }
-      if (fs.existsSync(tempDir)) {
-        fs.rmdirSync(tempDir);
-      }
+      deleteFileSync(tempBinFilePath);
+      removeDirSync(tempDir);
     }
   });
 
@@ -142,12 +172,8 @@ describe("EGN Protobuf Converter Core", () => {
       const decodedObj = JSON.parse(convertBinToEgnJson(tempBinFilePath, true));
       expect(decodedObj.metadata.players).toEqual(playersData.metadata.players);
     } finally {
-      if (fs.existsSync(tempBinFilePath)) {
-        fs.unlinkSync(tempBinFilePath);
-      }
-      if (fs.existsSync(tempDir)) {
-        fs.rmdirSync(tempDir);
-      }
+      deleteFileSync(tempBinFilePath);
+      removeDirSync(tempDir);
     }
   });
 
@@ -168,9 +194,7 @@ describe("EGN Protobuf Converter Core", () => {
       convertEgnJsonToBin(invalidJsonStr, tempBinFilePath);
     }).toThrow("Input EGN failed schema validation before binary conversion");
 
-    if (fs.existsSync(tempBinFilePath)) {
-      fs.unlinkSync(tempBinFilePath);
-    }
+    deleteFileSync(tempBinFilePath);
   });
 
   it("should fail when converting non-existent binary file", () => {
@@ -203,12 +227,8 @@ describe("EGN Protobuf Converter Core", () => {
       // In JS, object keys are strings at runtime, so we check "8"
       expect(phase.callAnnotations["8"]).toEqual(["High index annotation test"]);
     } finally {
-      if (fs.existsSync(tempBinFilePath)) {
-        fs.unlinkSync(tempBinFilePath);
-      }
-      if (fs.existsSync(tempDir)) {
-        fs.rmdirSync(tempDir);
-      }
+      deleteFileSync(tempBinFilePath);
+      removeDirSync(tempDir);
     }
   });
 
@@ -227,12 +247,8 @@ describe("EGN Protobuf Converter Core", () => {
         convertBinToEgnJson(tempBinFilePath);
       }).toThrow();
     } finally {
-      if (fs.existsSync(tempBinFilePath)) {
-        fs.unlinkSync(tempBinFilePath);
-      }
-      if (fs.existsSync(tempDir)) {
-        fs.rmdirSync(tempDir);
-      }
+      deleteFileSync(tempBinFilePath);
+      removeDirSync(tempDir);
     }
   });
 
@@ -658,6 +674,34 @@ describe("EGN Protobuf Converter Core", () => {
       if (decodedDeal.phases[1]) {
         expect(decodedDeal.phases[1].phaseNumber).toBe(1);
       }
+    });
+  });
+
+  describe("Metadata teamNames Binary Roundtrip", () => {
+    it("should preserve teamNames across condensed and expanded binary conversion", () => {
+      const mockWithTeams: EgnFile = {
+        ...validMockData,
+        metadata: {
+          ...validMockData.metadata,
+          teamNames: ["Buckeyes", "Wolverines"],
+        },
+      };
+
+      // Condensed binary roundtrip
+      const condensedBin = convertEgnFileToBinData(mockWithTeams, true);
+      const decodedCondensed = convertBinDataToEgnFile(condensedBin, true);
+      expect(decodedCondensed.metadata.teamNames).toEqual(["Buckeyes", "Wolverines"]);
+
+      // Expanded binary roundtrip
+      const expandedBin = convertEgnFileToBinData(mockWithTeams, false);
+      const decodedExpanded = convertBinDataToEgnFile(expandedBin, false);
+      expect(decodedExpanded.metadata.teamNames).toEqual(["Buckeyes", "Wolverines"]);
+    });
+
+    it("should not create empty teamNames array if omitted in original file", () => {
+      const binData = convertEgnFileToBinData(validMockData, true);
+      const decoded = convertBinDataToEgnFile(binData, true);
+      expect(decoded.metadata.teamNames).toBeUndefined();
     });
   });
 });

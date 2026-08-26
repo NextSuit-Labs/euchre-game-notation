@@ -35,7 +35,7 @@ import {
 
 const mockSubEgn = {
   fileType: "Euchre Game Notation",
-  version: "1.5",
+  version: "1.6",
   metadata: {
     title: "Game 1",
     players: ["Alice", "Bob", "Charlie", "David"],
@@ -85,6 +85,23 @@ const validEmnMock: EmnFile = {
 describe("EMN Binary Converter (.emnb)", () => {
   const tempDir = path.join(__dirname, "../../temp_test_emnb");
 
+  function removeDirSync(dirPath: string) {
+    if (!fs.existsSync(dirPath)) return;
+    for (let i = 0; i < 5; i++) {
+      try {
+        fs.rmSync(dirPath, { recursive: true, force: true });
+        return;
+      } catch (err: any) {
+        if (err.code === "EBUSY" || err.code === "ENOTEMPTY" || err.code === "EPERM") {
+          const end = Date.now() + 50;
+          while (Date.now() < end) { }
+        } else {
+          throw err;
+        }
+      }
+    }
+  }
+
   beforeAll(() => {
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir, { recursive: true });
@@ -92,9 +109,7 @@ describe("EMN Binary Converter (.emnb)", () => {
   });
 
   afterAll(() => {
-    if (fs.existsSync(tempDir)) {
-      fs.rmSync(tempDir, { recursive: true, force: true });
-    }
+    removeDirSync(tempDir);
   });
 
   it("should encode EmnFile to binary bytes with magic byte 0x02 header", () => {
@@ -215,5 +230,36 @@ describe("EMN Binary Converter (.emnb)", () => {
     const manualUnpacked = unpackEmnFile(packedEmn);
     expect(typeof manualUnpacked.games[0].gameData.deals[0]).toBe("object");
     expect(manualUnpacked.games[0].gameData.deals[0].dealNumber).toBe(0);
+  });
+
+  it("should preserve metadata.teams across .emnb binary roundtrip", () => {
+    const emnWithTeams: EmnFile = {
+      ...validEmnMock,
+      metadata: {
+        ...validEmnMock.metadata,
+        teams: [
+          { id: "team-a", name: "Red Dragons", playerIds: ["p-01", "p-03"], color: "#FF0000" },
+          { id: "team-b", name: "Blue Jays", playerIds: ["p-02", "p-04"], color: "#0000FF" },
+        ],
+      },
+    };
+
+    const binBytes = convertEmnFileToBinData(emnWithTeams);
+    const decoded = convertBinDataToEmnFile(binBytes);
+
+    expect(decoded.metadata.teams).toBeDefined();
+    expect(decoded.metadata.teams).toHaveLength(2);
+    expect(decoded.metadata.teams![0]).toEqual({
+      id: "team-a",
+      name: "Red Dragons",
+      playerIds: ["p-01", "p-03"],
+      color: "#FF0000",
+    });
+    expect(decoded.metadata.teams![1]).toEqual({
+      id: "team-b",
+      name: "Blue Jays",
+      playerIds: ["p-02", "p-04"],
+      color: "#0000FF",
+    });
   });
 });

@@ -33,6 +33,13 @@ message MatchResult {
   map<string, double> scores = 3; // Player ID / team key -> score metric
 }
 
+message MatchTeam {
+  string id = 1;
+  string name = 2;
+  repeated string player_ids = 3;
+  optional string color = 4;
+}
+
 message MatchMetadata {
   optional string match_id = 1;
   optional string title = 2;
@@ -41,6 +48,7 @@ message MatchMetadata {
   optional string date = 5;
   MatchFormat match_format = 6;
   MatchResult result = 7;
+  repeated MatchTeam teams = 8;
 }
 
 message GameEntry {

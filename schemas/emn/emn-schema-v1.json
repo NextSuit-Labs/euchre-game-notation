@@ -53,6 +53,40 @@
             }
           ]
         },
+        "teams": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "playerIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 64
+                }
+              },
+              "color": {
+                "type": "string",
+                "maxLength": 32
+              }
+            }
+          }
+        },
         "players": {
           "type": "array",
           "minItems": 1,
