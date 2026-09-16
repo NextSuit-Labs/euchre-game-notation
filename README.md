@@ -31,9 +31,9 @@ By bridging digital apps, analysis tools, and video rendering pipelines under a 
 
 ## Latest Release
 
-- **Current npm package:** `1.6.0`
+- **Current npm package:** `1.6.1`
 - **Schema family:** `1.6` (EGN) / `1.2` (EMN)
-- **Highlights:** Converted `phaseNumber` to optional across deal phases, canonical baseline hash preservation, and added gameplay validation engine.
+- **Highlights:** Added comprehensive browser-based EGN & EMN Web Workbench, added shorthand `"p"` (Pass) and `"o"` (Order) bidding call support, added complete baseline & full hash canonical parity (empty player card / structure pruning and shorthand normalization), added dealer discard & upcard pickup support in the baseline replayer and rules engine (`compileDealSteps`), and added automated zero-dependency browser bundle generation.
 
 See [changelog.md](changelog.md) for full release details.
 
@@ -250,6 +250,13 @@ When implementing or parsing EGN, keep the following details in mind:
     * **Flexible Date Formats**: The `date` property supports date-only strings (e.g., `2026-08-11`), ISO-8601 date-time strings with a timezone offset (e.g., `2026-05-17T19:00:00Z` or `+05:30`), or local timezone-less formats (e.g., `2026-05-30T03:51` or `2026-06-02 19:02`).
 
 6. **Variant Rulesets**: For extensive documentation on alternate rules and regional variations supported in EGN, see [docs/alternate-rules.md](docs/alternate-rules.md).
+ 
+7. **Bidding Calls & Shorthand Notation**:
+   * **Full vs. Shorthand Notation**: Bidding calls in the `calls` array support both standard full words and shorthand single-character tokens:
+     * **Pass**: `"Pass"` or shorthand `"p"`.
+     * **Order Up (Round 1)**: `"Order"` or shorthand `"o"`. (Note: In Round 1 order-up calls, only `"Order"` and `"o"` are allowed).
+     * **Round 2 Suit Calls**: `"s"` (Spades), `"h"` (Hearts), `"c"` (Clubs), `"d"` (Diamonds), or special variant calls `"n"` (No Trump) and `"x"` (Stick the dealer / pass round 2 where permitted).
+   * **Parity and Compatibility**: Shorthand `"p"` and `"o"` are strictly non-breaking and fully interoperable. Bitpacker encoding (`.egnb`) packs shorthand calls into the exact same bit representation as full words, baseline conversions normalize `"p"` and `"o"` to preserve canonical SHA-256 baseline hashes, and the visual baseline replayer formats shorthand calls as full words.
 
 ---
 
@@ -309,6 +316,7 @@ A **baseline EGN** is a deterministic, analysis-free version of a game record. I
 - Removes `callAnnotations` (bidding comments)
 - Removes `playAnnotations` (trick play comments)
 - Removes `alternativeLines` (branching analysis)
+- Excludes obsolete `phaseNumber` (ensuring deterministic parity whether phase numbers are explicit or omitted)
 - Preserves all game-critical data (bidding, play, ruleset, player info)
 
 Baseline EGNs are useful for:
@@ -317,7 +325,7 @@ Baseline EGNs are useful for:
 - **Validation**: Create canonical hashes of game records for verification and auditing
 - **Archival**: Store lightweight versions for long-term record keeping
 
-Each baseline EGN has a deterministic SHA256 hash that remains identical regardless of the source format (condensed or expanded binary). Use the `egn-baseline` CLI tool to generate baseline versions and hashes. For more details, see [docs/determinism-of-egn.md](docs/determinism-of-egn.md).
+Each baseline EGN has a deterministic SHA-256 hash that remains identical regardless of the source format (condensed or expanded binary) or whether phase numbers are explicitly present or omitted. Clean games without annotations hash to the exact same SHA-256 value for both baseline and full game hashes. Use the `egn-baseline` CLI tool to generate baseline versions and hashes. For more details, see [docs/determinism-of-egn.md](docs/determinism-of-egn.md).
 
 ---
 
@@ -529,7 +537,15 @@ const singleGameEgn: EgnFile = emn.extractEgnFromEmn(emnFile, 0);
 // 3. Extract all EGN games from an EMN file
 const allGamesEgns: EgnFile[] = emn.extractAllEgnsFromEmn(emnFile);
 
-// 4. Convert EMN match file to Protobuf binary (.emnb) and back
+// 4. Calculate match standings, player points, and team scores across all games
+const standings = emn.calculateEmnScores(emnFile);
+console.log("Match winners:", standings.winner);
+console.log("Player scores:", standings.scores);
+
+// 5. Calculate standings and inject metadata.result into the EMN file
+const updatedEmn = emn.addScoresToEmn(emnFile);
+
+// 6. Convert EMN match file to Protobuf binary (.emnb) and back
 const emnBinaryBytes: Uint8Array = emn.convertEmnFileToBinData(emnFile);
 const decodedEmnFile: emn.EmnFile = emn.convertBinDataToEmnFile(emnBinaryBytes);
 ```
@@ -587,6 +603,22 @@ npx egn-engine game.egn --check
 # Validate gameplay rules (reneges, duplicate cards, trick counts)
 npx egn-engine game.egn --validate-gameplay
 ```
+
+### 5. Interactive Browser Tools (Zero Build Required)
+
+The repository provides two fully client-side, zero-dependency browser applications:
+
+1. **EGN & EMN Developer Workbench** ([`src/workbench/`](src/workbench/)):
+   * **Real-time Verifiers**: Schema validation (Ajv) and full Euchre gameplay rules engine verification (detecting reneges, cards not in hand, sit-out violations, illegal bids, and duplicate cards).
+   * **Full Converters**: Protobuf Binary (`.egnb`, `.emnb`) encode/decode with download and size comparison metrics, deal bitpacking and unpacking, baseline stripping and canonical SHA-256 hashing, and legacy v1.0/v1.1 file upgrader.
+   * **Cross-Format Suite**: Match Combiner (`combineEgnToEmn`) to merge multiple sub-EGNs into an EMN series with auto-standings calculation, and Match Extractor (`extractEgnFromEmn`, `extractAllEgnsFromEmn`) with master player name resolution.
+   * **Quick Launch**: Double-click [`src/workbench/index.html`](src/workbench/index.html) or run `npx serve src/workbench`.
+
+2. **EGN Baseline Replayer** ([`src/baseline-replayer/`](src/baseline-replayer/)):
+   * Lightweight 4-player visual table and step-by-step game replayer.
+   * Supports dealer discard & upcard pickup, bidding badges, trick center cards, and mid-hand annotations.
+   * Direct bridge from the Workbench via the **"▶ Replay Game"** button.
+   * Quick Launch: Double-click [`src/baseline-replayer/index.html`](src/baseline-replayer/index.html).
 
 ### 🔒 Security & Safe Rendering Guidelines
 

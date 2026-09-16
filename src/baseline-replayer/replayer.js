@@ -227,7 +227,10 @@ function renderStep() {
 function formatCall(call, isAlone) {
   const isAloneSuffix = isAlone ? " (Alone)" : "";
   switch (call) {
-    case "Order": return call + isAloneSuffix;
+    case "Order":
+    case "o": return "Order" + isAloneSuffix;
+    case "Pass":
+    case "p": return "Pass";
     case "s": return "Spades" + isAloneSuffix;
     case "h": return "Hearts" + isAloneSuffix;
     case "c": return "Clubs" + isAloneSuffix;
@@ -451,5 +454,16 @@ document.getElementById("prev-game-btn").addEventListener("click", () => {
   }
 });
 
-// Auto-load default hand on startup
-loadSampleHand("0");
+// Auto-load game on startup (support bridge from Workbench)
+const storedWorkbenchData = localStorage.getItem('egn_workbench_replay_data');
+if (storedWorkbenchData && new URLSearchParams(window.location.search).get('source') === 'workbench') {
+  try {
+    const parsed = JSON.parse(storedWorkbenchData);
+    document.getElementById("egn-input").value = storedWorkbenchData;
+    initializeEgn(parsed);
+  } catch (e) {
+    loadSampleHand("0");
+  }
+} else {
+  loadSampleHand("0");
+}

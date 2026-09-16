@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2026 Write Words - Make Magic, LLC
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="NextSuit Labs Euchre Game Notation (EGN) and Euchre Match Notation (EMN) Developer Workbench. Validates, converts, bitpacks, and verifies Euchre game files.">
+  <title>EGN & EMN Developer Workbench | NextSuit Labs</title>
+  <link rel="stylesheet" href="workbench.css">
+</head>
+
+<body>
+  <!-- Ambient Glow Effects -->
+  <div class="ambient-glow-1"></div>
+  <div class="ambient-glow-2"></div>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-logo">♠</div>
+      <div>
+        <h1 class="brand-title">EGN & EMN Workbench</h1>
+        <p class="brand-subtitle">Specification Suite & Game Engine</p>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="header-nav" aria-label="Workbench sections">
+      <button class="tab-btn active" data-tab="tab-egn" id="nav-tab-egn">
+        <span>♠</span> EGN Single Games
+      </button>
+      <button class="tab-btn" data-tab="tab-emn" id="nav-tab-emn">
+        <span>🏆</span> EMN Match Series
+      </button>
+      <button class="tab-btn" data-tab="tab-suite" id="nav-tab-suite">
+        <span>🔄</span> Combiner & Extractor
+      </button>
+    </nav>
+
+    <!-- Header Actions -->
+    <div class="header-links">
+      <span class="badge-version" id="header-version-badge">v1.6.1</span>
+      <a href="../baseline-replayer/index.html" class="btn-link" target="_blank" id="header-link-replayer" title="Launch Interactive Baseline Replayer">
+        <span>▶</span> Replayer
+      </a>
+      <a href="../../README.md" class="btn-link" target="_blank" id="header-link-docs" title="View Specification Documentation">
+        <span>📖</span> Docs
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="workbench-container">
+
+    <!-- ==================================================================== -->
+    <!-- TAB 1: EGN SINGLE GAMES WORKSPACE -->
+    <!-- ==================================================================== -->
+    <section class="tab-pane active" id="tab-egn" aria-labelledby="nav-tab-egn">
+      <div class="workspace-grid">
+
+        <!-- Input Editor Panel -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title"><span>📝</span> EGN Game Input</h2>
+              <p class="panel-subtitle">Paste .egn JSON, drag & drop .egn / .egnb, or select a sample</p>
+            </div>
+            <div class="tool-group">
+              <label for="egn-sample-select" class="panel-subtitle">Preset:</label>
+              <select id="egn-sample-select" class="select-input">
+                <option value="standard">VWEC Standard Deal</option>
+                <option value="loner">Loner March (4-pt)</option>
+                <option value="renege">Renege Violation Test</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Drag and Drop Zone -->
+          <div class="dropzone" id="egn-dropzone" tabindex="0" role="button" aria-label="Upload EGN or EGNB file">
+            <span class="dropzone-icon">📁</span>
+            <div class="dropzone-text"><strong>Drag & Drop</strong> .egn or .egnb file here, or click to browse</div>
+            <input type="file" id="egn-file-input" accept=".egn,.json,.egnb" style="display: none;">
+          </div>
+
+          <!-- Code Textarea -->
+          <div class="editor-container">
+            <textarea id="egn-input" class="code-textarea" placeholder="Paste EGN JSON here..." spellcheck="false"></textarea>
+          </div>
+        </div>
+
+        <!-- Verification & Converter Panel -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title"><span>🔍</span> Verification & Operations</h2>
+              <p class="panel-subtitle">Real-time schema verification, Euchre rules engine, and converters</p>
+            </div>
+            <div class="tool-group">
+              <span class="badge badge-neutral" id="egn-schema-badge">Checking...</span>
+              <span class="badge badge-neutral" id="egn-gameplay-badge">Checking...</span>
+            </div>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-label">Deals</span>
+              <span class="stat-value" id="egn-stat-deals">-</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">File Size</span>
+              <span class="stat-value" id="egn-stat-size">-</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Score</span>
+              <span class="stat-value" id="egn-stat-score">-</span>
+            </div>
+          </div>
+
+          <!-- Validation Report -->
+          <div class="validation-card">
+            <div class="validation-header">
+              <span class="validation-title">Validation & Rules Engine Report</span>
+            </div>
+            <div class="violation-list" id="egn-violation-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Canonical Hashes -->
+          <div class="hash-card">
+            <div class="hash-row">
+              <span class="hash-label">Baseline Hash:</span>
+              <span class="hash-value" id="egn-hash-baseline">-</span>
+              <button class="btn btn-sm btn-secondary btn-copy-hash" data-target="egn-hash-baseline" type="button" title="Copy hash">Copy</button>
+            </div>
+            <div class="hash-row">
+              <span class="hash-label">Game Hash:</span>
+              <span class="hash-value" id="egn-hash-game">-</span>
+              <button class="btn btn-sm btn-secondary btn-copy-hash" data-target="egn-hash-game" type="button" title="Copy hash">Copy</button>
+            </div>
+            <div class="hash-row">
+              <span class="hash-label">Full File Hash:</span>
+              <span class="hash-value" id="egn-hash-full">-</span>
+              <button class="btn btn-sm btn-secondary btn-copy-hash" data-target="egn-hash-full" type="button" title="Copy hash">Copy</button>
+            </div>
+          </div>
+
+          <!-- Converters & Actions Toolbar -->
+          <div class="toolbar-row">
+            <div class="tool-group">
+              <button class="btn btn-secondary btn-sm" id="btn-egn-pack" type="button" title="Convert full JSON deals into condensed base64 deal strings">
+                📦 Pack Deals
+              </button>
+              <button class="btn btn-secondary btn-sm" id="btn-egn-unpack" type="button" title="Expand condensed base64 deals into full JSON objects">
+                📂 Unpack Deals
+              </button>
+              <button class="btn btn-secondary btn-sm" id="btn-egn-baseline" type="button" title="Strip analysis annotations and alternative lines">
+                🧹 Strip Baseline
+              </button>
+              <button class="btn btn-secondary btn-sm" id="btn-egn-upgrade" type="button" title="Upgrade older snake_case or legacy schemas to current specification">
+                ⚡ Upgrade EGN
+              </button>
+            </div>
+
+            <div class="tool-group">
+              <select id="egn-bin-mode-select" class="select-input" style="padding: 5px 8px; font-size: 0.78rem;">
+                <option value="condensed">Condensed (0x01)</option>
+                <option value="expanded">Expanded (0x00)</option>
+              </select>
+              <button class="btn btn-primary btn-sm" id="btn-egn-to-bin" type="button" title="Encode Protobuf binary (.egnb) and download">
+                💾 Download .egnb
+              </button>
+              <button class="btn btn-cyan btn-sm" id="btn-egn-replayer" type="button" title="Launch game in interactive baseline replayer">
+                ▶ Replay Game
+              </button>
+            </div>
+          </div>
+
+          <!-- Output Preview Area -->
+          <div class="output-area">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="panel-subtitle">Operation Output / Converted View</span>
+              <button class="btn btn-sm btn-secondary" id="btn-copy-egn-output" type="button">Copy Output</button>
+            </div>
+            <textarea id="egn-output" class="code-textarea" style="min-height: 140px; height: 140px;" placeholder="Converted JSON / Binary metrics will appear here..." readonly></textarea>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 2: EMN MATCH SERIES WORKSPACE -->
+    <!-- ==================================================================== -->
+    <section class="tab-pane" id="tab-emn" aria-labelledby="nav-tab-emn">
+      <div class="workspace-grid">
+
+        <!-- EMN Input Panel -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title"><span>🏆</span> EMN Match Input</h2>
+              <p class="panel-subtitle">Paste .emn JSON, drag & drop .emn / .emnb, or select sample match</p>
+            </div>
+            <div class="tool-group">
+              <label for="emn-sample-select" class="panel-subtitle">Preset:</label>
+              <select id="emn-sample-select" class="select-input">
+                <option value="matchBestOf3">Best of 3 Match Series</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Drag and Drop Zone -->
+          <div class="dropzone" id="emn-dropzone" tabindex="0" role="button" aria-label="Upload EMN or EMNB file">
+            <span class="dropzone-icon">📁</span>
+            <div class="dropzone-text"><strong>Drag & Drop</strong> .emn or .emnb match file here, or click to browse</div>
+            <input type="file" id="emn-file-input" accept=".emn,.json,.emnb" style="display: none;">
+          </div>
+
+          <!-- Code Textarea -->
+          <div class="editor-container">
+            <textarea id="emn-input" class="code-textarea" placeholder="Paste EMN JSON here..." spellcheck="false"></textarea>
+          </div>
+        </div>
+
+        <!-- EMN Verification & Converters Panel -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title"><span>🛡️</span> Match Verification & Controls</h2>
+              <p class="panel-subtitle">Master player ID validation, team consistency, and binary encoding</p>
+            </div>
+            <div class="tool-group">
+              <span class="badge badge-neutral" id="emn-schema-badge">Checking...</span>
+              <span class="badge badge-neutral" id="emn-gameplay-badge">Checking...</span>
+            </div>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-label">Games</span>
+              <span class="stat-value" id="emn-stat-games">-</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Master Players</span>
+              <span class="stat-value" id="emn-stat-players">-</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Match Format</span>
+              <span class="stat-value" id="emn-stat-format">-</span>
+            </div>
+          </div>
+
+          <!-- Match Report Card -->
+          <div class="validation-card">
+            <div class="validation-header">
+              <span class="validation-title">Match Schema & Sub-Game Engine Violations</span>
+            </div>
+            <div class="violation-list" id="emn-violation-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- EMN Toolbar -->
+          <div class="toolbar-row">
+            <div class="tool-group">
+              <button class="btn btn-secondary btn-sm" id="btn-emn-pack" type="button" title="Pack all deals in all games to base64">
+                📦 Bitpack All Games
+              </button>
+              <button class="btn btn-secondary btn-sm" id="btn-emn-unpack" type="button" title="Unpack all deals in all games to full JSON">
+                📂 Unpack All Games
+              </button>
+              <button class="btn btn-secondary btn-sm" id="btn-emn-score" type="button" title="Calculate match results and standings">
+                📊 Calculate Scores
+              </button>
+            </div>
+
+            <div class="tool-group">
+              <label style="font-size: 0.78rem; display: inline-flex; align-items: center; gap: 4px; color: var(--text-secondary);">
+                <input type="checkbox" id="emn-bin-condense-chk" checked> Condense Games
+              </label>
+              <button class="btn btn-purple btn-sm" id="btn-emn-to-bin" type="button" title="Encode Protobuf match binary (.emnb) and download">
+                💾 Download .emnb
+              </button>
+            </div>
+          </div>
+
+          <!-- Output Preview Area -->
+          <div class="output-area">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="panel-subtitle">EMN Output / Standings Preview</span>
+              <button class="btn btn-sm btn-secondary" id="btn-copy-emn-output" type="button">Copy Output</button>
+            </div>
+            <textarea id="emn-output" class="code-textarea" style="min-height: 140px; height: 140px;" placeholder="EMN output or calculated standings will appear here..." readonly></textarea>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 3: CROSS-FORMAT COMBINER & EXTRACTOR -->
+    <!-- ==================================================================== -->
+    <section class="tab-pane" id="tab-suite" aria-labelledby="nav-tab-suite">
+      <div class="workspace-grid">
+
+        <!-- Combiner Panel -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title"><span>➕</span> EGN to EMN Match Combiner</h2>
+              <p class="panel-subtitle">Combine multiple sub-EGN games into a unified .emn match file</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-combine-add-sample" type="button">+ Add Sub-Game</button>
+          </div>
+
+          <div class="tool-group" style="gap: 12px;">
+            <div>
+              <label for="combiner-format-select" class="panel-subtitle">Format:</label>
+              <select id="combiner-format-select" class="select-input">
+                <option value="BEST_OF_N">BEST_OF_N</option>
+                <option value="PROGRESSIVE">PROGRESSIVE</option>
+                <option value="ROUND_ROBIN">ROUND_ROBIN</option>
+                <option value="TARGET_SCORE">TARGET_SCORE</option>
+                <option value="FIXED_GAMES">FIXED_GAMES</option>
+                <option value="SINGLE_GAME">SINGLE_GAME</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="combiner-target-input" class="panel-subtitle">Target:</label>
+              <input type="number" id="combiner-target-input" class="text-input" placeholder="e.g. 3" style="width: 70px;" value="3">
+            </div>
+
+            <div style="flex: 1;">
+              <label for="combiner-title-input" class="panel-subtitle">Match Title:</label>
+              <input type="text" id="combiner-title-input" class="text-input" placeholder="Championship Series" style="width: 100%;">
+            </div>
+          </div>
+
+          <div id="combiner-input-list" style="display: flex; flex-direction: column; max-height: 280px; overflow-y: auto;">
+            <!-- Sub-game entries added here -->
+            <div class="combiner-entry" style="margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">Sub-Game #1 (Sample)</span>
+              </div>
+              <textarea class="code-textarea subgame-textarea" style="min-height: 100px; height: 100px;">{
+  "fileType": "Euchre Game Notation",
+  "version": "1.2",
+  "metadata": {
+    "title": "Game 1",
+    "players": ["Alice", "Bob", "Charlie", "David"],
+    "finalScore": [10, 8]
+  },
+  "deals": ["AgAAmQEAAQEFAAcBBRAPEA8QDwA="]
+}</textarea>
+            </div>
+          </div>
+
+          <div class="toolbar-row">
+            <button class="btn btn-primary" id="btn-run-combine" type="button">
+              ✨ Combine into EMN
+            </button>
+            <button class="btn btn-secondary btn-sm" id="btn-copy-combiner-output" type="button">Copy EMN JSON</button>
+          </div>
+
+          <textarea id="combiner-output" class="code-textarea" style="min-height: 140px; height: 140px;" placeholder="Combined EMN match file will appear here..." readonly></textarea>
+        </div>
+
+        <!-- Extractor Panel -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title"><span>✂️</span> EMN to EGN Game Extractor</h2>
+              <p class="panel-subtitle">Extract single or all games from an EMN file with master player resolution</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-load-sample-extractor" type="button">Load Match Sample</button>
+          </div>
+
+          <textarea id="extractor-emn-input" class="code-textarea" style="min-height: 180px; height: 180px;" placeholder="Paste EMN JSON here to extract games..."></textarea>
+
+          <div class="toolbar-row">
+            <div class="tool-group">
+              <label for="extractor-game-select" class="panel-subtitle">Select Game:</label>
+              <select id="extractor-game-select" class="select-input">
+                <option value="0">Game 1</option>
+              </select>
+              <button class="btn btn-cyan btn-sm" id="btn-extract-game" type="button">
+                Extract Selected Game
+              </button>
+            </div>
+
+            <button class="btn btn-secondary btn-sm" id="btn-extract-all" type="button">
+              Extract All Games
+            </button>
+          </div>
+
+          <div class="output-area">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="panel-subtitle">Extracted EGN Game(s)</span>
+              <button class="btn btn-sm btn-secondary" id="btn-copy-extractor-output" type="button">Copy EGN</button>
+            </div>
+            <textarea id="extractor-output" class="code-textarea" style="min-height: 160px; height: 160px;" placeholder="Extracted EGN JSON will appear here..." readonly></textarea>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div>
+      <strong>NextSuit Labs</strong> &bull; Euchre Game Notation (EGN) & Euchre Match Notation (EMN)
+    </div>
+    <div>
+      Zero-dependency browser engine &bull; Standalone Protobuf, Ajv, & Noble SHA-256
+    </div>
+  </footer>
+
+  <!-- Scripts: Standalone bundle followed by workbench UI controller -->
+  <script src="bundle.js"></script>
+  <script src="workbench.js"></script>
+</body>
+
+</html>

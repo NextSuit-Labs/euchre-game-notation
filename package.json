@@ -1,6 +1,6 @@
 {
   "name": "euchre-game-notation",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Euchre Game Notation (EGN) file format specification, JSON schemas, and TypeScript utilities.",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -40,9 +40,11 @@
   "scripts": {
     "generate:proto-schemas": "node generate-proto-schemas.js",
     "generate:replayer-rules": "node generate-replayer-rules.js",
-    "prebuild": "npm run generate:proto-schemas && npm run generate:replayer-rules",
+    "generate:workbench-bundle": "node generate-workbench-bundle.js",
+    "prebuild": "npm run generate:proto-schemas && npm run generate:replayer-rules && npm run generate:workbench-bundle",
     "build": "tsc",
-    "pretest": "npm run generate:proto-schemas && npm run generate:replayer-rules",
+    "build:workbench": "node generate-workbench-bundle.js",
+    "pretest": "npm run generate:proto-schemas && npm run generate:replayer-rules && npm run generate:workbench-bundle",
     "test": "jest",
     "prepublishOnly": "npm run build && npm test"
   },

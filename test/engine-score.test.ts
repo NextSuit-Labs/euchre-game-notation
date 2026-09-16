@@ -47,7 +47,7 @@ describe("EGN Rules Engine & Scoring Utility", () => {
   const customScenarioPath = path.join(examplesDir, "Custom Scenario.egn");
 
   describe("Bidding & Trump Determination", () => {
-    it("identifies trump from Round 1 calls (Order, PickUp, Alone, Call)", () => {
+    it("identifies trump from Round 1 calls (Order, o)", () => {
       const makeDeal = (call: string, upCard: string): Deal => ({
         dealNumber: 0,
         initialState: { dealer: 0, upCard },
@@ -55,9 +55,9 @@ describe("EGN Rules Engine & Scoring Utility", () => {
       });
 
       expect(determineTrump(makeDeal("Order", "Ks"))).toBe("s");
-      expect(determineTrump(makeDeal("PickUp", "9h"))).toBe("h");
-      expect(determineTrump(makeDeal("Alone", "Jd"))).toBe("d");
-      expect(determineTrump(makeDeal("Call", "Tc"))).toBe("c");
+      expect(determineTrump(makeDeal("o", "9h"))).toBe("h");
+      expect(determineTrump(makeDeal("Order", "Jd"))).toBe("d");
+      expect(determineTrump(makeDeal("o", "Tc"))).toBe("c");
     });
 
     it("identifies trump from Round 2 calls", () => {
@@ -118,6 +118,32 @@ describe("EGN Rules Engine & Scoring Utility", () => {
         phases: [{ phaseNumber: 0, type: "EUCHRE_BIDDING", calls: ["Pass", "Pass", "Pass", "Order"] }],
       };
       expect(determineMaker(dealDealerPickUp)).toBe(1);
+    });
+
+    it("handles shorthand 'p' and 'o' calls identically to 'Pass' and 'Order'", () => {
+      const dealShorthand: Deal = {
+        dealNumber: 0,
+        initialState: { dealer: 1, upCard: "9s" },
+        phases: [{ phaseNumber: 0, type: "EUCHRE_BIDDING", calls: ["p", "p", "p", "o"] }],
+      };
+      expect(determineMaker(dealShorthand)).toBe(1);
+      expect(determineTrump(dealShorthand)).toBe("s");
+
+      const dealR2Shorthand: Deal = {
+        dealNumber: 0,
+        initialState: { dealer: 0, upCard: "9s" },
+        phases: [{ phaseNumber: 0, type: "EUCHRE_BIDDING", calls: ["p", "p", "p", "p", "h"] }],
+      };
+      expect(determineMaker(dealR2Shorthand)).toBe(1);
+      expect(determineTrump(dealR2Shorthand)).toBe("h");
+
+      const allShorthandPass: Deal = {
+        dealNumber: 0,
+        initialState: { dealer: 0, upCard: "9s" },
+        phases: [{ phaseNumber: 0, type: "EUCHRE_BIDDING", calls: ["p", "p", "p", "p", "p", "p", "p", "p"] }],
+      };
+      expect(determineTrump(allShorthandPass)).toBeNull();
+      expect(determineMaker(allShorthandPass)).toBeNull();
     });
   });
 
@@ -389,6 +415,101 @@ describe("EGN Rules Engine & Scoring Utility", () => {
 
     it("throws clear error if input file path does not exist", () => {
       expect(() => addFinalScoreToEgnFile("non_existent_file.egn")).toThrow("EGN file not found");
+    });
+  });
+
+  describe("Dealer Discard and Upcard Pickup in compileDealSteps", () => {
+    it("removes discard from dealer hand and adds upcard when ordered up in first 4 calls", () => {
+      const dealWithDiscard: Deal = {
+        dealNumber: 0,
+        initialState: {
+          dealer: 0,
+          upCard: "9h",
+          playerCards: [
+            ["As", "Ks", "Qs", "Js", "Ts"],
+            ["Ah", "Kh", "Qh", "Jh", "Th"],
+            ["Ad", "Kd", "Qd", "Jd", "Td"],
+            ["Ac", "Kc", "Qc", "Jc", "Tc"],
+          ],
+        },
+        phases: [
+          {
+            type: "EUCHRE_BIDDING",
+            calls: ["Pass", "Pass", "Pass", "Order"],
+            discard: "Ts",
+          },
+          {
+            type: "TRICK_PLAY",
+            tricks: [
+              ["Ah", "Ad", "Ac", "9h"],
+              ["Kh", "Kd", "Kc", "As"],
+              ["Qh", "Qd", "Qc", "Ks"],
+              ["Jh", "Jd", "Jc", "Qs"],
+              ["Th", "Td", "Tc", "Js"],
+            ],
+          },
+        ],
+      };
+
+      const steps = compileDealSteps(dealWithDiscard);
+
+      // Step 0: INITIAL deal - dealer has initial dealt hand containing Ts, not 9h
+      expect(steps[0].hands[0]).toEqual(["As", "Ks", "Qs", "Js", "Ts"]);
+
+      // Step 1..3: Passes - dealer still has initial hand
+      expect(steps[1].hands[0]).toEqual(["As", "Ks", "Qs", "Js", "Ts"]);
+      expect(steps[2].hands[0]).toEqual(["As", "Ks", "Qs", "Js", "Ts"]);
+      expect(steps[3].hands[0]).toEqual(["As", "Ks", "Qs", "Js", "Ts"]);
+
+      // Step 4: Call 3 ("Order") - dealer discards Ts and picks up 9h
+      expect(steps[4].hands[0]).toContain("9h");
+      expect(steps[4].hands[0]).not.toContain("Ts");
+      expect(steps[4].hands[0].length).toBe(5);
+
+      // Subsequent play steps: dealer holds 9h, not Ts
+      // Step 5: Trick 1, card 1 led by Seat 1
+      expect(steps[5].hands[0]).toContain("9h");
+      expect(steps[5].hands[0]).not.toContain("Ts");
+
+      // Final step: dealer played 9h in trick 1, and played all remaining cards
+      expect(steps[steps.length - 1].hands[0]).toEqual([]);
+    });
+
+    it("reconstructs dealer hand with discard when playerCards not provided", () => {
+      const dealNoPlayerCards: Deal = {
+        dealNumber: 0,
+        initialState: {
+          dealer: 0,
+          upCard: "9h",
+        },
+        phases: [
+          {
+            type: "EUCHRE_BIDDING",
+            calls: ["Order"],
+            discard: "Ts",
+          },
+          {
+            type: "TRICK_PLAY",
+            tricks: [
+              ["Ah", "Ad", "Ac", "9h"],
+              ["Kh", "Kd", "Kc", "As"],
+              ["Qh", "Qd", "Qc", "Ks"],
+              ["Jh", "Jd", "Jc", "Qs"],
+              ["Th", "Td", "Tc", "Js"],
+            ],
+          },
+        ],
+      };
+
+      const steps = compileDealSteps(dealNoPlayerCards);
+
+      // Initial deal step: reconstructed pre-discard hand has Ts, not 9h
+      expect(steps[0].hands[0]).toContain("Ts");
+      expect(steps[0].hands[0]).not.toContain("9h");
+
+      // Step 1: Order step: dealer drops Ts and picks up 9h
+      expect(steps[1].hands[0]).toContain("9h");
+      expect(steps[1].hands[0]).not.toContain("Ts");
     });
   });
 });

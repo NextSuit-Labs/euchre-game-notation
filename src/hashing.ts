@@ -31,7 +31,9 @@ export const DEFAULT_TGN_ANALYSIS_KEYS = new Set<string>([
   "playAnnotations",
   "annotations",
   "notes",
-  "tags"
+  "tags",
+  "phaseNumber",
+  "phase_number"
 ]);
 
 /**
@@ -58,8 +60,62 @@ export function stableStringify(value: unknown): string {
 }
 
 /**
+ * Recursively cleans a game notation object for canonical full hashing by:
+ * - Stripping obsolete phaseNumber and phase_number properties
+ * - Normalizing shorthand bidding calls ("p" -> "Pass", "o" -> "Order")
+ * - Pruning empty arrays (including empty player hands, empty playerCards, empty teamNames, empty cardExchanges)
+ * - Pruning empty objects and filtering out undefined elements
+ *
+ * This guarantees that non-annotated games produce byte-for-byte identical canonical representations
+ * and SHA-256 hashes across both full and baseline hashing algorithms.
+ */
+export function stripPhaseNumbers(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value
+      .map(stripPhaseNumbers)
+      .filter((item) => item !== undefined)
+      .filter((item) => {
+        if (Array.isArray(item) && item.length === 0) return false;
+        if (item && typeof item === "object" && item !== null && Object.keys(item as Record<string, unknown>).length === 0) return false;
+        return true;
+      });
+  }
+
+  if (value && typeof value === "object" && value !== null) {
+    const stripped: Record<string, unknown> = {};
+    for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+      if (key === "phaseNumber" || key === "phase_number") {
+        continue;
+      }
+
+      let childToProcess = child;
+      if (key === "calls" && Array.isArray(child)) {
+        childToProcess = child.map((c) => (c === "p" ? "Pass" : c === "o" ? "Order" : c));
+      }
+
+      const strippedChild = stripPhaseNumbers(childToProcess);
+      if (strippedChild === undefined) {
+        continue;
+      }
+
+      if (Array.isArray(strippedChild) && strippedChild.length === 0) {
+        continue;
+      }
+
+      if (strippedChild && typeof strippedChild === "object" && strippedChild !== null && Object.keys(strippedChild as Record<string, unknown>).length === 0) {
+        continue;
+      }
+
+      stripped[key] = strippedChild;
+    }
+    return stripped;
+  }
+  return value;
+}
+
+/**
  * Recursively converts a game object into a baseline object by stripping analysis annotations,
- * alternative lines, and commentary properties.
+ * alternative lines, commentary properties, and obsolete phaseNumbers.
  */
 export function convertToBaselineGame(
   value: unknown,
@@ -81,11 +137,16 @@ export function convertToBaselineGame(
   if (value && typeof value === "object" && value !== null) {
     const stripped: Record<string, unknown> = {};
     for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
-      if (keySet.has(key)) {
+      if (key === "phaseNumber" || key === "phase_number" || keySet.has(key)) {
         continue;
       }
 
-      const strippedChild = convertToBaselineGame(child, keySet);
+      let childToProcess = child;
+      if (key === "calls" && Array.isArray(child)) {
+        childToProcess = child.map((c) => (c === "p" ? "Pass" : c === "o" ? "Order" : c));
+      }
+
+      const strippedChild = convertToBaselineGame(childToProcess, keySet);
       if (strippedChild === undefined) {
         continue;
       }
@@ -101,12 +162,6 @@ export function convertToBaselineGame(
       stripped[key] = strippedChild;
     }
 
-    if (stripped.type === "EUCHRE_BIDDING") {
-      stripped.phaseNumber = typeof stripped.phaseNumber === "number" ? stripped.phaseNumber : 0;
-    } else if (stripped.type === "TRICK_PLAY") {
-      stripped.phaseNumber = typeof stripped.phaseNumber === "number" ? stripped.phaseNumber : 1;
-    }
-
     return stripped;
   }
 
@@ -115,10 +170,11 @@ export function convertToBaselineGame(
 
 /**
  * Generates a deterministic SHA-256 hex hash of a full game notation object (including all annotations,
- * alternative lines, and metadata). Uses key sorting for canonical hashing.
+ * alternative lines, and metadata, with obsolete phaseNumbers and empty player card arrays excluded). Uses key sorting for canonical hashing.
  */
 export function hashGame(gameObj: unknown): string {
-  const canonical = stableStringify(gameObj);
+  const stripped = stripPhaseNumbers(gameObj);
+  const canonical = stableStringify(stripped);
   return sha256(canonical);
 }
 

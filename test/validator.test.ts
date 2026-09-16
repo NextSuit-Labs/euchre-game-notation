@@ -758,4 +758,22 @@ describe("EgnDeal Bitpacker", () => {
       expect(result.isValid).toBe(false);
     });
   });
+
+  describe("Shorthand bidding calls 'p' and 'o'", () => {
+    it("should accept deals with shorthand 'p' and 'o' calls", () => {
+      const dataWithShorthand = JSON.parse(JSON.stringify(validMockData));
+      dataWithShorthand.deals[0].phases[0].calls = ["p", "p", "p", "o"];
+      const result = validateEgn(dataWithShorthand);
+      expect(result.isValid).toBe(true);
+      expect(isEgnFile(dataWithShorthand)).toBe(true);
+    });
+
+    it("should validate isolated deal with shorthand 'p' and 'o'", () => {
+      const dealWithShorthand = JSON.parse(JSON.stringify(validMockData.deals[0]));
+      dealWithShorthand.phases[0].calls = ["p", "p", "p", "p", "p", "s"];
+      const result = validateDeal(dealWithShorthand);
+      expect(result.isValid).toBe(true);
+      expect(isDeal(dealWithShorthand)).toBe(true);
+    });
+  });
 });

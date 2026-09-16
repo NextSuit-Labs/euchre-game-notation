@@ -21,7 +21,7 @@
 
 export type Card = string; // Pattern: ^([78N9TJQKAX][SsHhCcDdxtngh]|[LRB])$
 
-export type Call = "Pass" | "Order" | "s" | "h" | "d" | "c" | "n" | "x";
+export type Call = "Pass" | "Order" | "p" | "o" | "s" | "h" | "d" | "c" | "n" | "x";
 
 export interface CompletionConditions {
   winning_score?: number;

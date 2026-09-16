@@ -92,7 +92,7 @@ export function collectAnalysisPropertyNames(schema: unknown = egnSchema, proper
 const analysisPropertyNames = new Set(collectAnalysisPropertyNames());
 
 function shouldStripProperty(key: string): boolean {
-  return analysisPropertyNames.has(key);
+  return analysisPropertyNames.has(key) || key === "phaseNumber" || key === "phase_number";
 }
 
 export function convertToBaselineEgn(value: unknown): unknown {
@@ -114,7 +114,12 @@ export function convertToBaselineEgn(value: unknown): unknown {
         continue;
       }
 
-      const strippedChild = convertToBaselineEgn(child);
+      let childToProcess = child;
+      if (key === "calls" && Array.isArray(child)) {
+        childToProcess = child.map((c) => (c === "p" ? "Pass" : c === "o" ? "Order" : c));
+      }
+
+      const strippedChild = convertToBaselineEgn(childToProcess);
       if (strippedChild === undefined) {
         continue;
       }
@@ -130,12 +135,6 @@ export function convertToBaselineEgn(value: unknown): unknown {
       stripped[key] = strippedChild;
     }
 
-    if (stripped.type === "EUCHRE_BIDDING") {
-      stripped.phaseNumber = typeof stripped.phaseNumber === "number" ? stripped.phaseNumber : 0;
-    } else if (stripped.type === "TRICK_PLAY") {
-      stripped.phaseNumber = typeof stripped.phaseNumber === "number" ? stripped.phaseNumber : 1;
-    }
-
     return stripped;
   }
 
@@ -149,7 +148,7 @@ export function hashBaselineEgn(egn: EgnFile): string {
   return hashBaselineGame(egn, convertToBaselineEgn);
 }
 
-export { stableStringify, hashEgn, hashFullEgn, convertToBaselineGame, hashGame, hashFullGame, hashBaselineGame } from "./hashing";
+export { stableStringify, hashEgn, hashFullEgn, convertToBaselineGame, hashGame, hashFullGame, hashBaselineGame, stripPhaseNumbers } from "./hashing";
 
 function loadEgnFromInput(inputPath: string, condensed: boolean): EgnFile {
   const ext = path.extname(inputPath).toLowerCase();

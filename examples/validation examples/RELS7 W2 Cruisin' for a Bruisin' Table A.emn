@@ -1,0 +1,3484 @@
+{
+  "fileType": "Euchre Match Notation",
+  "version": "1.1",
+  "metadata": {
+    "title": "RELS7 W2 Cruisin' for a Bruisin' Table A",
+    "description": "",
+    "date": "2026-08-24T20:01",
+    "players": [
+      {
+        "id": "p-01",
+        "name": "Robson",
+        "playerIds": [
+          {
+            "source": "robson",
+            "id": "Euchre3D"
+          }
+        ]
+      },
+      {
+        "id": "p-02",
+        "name": "Lenny",
+        "playerIds": [
+          {
+            "source": "KngLenny",
+            "id": "Euchre3D"
+          }
+        ]
+      },
+      {
+        "id": "p-03",
+        "name": "I75North",
+        "playerIds": [
+          {
+            "source": "I75North",
+            "id": "Euchre3D"
+          }
+        ]
+      },
+      {
+        "id": "p-04",
+        "name": "TheJoggler",
+        "playerIds": [
+          {
+            "source": "TheJoggler",
+            "id": "Euchre3D"
+          }
+        ]
+      }
+    ],
+    "matchFormat": {
+      "type": "ROUND_ROBIN",
+      "target": 5
+    }
+  },
+  "games": [
+    {
+      "gameIndex": 0,
+      "playersOverride": [
+        "p-01",
+        "p-02",
+        "p-03",
+        "p-04"
+      ],
+      "gameData": {
+        "fileType": "Euchre Game Notation",
+        "version": "1.5",
+        "metadata": {
+          "title": "Game 1",
+          "description": "",
+          "date": "2026-08-24T20:01",
+          "players": [
+            "Robson",
+            "Lenny",
+            "I75North",
+            "TheJoggler"
+          ],
+          "initialScore": [
+            0,
+            0
+          ],
+          "ruleset": {
+            "std": true,
+            "canadian": false,
+            "loner_lead": "LEFT_OF_DEALER"
+          }
+        },
+        "deals": [
+          {
+            "dealNumber": 0,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "Js"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Tc",
+                    "Ts",
+                    "Ac",
+                    "Qc"
+                  ],
+                  [
+                    "Ad",
+                    "Td",
+                    "Kc",
+                    "Ks"
+                  ],
+                  [
+                    "Kh",
+                    "Qh",
+                    "9h",
+                    "Ah"
+                  ],
+                  [
+                    "Js",
+                    "Jh",
+                    "9d",
+                    "Qs"
+                  ],
+                  [
+                    "9s",
+                    "Th",
+                    "Jd",
+                    "Kd"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 1,
+            "initialState": {
+              "dealer": 1,
+              "upCard": "As"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Th",
+                    "Ah",
+                    "Jh",
+                    "Tc"
+                  ],
+                  [
+                    "9d",
+                    "Jd",
+                    "Ks",
+                    "Qd"
+                  ],
+                  [
+                    "9s",
+                    "Qs",
+                    "Js",
+                    "Jc"
+                  ],
+                  [
+                    "Ts",
+                    "Qc",
+                    "As",
+                    "Qh"
+                  ],
+                  [
+                    "Kc",
+                    "Ad",
+                    "9c",
+                    "Ac"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 2,
+            "initialState": {
+              "dealer": 2,
+              "upCard": "Js"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false,
+                "discard": "9d"
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "9c",
+                    "Ac",
+                    "Td",
+                    "Tc"
+                  ],
+                  [
+                    "9s",
+                    "Jd",
+                    "Js",
+                    "Jc"
+                  ],
+                  [
+                    "Kc",
+                    "Qc",
+                    "Ts",
+                    "Th"
+                  ],
+                  [
+                    "Jh",
+                    "Ad",
+                    "Kh",
+                    "9h"
+                  ],
+                  [
+                    "Qs",
+                    "Qd",
+                    "As",
+                    "Kd"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 3,
+            "initialState": {
+              "dealer": 3,
+              "upCard": "Jh"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": true
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Td",
+                    "Qd",
+                    "Ad"
+                  ],
+                  [
+                    "Jh",
+                    "Jd",
+                    "Th"
+                  ],
+                  [
+                    "Ah",
+                    "Ts",
+                    "Qh"
+                  ],
+                  [
+                    "9h",
+                    "Ks",
+                    "9c"
+                  ],
+                  [
+                    "9d",
+                    "Kd",
+                    "Js"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 4,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "Jd"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "9s",
+                    "Ad",
+                    "Qs",
+                    "As"
+                  ],
+                  [
+                    "Jc",
+                    "Qd",
+                    "Tc",
+                    "Th"
+                  ],
+                  [
+                    "Js",
+                    "Qh",
+                    "Ks",
+                    "Qc"
+                  ],
+                  [
+                    "9d",
+                    "9h",
+                    "Td",
+                    "Jd"
+                  ],
+                  [
+                    "Ah",
+                    "Jh",
+                    "Kh",
+                    "Ts"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 5,
+            "initialState": {
+              "dealer": 1,
+              "upCard": "Td"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "s"
+                ],
+                "isAlone": true
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Jc",
+                    "Ts",
+                    "Js"
+                  ],
+                  [
+                    "Th",
+                    "Jh",
+                    "Kh"
+                  ],
+                  [
+                    "Jd",
+                    "9d",
+                    "9s"
+                  ],
+                  [
+                    "As",
+                    "Qc",
+                    "9c"
+                  ],
+                  [
+                    "Qs",
+                    "Kc",
+                    "Tc"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 6,
+            "initialState": {
+              "dealer": 2,
+              "upCard": "Kc"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false,
+                "discard": "Kd"
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "9d",
+                    "9c",
+                    "Td",
+                    "9s"
+                  ],
+                  [
+                    "Kh",
+                    "Ah",
+                    "Tc",
+                    "Th"
+                  ],
+                  [
+                    "Jc",
+                    "Js",
+                    "9h",
+                    "Qc"
+                  ],
+                  [
+                    "Kc",
+                    "Ac",
+                    "Jh",
+                    "Ts"
+                  ],
+                  [
+                    "Qs",
+                    "Qh",
+                    "As",
+                    "Ks"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 7,
+            "initialState": {
+              "dealer": 3,
+              "upCard": "Jd"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": true
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "9h",
+                    "Th",
+                    "Qd"
+                  ],
+                  [
+                    "Jd",
+                    "Js",
+                    "9d"
+                  ],
+                  [
+                    "As",
+                    "Qc",
+                    "Ks"
+                  ],
+                  [
+                    "Ad",
+                    "Kc",
+                    "Jh"
+                  ],
+                  [
+                    "Tc",
+                    "9s",
+                    "Ac"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 8,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "9c"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "s"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Js",
+                    "9s",
+                    "Ts",
+                    "9h"
+                  ],
+                  [
+                    "Ad",
+                    "Qs",
+                    "9d",
+                    "Td"
+                  ],
+                  [
+                    "Jc",
+                    "Jd",
+                    "Kh",
+                    "Th"
+                  ],
+                  [
+                    "Ks",
+                    "Qd",
+                    "Kd",
+                    "Jh"
+                  ],
+                  [
+                    "Qh",
+                    "Qc",
+                    "Ah",
+                    "Ac"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 9,
+            "initialState": {
+              "dealer": 1,
+              "upCard": "Ad"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "h"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Jh",
+                    "Td",
+                    "Jd",
+                    "9h"
+                  ],
+                  [
+                    "Ah",
+                    "Kc",
+                    "9d",
+                    "Th"
+                  ],
+                  [
+                    "Qd",
+                    "Jc",
+                    "9s",
+                    "Kd"
+                  ],
+                  [
+                    "Kh",
+                    "Ts",
+                    "Qc",
+                    "Tc"
+                  ],
+                  [
+                    "Ac",
+                    "Ks",
+                    "As",
+                    "Js"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 10,
+            "initialState": {
+              "dealer": 2,
+              "upCard": "Ac"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "d"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "9c",
+                    "9s",
+                    "Qc",
+                    "Kc"
+                  ],
+                  [
+                    "Ks",
+                    "Ts",
+                    "9h",
+                    "Js"
+                  ],
+                  [
+                    "As",
+                    "Kd",
+                    "Th",
+                    "Qs"
+                  ],
+                  [
+                    "Qd",
+                    "Qh",
+                    "Jd",
+                    "Td"
+                  ],
+                  [
+                    "Jc",
+                    "Jh",
+                    "9d",
+                    "Kh"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 11,
+            "initialState": {
+              "dealer": 3,
+              "upCard": "9d"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "h"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Jh",
+                    "Ah",
+                    "Kh",
+                    "9h"
+                  ],
+                  [
+                    "9c",
+                    "Jc",
+                    "Ac",
+                    "Qc"
+                  ],
+                  [
+                    "Kd",
+                    "Ad",
+                    "Qd",
+                    "Td"
+                  ],
+                  [
+                    "As",
+                    "Qs",
+                    "Ks",
+                    "Ts"
+                  ],
+                  [
+                    "9s",
+                    "Qh",
+                    "Kc",
+                    "Jd"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 12,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "Jh"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Ac",
+                    "9c",
+                    "Jc",
+                    "Kc"
+                  ],
+                  [
+                    "Ad",
+                    "Kh",
+                    "Td",
+                    "As"
+                  ],
+                  [
+                    "Qs",
+                    "9s",
+                    "Th",
+                    "Ah"
+                  ],
+                  [
+                    "Kd",
+                    "Ts",
+                    "Qd",
+                    "9h"
+                  ],
+                  [
+                    "Jh",
+                    "Tc",
+                    "Qc",
+                    "Jd"
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "gameIndex": 1,
+      "playersOverride": [
+        "p-01",
+        "p-02",
+        "p-03",
+        "p-04"
+      ],
+      "gameData": {
+        "fileType": "Euchre Game Notation",
+        "version": "1.5",
+        "metadata": {
+          "title": "Game 2",
+          "description": "",
+          "date": "2026-08-24T20:01",
+          "players": [
+            "Robson",
+            "Lenny",
+            "I75North",
+            "TheJoggler"
+          ],
+          "initialScore": [
+            0,
+            0
+          ],
+          "ruleset": {
+            "std": true,
+            "canadian": false,
+            "loner_lead": "LEFT_OF_DEALER"
+          }
+        },
+        "deals": [
+          {
+            "dealNumber": 0,
+            "initialState": {
+              "dealer": 2,
+              "upCard": "Qc"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": true,
+                "discard": "Kh"
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Ad",
+                    "9d",
+                    "Qc"
+                  ],
+                  [
+                    "Ac",
+                    "Tc",
+                    "9c"
+                  ],
+                  [
+                    "As",
+                    "Ts",
+                    "Td"
+                  ],
+                  [
+                    "Js",
+                    "Kc",
+                    "Jd"
+                  ],
+                  [
+                    "Ks",
+                    "Qs",
+                    "Qh"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 1,
+            "initialState": {
+              "dealer": 3,
+              "upCard": "Ks"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Td",
+                    "Ad",
+                    "Qd",
+                    "9c"
+                  ],
+                  [
+                    "Kh",
+                    "Qh",
+                    "As",
+                    "Jh"
+                  ],
+                  [
+                    "Ac",
+                    "9s",
+                    "Tc",
+                    "Kc"
+                  ],
+                  [
+                    "Kd",
+                    "9d",
+                    "Jc",
+                    "Qc"
+                  ],
+                  [
+                    "Ts",
+                    "Ks",
+                    "Js",
+                    "9h"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 2,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "As"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "c"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Jc",
+                    "Tc",
+                    "Qc",
+                    "9c"
+                  ],
+                  [
+                    "Ah",
+                    "9h",
+                    "Td",
+                    "Qh"
+                  ],
+                  [
+                    "Kh",
+                    "Jh",
+                    "Kd",
+                    "9d"
+                  ],
+                  [
+                    "Qd",
+                    "Ad",
+                    "9s",
+                    "Jd"
+                  ],
+                  [
+                    "Kc",
+                    "Ks",
+                    "Qs",
+                    "Ts"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 3,
+            "initialState": {
+              "dealer": 1,
+              "upCard": "Qs"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "As",
+                    "Jc",
+                    "9d",
+                    "Qs"
+                  ],
+                  [
+                    "Ah",
+                    "Td",
+                    "9c",
+                    "Th"
+                  ],
+                  [
+                    "9h",
+                    "Tc",
+                    "Kc",
+                    "9s"
+                  ],
+                  [
+                    "Ks",
+                    "Jd",
+                    "Qc",
+                    "Qd"
+                  ],
+                  [
+                    "Ts",
+                    "Ad",
+                    "Ac",
+                    "Kd"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 4,
+            "initialState": {
+              "dealer": 2,
+              "upCard": "9s"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "h"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Kh",
+                    "Jh",
+                    "9h",
+                    "Td"
+                  ],
+                  [
+                    "Ad",
+                    "Ah",
+                    "Qd",
+                    "Kd"
+                  ],
+                  [
+                    "As",
+                    "Ks",
+                    "Ts",
+                    "Js"
+                  ],
+                  [
+                    "Qs",
+                    "Qc",
+                    "Th",
+                    "9c"
+                  ],
+                  [
+                    "Jd",
+                    "9d",
+                    "Tc",
+                    "Ac"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 5,
+            "initialState": {
+              "dealer": 3,
+              "upCard": "Qd"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Qh",
+                    "Kh",
+                    "Ah",
+                    "9h"
+                  ],
+                  [
+                    "As",
+                    "Qd",
+                    "Js",
+                    "Ts"
+                  ],
+                  [
+                    "Jd",
+                    "Td",
+                    "Qs",
+                    "9d"
+                  ],
+                  [
+                    "Th",
+                    "Jc",
+                    "9c",
+                    "Ad"
+                  ],
+                  [
+                    "Qc",
+                    "Tc",
+                    "Ac",
+                    "Kc"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 6,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "Qh"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "9h",
+                    "Kh",
+                    "9d",
+                    "Qh"
+                  ],
+                  [
+                    "9c",
+                    "Ac",
+                    "Td",
+                    "Jc"
+                  ],
+                  [
+                    "Ad",
+                    "Kd",
+                    "Qd",
+                    "Th"
+                  ],
+                  [
+                    "Kc",
+                    "9s",
+                    "Js",
+                    "Jd"
+                  ],
+                  [
+                    "Ts",
+                    "Tc",
+                    "Qs",
+                    "Ks"
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "gameIndex": 2,
+      "playersOverride": [
+        "p-04",
+        "p-01",
+        "p-03",
+        "p-02"
+      ],
+      "gameData": {
+        "fileType": "Euchre Game Notation",
+        "version": "1.5",
+        "metadata": {
+          "title": "Game 3",
+          "description": "",
+          "date": "2026-08-24T20:01",
+          "players": [
+            "TheJoggler",
+            "Robson",
+            "I75North",
+            "Lenny"
+          ],
+          "initialScore": [
+            0,
+            0
+          ],
+          "ruleset": {
+            "std": true,
+            "canadian": false,
+            "loner_lead": "LEFT_OF_DEALER"
+          }
+        },
+        "deals": [
+          {
+            "dealNumber": 0,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "Kh"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "d"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Th",
+                    "Qh",
+                    "Ah",
+                    "Td"
+                  ],
+                  [
+                    "Jd",
+                    "9h",
+                    "Qd",
+                    "Qc"
+                  ],
+                  [
+                    "Jc",
+                    "Tc",
+                    "Kd",
+                    "Ac"
+                  ],
+                  [
+                    "9s",
+                    "Qs",
+                    "Js",
+                    "Ts"
+                  ],
+                  [
+                    "Ks",
+                    "9c",
+                    "As",
+                    "Ad"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 1,
+            "initialState": {
+              "dealer": 1,
+              "upCard": "Kd"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Ac",
+                    "Jc",
+                    "9c",
+                    "9d"
+                  ],
+                  [
+                    "Ad",
+                    "Td",
+                    "9s",
+                    "Jd"
+                  ],
+                  [
+                    "Kc",
+                    "Qd",
+                    "Tc",
+                    "Ts"
+                  ],
+                  [
+                    "Ks",
+                    "9h",
+                    "Js",
+                    "As"
+                  ],
+                  [
+                    "Qh",
+                    "Kd",
+                    "Qc",
+                    "Ah"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 2,
+            "initialState": {
+              "dealer": 2,
+              "upCard": "Th"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false,
+                "discard": "Qd"
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "As",
+                    "Qs",
+                    "Js",
+                    "9s"
+                  ],
+                  [
+                    "Tc",
+                    "9h",
+                    "Jc",
+                    "Ac"
+                  ],
+                  [
+                    "Ad",
+                    "Kd",
+                    "Ks",
+                    "9c"
+                  ],
+                  [
+                    "Td",
+                    "Ah",
+                    "Jh",
+                    "Ts"
+                  ],
+                  [
+                    "Th",
+                    "Kc",
+                    "9d",
+                    "Jd"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 3,
+            "initialState": {
+              "dealer": 3,
+              "upCard": "Qd"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "h"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Qh",
+                    "Kh",
+                    "Jd",
+                    "Jh"
+                  ],
+                  [
+                    "Tc",
+                    "Ac",
+                    "Kc",
+                    "Kd"
+                  ],
+                  [
+                    "Jc",
+                    "Td",
+                    "Ts",
+                    "Qc"
+                  ],
+                  [
+                    "Js",
+                    "9s",
+                    "Qs",
+                    "As"
+                  ],
+                  [
+                    "Th",
+                    "Ks",
+                    "9d",
+                    "Ah"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 4,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "Ad"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "9d",
+                    "Jd",
+                    "9c",
+                    "Ad"
+                  ],
+                  [
+                    "Th",
+                    "9h",
+                    "Ah",
+                    "Qh"
+                  ],
+                  [
+                    "Ac",
+                    "Qc",
+                    "Js",
+                    "Kh"
+                  ],
+                  [
+                    "Ks",
+                    "As",
+                    "Td",
+                    "Ts"
+                  ],
+                  [
+                    "Qd",
+                    "Qs",
+                    "9s",
+                    "Kc"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 5,
+            "initialState": {
+              "dealer": 1,
+              "upCard": "9c"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "9d",
+                    "Ad",
+                    "Td",
+                    "Ah"
+                  ],
+                  [
+                    "Jc",
+                    "Qh",
+                    "9c",
+                    "Ac"
+                  ],
+                  [
+                    "Qs",
+                    "As",
+                    "Tc",
+                    "Ts"
+                  ],
+                  [
+                    "Qc",
+                    "Kd",
+                    "Qd",
+                    "9h"
+                  ],
+                  [
+                    "Kc",
+                    "Ks",
+                    "Jd",
+                    "Th"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 6,
+            "initialState": {
+              "dealer": 2,
+              "upCard": "Ah",
+              "playerCards": [
+                [],
+                [],
+                [
+                  "Qh",
+                  "Qd",
+                  "Qc",
+                  "Tc",
+                  "9c"
+                ],
+                []
+              ]
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": true,
+                "discard": "Ah"
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "9d",
+                    "Th",
+                    "Ad"
+                  ],
+                  [
+                    "Jh",
+                    "9h",
+                    "Jd"
+                  ],
+                  [
+                    "Kh",
+                    "Js",
+                    "Kd"
+                  ],
+                  [
+                    "As",
+                    "Jc",
+                    "Ks"
+                  ],
+                  [
+                    "9s",
+                    "Ac",
+                    "Kc"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 7,
+            "initialState": {
+              "dealer": 3,
+              "upCard": "Js"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "9h",
+                    "9s",
+                    "Jh",
+                    "Th"
+                  ],
+                  [
+                    "Ts",
+                    "As",
+                    "Js",
+                    "Qs"
+                  ],
+                  [
+                    "Ah",
+                    "Kh",
+                    "9c",
+                    "Qh"
+                  ],
+                  [
+                    "Kd",
+                    "Td",
+                    "Qc",
+                    "Jc"
+                  ],
+                  [
+                    "Kc",
+                    "Qd",
+                    "Jd",
+                    "Ac"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 8,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "Kh"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Jc",
+                    "Tc",
+                    "Qc",
+                    "Ac"
+                  ],
+                  [
+                    "Jh",
+                    "Jd",
+                    "9c",
+                    "Th"
+                  ],
+                  [
+                    "Ah",
+                    "9d",
+                    "Qs",
+                    "Qh"
+                  ],
+                  [
+                    "Kh",
+                    "Js",
+                    "Td",
+                    "Ts"
+                  ],
+                  [
+                    "9h",
+                    "As",
+                    "Ad",
+                    "Qd"
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "gameIndex": 3,
+      "playersOverride": [
+        "p-04",
+        "p-01",
+        "p-03",
+        "p-02"
+      ],
+      "gameData": {
+        "fileType": "Euchre Game Notation",
+        "version": "1.5",
+        "metadata": {
+          "title": "Game 4",
+          "description": "",
+          "date": "2026-08-24T20:01",
+          "players": [
+            "TheJoggler",
+            "Robson",
+            "I75North",
+            "Lenny"
+          ],
+          "initialScore": [
+            0,
+            0
+          ],
+          "ruleset": {
+            "std": true,
+            "canadian": false,
+            "loner_lead": "LEFT_OF_DEALER"
+          }
+        },
+        "deals": [
+          {
+            "dealNumber": 0,
+            "initialState": {
+              "dealer": 3,
+              "upCard": "Jc"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": true
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Qd",
+                    "Kd",
+                    "9d"
+                  ],
+                  [
+                    "Js",
+                    "9c",
+                    "Jd"
+                  ],
+                  [
+                    "Ac",
+                    "Qc",
+                    "Td"
+                  ],
+                  [
+                    "Ah",
+                    "Th",
+                    "Qh"
+                  ],
+                  [
+                    "Ad",
+                    "Kc",
+                    "9s"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 1,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "Qs"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "d"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Kd",
+                    "9d",
+                    "Jh",
+                    "Jd"
+                  ],
+                  [
+                    "Ad",
+                    "Qd",
+                    "9c",
+                    "Qc"
+                  ],
+                  [
+                    "Td",
+                    "9s",
+                    "9h",
+                    "Ts"
+                  ],
+                  [
+                    "Ac",
+                    "As",
+                    "Js",
+                    "Ks"
+                  ],
+                  [
+                    "Kc",
+                    "Ah",
+                    "Qh",
+                    "Kh"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 2,
+            "initialState": {
+              "dealer": 1,
+              "upCard": "Jc"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Ad",
+                    "9d",
+                    "Qd",
+                    "Tc"
+                  ],
+                  [
+                    "Jh",
+                    "Ah",
+                    "Qh",
+                    "Kh"
+                  ],
+                  [
+                    "Th",
+                    "Td",
+                    "9s",
+                    "Ts"
+                  ],
+                  [
+                    "Kd",
+                    "9c",
+                    "Qc",
+                    "Jc"
+                  ],
+                  [
+                    "As",
+                    "Qs",
+                    "Ks",
+                    "Js"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 3,
+            "initialState": {
+              "dealer": 2,
+              "upCard": "Ac"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": true,
+                "discard": "9s"
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Ah",
+                    "Kc",
+                    "Ac"
+                  ],
+                  [
+                    "Js",
+                    "9h",
+                    "9c"
+                  ],
+                  [
+                    "As",
+                    "Qs",
+                    "Qc"
+                  ],
+                  [
+                    "Jd",
+                    "Tc",
+                    "9d"
+                  ],
+                  [
+                    "Ks",
+                    "Kd",
+                    "Td"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 4,
+            "initialState": {
+              "dealer": 3,
+              "upCard": "Ts"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "c"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Js",
+                    "Qc",
+                    "Kc",
+                    "9h"
+                  ],
+                  [
+                    "Tc",
+                    "Td",
+                    "Ac",
+                    "9d"
+                  ],
+                  [
+                    "9s",
+                    "Kd",
+                    "9c",
+                    "Qs"
+                  ],
+                  [
+                    "Kh",
+                    "Jd",
+                    "Th",
+                    "Ad"
+                  ],
+                  [
+                    "Qh",
+                    "As",
+                    "Jh",
+                    "Qd"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 5,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "Jd"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Kh",
+                    "9d",
+                    "Ah",
+                    "Jc"
+                  ],
+                  [
+                    "Td",
+                    "Kd",
+                    "Jd",
+                    "Jh"
+                  ],
+                  [
+                    "Ad",
+                    "Th",
+                    "Qc",
+                    "Qd"
+                  ],
+                  [
+                    "Ac",
+                    "Tc",
+                    "As",
+                    "9c"
+                  ],
+                  [
+                    "Kc",
+                    "Ts",
+                    "Ks",
+                    "Js"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 6,
+            "initialState": {
+              "dealer": 1,
+              "upCard": "Td"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Jd",
+                    "Kd",
+                    "9d",
+                    "Td"
+                  ],
+                  [
+                    "Jh",
+                    "Qd",
+                    "Tc",
+                    "9s"
+                  ],
+                  [
+                    "Ad",
+                    "Ts",
+                    "Th",
+                    "Jc"
+                  ],
+                  [
+                    "Ah",
+                    "Ks",
+                    "Qh",
+                    "Qs"
+                  ],
+                  [
+                    "9c",
+                    "Ac",
+                    "Kh",
+                    "Kc"
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "gameIndex": 4,
+      "playersOverride": [
+        "p-02",
+        "p-04",
+        "p-03",
+        "p-01"
+      ],
+      "gameData": {
+        "fileType": "Euchre Game Notation",
+        "version": "1.5",
+        "metadata": {
+          "title": "Game 5",
+          "description": "",
+          "date": "2026-08-24T20:01",
+          "players": [
+            "Lenny",
+            "TheJoggler",
+            "I75North",
+            "Robson"
+          ],
+          "initialScore": [
+            0,
+            0
+          ],
+          "ruleset": {
+            "std": true,
+            "canadian": false,
+            "loner_lead": "LEFT_OF_DEALER"
+          }
+        },
+        "deals": [
+          {
+            "dealNumber": 0,
+            "initialState": {
+              "dealer": 1,
+              "upCard": "Td"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "h"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Th",
+                    "9d",
+                    "Ah",
+                    "Jh"
+                  ],
+                  [
+                    "Ks",
+                    "Qs",
+                    "9s",
+                    "9h"
+                  ],
+                  [
+                    "Jc",
+                    "Qc",
+                    "Kh",
+                    "9c"
+                  ],
+                  [
+                    "Kd",
+                    "Ts",
+                    "Kc",
+                    "Qh"
+                  ],
+                  [
+                    "Tc",
+                    "Qd",
+                    "Ac",
+                    "Jd"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 1,
+            "initialState": {
+              "dealer": 2,
+              "upCard": "Jc"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "s"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "9s",
+                    "Jd",
+                    "Ks",
+                    "Ts"
+                  ],
+                  [
+                    "Ac",
+                    "Qs",
+                    "Qc",
+                    "Kc"
+                  ],
+                  [
+                    "Ah",
+                    "As",
+                    "Jh",
+                    "Kh"
+                  ],
+                  [
+                    "9d",
+                    "Ad",
+                    "Qd",
+                    "Kd"
+                  ],
+                  [
+                    "Qh",
+                    "9c",
+                    "9h",
+                    "Td"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 2,
+            "initialState": {
+              "dealer": 3,
+              "upCard": "9h"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "As",
+                    "9s",
+                    "Qs",
+                    "9h"
+                  ],
+                  [
+                    "Ad",
+                    "Ts",
+                    "Qd",
+                    "Td"
+                  ],
+                  [
+                    "Jh",
+                    "Js",
+                    "Jd",
+                    "Th"
+                  ],
+                  [
+                    "Qh",
+                    "Tc",
+                    "Jc",
+                    "Kh"
+                  ],
+                  [
+                    "Ah",
+                    "9d",
+                    "Kc",
+                    "Qc"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 3,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "Th"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Qd",
+                    "Ad",
+                    "Td",
+                    "9s"
+                  ],
+                  [
+                    "9h",
+                    "Ah",
+                    "Jh",
+                    "Kh"
+                  ],
+                  [
+                    "Js",
+                    "9c",
+                    "As",
+                    "Qs"
+                  ],
+                  [
+                    "Ts",
+                    "Tc",
+                    "Th",
+                    "Jc"
+                  ],
+                  [
+                    "Qh",
+                    "Kc",
+                    "Qc",
+                    "Ac"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 4,
+            "initialState": {
+              "dealer": 1,
+              "upCard": "Js"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Ac",
+                    "Tc",
+                    "Qc",
+                    "Kc"
+                  ],
+                  [
+                    "9c",
+                    "Th",
+                    "9h",
+                    "Ts"
+                  ],
+                  [
+                    "Js",
+                    "9s",
+                    "Jh",
+                    "Ks"
+                  ],
+                  [
+                    "Qd",
+                    "Td",
+                    "Kh",
+                    "Qs"
+                  ],
+                  [
+                    "Jc",
+                    "9d",
+                    "As",
+                    "Ah"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 5,
+            "initialState": {
+              "dealer": 2,
+              "upCard": "Kd"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false,
+                "discard": "Ts"
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Th",
+                    "Kh",
+                    "Ah",
+                    "9h"
+                  ],
+                  [
+                    "Qh",
+                    "Qc",
+                    "9s",
+                    "Td"
+                  ],
+                  [
+                    "Ad",
+                    "Jh",
+                    "Jd",
+                    "Tc"
+                  ],
+                  [
+                    "Kd",
+                    "Jc",
+                    "9c",
+                    "9d"
+                  ],
+                  [
+                    "Ac",
+                    "As",
+                    "Qs",
+                    "Js"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 6,
+            "initialState": {
+              "dealer": 3,
+              "upCard": "Js"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Ks",
+                    "Jc",
+                    "9s",
+                    "Ts"
+                  ],
+                  [
+                    "Th",
+                    "Kh",
+                    "Jd",
+                    "Ah"
+                  ],
+                  [
+                    "Kd",
+                    "9d",
+                    "Ac",
+                    "Ad"
+                  ],
+                  [
+                    "Js",
+                    "Qs",
+                    "9c",
+                    "Qc"
+                  ],
+                  [
+                    "Qd",
+                    "Tc",
+                    "Qh",
+                    "Kc"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 7,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "9h"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "d"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Th",
+                    "Qh",
+                    "Kh",
+                    "Ad"
+                  ],
+                  [
+                    "As",
+                    "Js",
+                    "9s",
+                    "Qs"
+                  ],
+                  [
+                    "Ac",
+                    "9d",
+                    "Kc",
+                    "Tc"
+                  ],
+                  [
+                    "Jd",
+                    "Td",
+                    "Jh",
+                    "9c"
+                  ],
+                  [
+                    "Ts",
+                    "Ks",
+                    "Qc",
+                    "Jc"
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "gameIndex": 5,
+      "playersOverride": [
+        "p-02",
+        "p-04",
+        "p-03",
+        "p-01"
+      ],
+      "gameData": {
+        "fileType": "Euchre Game Notation",
+        "version": "1.5",
+        "metadata": {
+          "title": "Game 6",
+          "description": "",
+          "date": "2026-08-24T20:01",
+          "players": [
+            "Lenny",
+            "TheJoggler",
+            "I75North",
+            "Robson"
+          ],
+          "initialScore": [
+            0,
+            0
+          ],
+          "ruleset": {
+            "std": true,
+            "canadian": false,
+            "loner_lead": "LEFT_OF_DEALER"
+          }
+        },
+        "deals": [
+          {
+            "dealNumber": 0,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "9d"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "As",
+                    "9s",
+                    "Js",
+                    "Ts"
+                  ],
+                  [
+                    "Qc",
+                    "Ac",
+                    "Tc",
+                    "Th"
+                  ],
+                  [
+                    "Ad",
+                    "9h",
+                    "9d",
+                    "Jh"
+                  ],
+                  [
+                    "Ah",
+                    "Kh",
+                    "Qh",
+                    "Kd"
+                  ],
+                  [
+                    "Jd",
+                    "Jc",
+                    "Qs",
+                    "Ks"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 1,
+            "initialState": {
+              "dealer": 1,
+              "upCard": "Ac"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Ah",
+                    "9h",
+                    "Jh",
+                    "Qc"
+                  ],
+                  [
+                    "Kc",
+                    "9c",
+                    "Jc",
+                    "Tc"
+                  ],
+                  [
+                    "Ts",
+                    "9d",
+                    "As",
+                    "9s"
+                  ],
+                  [
+                    "Ac",
+                    "Qh",
+                    "Jd",
+                    "Ad"
+                  ],
+                  [
+                    "Qs",
+                    "Ks",
+                    "Qd",
+                    "Kd"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 2,
+            "initialState": {
+              "dealer": 2,
+              "upCard": "Ah"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false,
+                "discard": "Jc"
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Th",
+                    "Qh",
+                    "Kh",
+                    "Ah"
+                  ],
+                  [
+                    "Ad",
+                    "9s",
+                    "Kd",
+                    "9d"
+                  ],
+                  [
+                    "Qd",
+                    "9c",
+                    "Qc",
+                    "Ts"
+                  ],
+                  [
+                    "Td",
+                    "Jh",
+                    "Qs",
+                    "Ac"
+                  ],
+                  [
+                    "Kc",
+                    "Jd",
+                    "As",
+                    "Ks"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 3,
+            "initialState": {
+              "dealer": 3,
+              "upCard": "Ad"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Qd",
+                    "Jd",
+                    "9d",
+                    "Kd"
+                  ],
+                  [
+                    "As",
+                    "Ks",
+                    "9s",
+                    "Js"
+                  ],
+                  [
+                    "Ac",
+                    "Jc",
+                    "Qh",
+                    "Kc"
+                  ],
+                  [
+                    "Th",
+                    "9h",
+                    "Ad",
+                    "Kh"
+                  ],
+                  [
+                    "Ts",
+                    "Td",
+                    "Qc",
+                    "Jh"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 4,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "9s"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "c"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Jc",
+                    "Ac",
+                    "9d",
+                    "9c"
+                  ],
+                  [
+                    "Td",
+                    "Ad",
+                    "9h",
+                    "Jd"
+                  ],
+                  [
+                    "Kd",
+                    "Jh",
+                    "Qh",
+                    "Tc"
+                  ],
+                  [
+                    "Th",
+                    "Ts",
+                    "Kh",
+                    "Kc"
+                  ],
+                  [
+                    "Js",
+                    "Qc",
+                    "Qd",
+                    "Qs"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 5,
+            "initialState": {
+              "dealer": 1,
+              "upCard": "As"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "h"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Jh",
+                    "Th",
+                    "Qh",
+                    "9h"
+                  ],
+                  [
+                    "Ad",
+                    "Qd",
+                    "9c",
+                    "9d"
+                  ],
+                  [
+                    "Ks",
+                    "Ts",
+                    "Js",
+                    "Ah"
+                  ],
+                  [
+                    "Kd",
+                    "9s",
+                    "Kh",
+                    "Qc"
+                  ],
+                  [
+                    "Jd",
+                    "Jc",
+                    "Td",
+                    "Qs"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 6,
+            "initialState": {
+              "dealer": 2,
+              "upCard": "Jh"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false,
+                "discard": "9c"
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Jc",
+                    "Ac",
+                    "Qc",
+                    "Ts"
+                  ],
+                  [
+                    "Ad",
+                    "9d",
+                    "Qs",
+                    "Td"
+                  ],
+                  [
+                    "Js",
+                    "9s",
+                    "Ks",
+                    "As"
+                  ],
+                  [
+                    "Kc",
+                    "Tc",
+                    "Th",
+                    "Kh"
+                  ],
+                  [
+                    "Jh",
+                    "Qd",
+                    "Kd",
+                    "9h"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 7,
+            "initialState": {
+              "dealer": 3,
+              "upCard": "Qh"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Ah",
+                    "9d",
+                    "9h",
+                    "Qh"
+                  ],
+                  [
+                    "Qd",
+                    "9c",
+                    "Kd",
+                    "Ts"
+                  ],
+                  [
+                    "Jd",
+                    "Qs",
+                    "Th",
+                    "Tc"
+                  ],
+                  [
+                    "Jh",
+                    "Ks",
+                    "Kh",
+                    "Jc"
+                  ],
+                  [
+                    "As",
+                    "Ac",
+                    "Td",
+                    "Js"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 8,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "Js"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "9h",
+                    "Td",
+                    "Ah",
+                    "Qh"
+                  ],
+                  [
+                    "Ad",
+                    "9d",
+                    "Qd",
+                    "9s"
+                  ],
+                  [
+                    "9c",
+                    "Kc",
+                    "Js",
+                    "Jh"
+                  ],
+                  [
+                    "Kd",
+                    "Ks",
+                    "Jc",
+                    "Jd"
+                  ],
+                  [
+                    "Tc",
+                    "Ts",
+                    "Kh",
+                    "Qs"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 9,
+            "initialState": {
+              "dealer": 1,
+              "upCard": "Js"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "As",
+                    "Ts",
+                    "Qs",
+                    "Js"
+                  ],
+                  [
+                    "Jc",
+                    "9c",
+                    "9d",
+                    "Ks"
+                  ],
+                  [
+                    "Qc",
+                    "Kh",
+                    "Td",
+                    "9h"
+                  ],
+                  [
+                    "9s",
+                    "Ad",
+                    "Jh",
+                    "Jd"
+                  ],
+                  [
+                    "Qd",
+                    "Ah",
+                    "Qh",
+                    "Kd"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 10,
+            "initialState": {
+              "dealer": 2,
+              "upCard": "Qs"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false,
+                "discard": "Kh"
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Ac",
+                    "Tc",
+                    "Th",
+                    "9c"
+                  ],
+                  [
+                    "Td",
+                    "Qd",
+                    "Ks",
+                    "Ad"
+                  ],
+                  [
+                    "Ah",
+                    "Qs",
+                    "Jh",
+                    "Kd"
+                  ],
+                  [
+                    "9s",
+                    "Jd",
+                    "Jc",
+                    "Ts"
+                  ],
+                  [
+                    "Js",
+                    "As",
+                    "Qc",
+                    "Qh"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 11,
+            "initialState": {
+              "dealer": 3,
+              "upCard": "Kh"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Qh",
+                    "9h",
+                    "Jc",
+                    "Kh"
+                  ],
+                  [
+                    "Td",
+                    "9d",
+                    "Qd",
+                    "Ad"
+                  ],
+                  [
+                    "Ac",
+                    "Ah",
+                    "9c",
+                    "Qc"
+                  ],
+                  [
+                    "Jh",
+                    "Kc",
+                    "9s",
+                    "Ks"
+                  ],
+                  [
+                    "Th",
+                    "Kd",
+                    "Ts",
+                    "As"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 12,
+            "initialState": {
+              "dealer": 0,
+              "upCard": "Qs"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Qc",
+                    "Tc",
+                    "As",
+                    "Qh"
+                  ],
+                  [
+                    "Ah",
+                    "Qs",
+                    "Kc",
+                    "9h"
+                  ],
+                  [
+                    "Ad",
+                    "Ts",
+                    "Qd",
+                    "Th"
+                  ],
+                  [
+                    "Ac",
+                    "9s",
+                    "Jh",
+                    "Td"
+                  ],
+                  [
+                    "Kd",
+                    "Kh",
+                    "Ks",
+                    "Js"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "dealNumber": 13,
+            "initialState": {
+              "dealer": 1,
+              "upCard": "Qd"
+            },
+            "phases": [
+              {
+                "phaseNumber": 0,
+                "type": "EUCHRE_BIDDING",
+                "calls": [
+                  "Pass",
+                  "Pass",
+                  "Pass",
+                  "Order"
+                ],
+                "isAlone": false
+              },
+              {
+                "phaseNumber": 1,
+                "type": "TRICK_PLAY",
+                "tricks": [
+                  [
+                    "Th",
+                    "Ad",
+                    "Ah",
+                    "Ts"
+                  ],
+                  [
+                    "9c",
+                    "Qc",
+                    "Ac",
+                    "Td"
+                  ],
+                  [
+                    "Qh",
+                    "Jc",
+                    "Tc",
+                    "Qd"
+                  ],
+                  [
+                    "Jd",
+                    "Jh",
+                    "Js",
+                    "Ks"
+                  ],
+                  [
+                    "Kc",
+                    "9s",
+                    "As",
+                    "Qs"
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

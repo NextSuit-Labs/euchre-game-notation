@@ -403,6 +403,60 @@ describe("EGN Gameplay & Semantic Rule Validation", () => {
       expect(violation).toBeDefined();
       expect(violation?.actual).toBe("s");
     });
+
+    it("flags ILLEGAL_BID_SUIT when round 1 passes are shorthand 'p'", () => {
+      const illegalSuitCallDeal: Deal = {
+        dealNumber: 0,
+        initialState: { dealer: 0, upCard: "9s" },
+        phases: [
+          {
+            phaseNumber: 0,
+            type: "EUCHRE_BIDDING",
+            calls: ["p", "p", "p", "p", "s"],
+          },
+        ],
+      };
+
+      const result = validateDealGameplay(illegalSuitCallDeal, {}, 0);
+      expect(result.isValid).toBe(false);
+      const violation = result.violations.find((v) => v.code === "ILLEGAL_BID_SUIT");
+      expect(violation).toBeDefined();
+      expect(violation?.actual).toBe("s");
+    });
+
+    it("applies pickup and discard correctly when shorthand 'o' is called", () => {
+      const legalShorthandDeal: Deal = {
+        dealNumber: 0,
+        initialState: {
+          dealer: 0,
+          upCard: "9s",
+          playerCards: [
+            ["As", "Ks", "Qs", "Ts", "9d"],
+            ["Ah", "Kh", "Qh", "Jh", "Th"],
+            ["Jc", "Kc", "Qc", "Tc", "9c"],
+            ["Ad", "Kd", "Qd", "Jd", "Td"],
+          ],
+        },
+        phases: [
+          { phaseNumber: 0, type: "EUCHRE_BIDDING", calls: ["o"], discard: "9d" },
+          {
+            phaseNumber: 1,
+            type: "TRICK_PLAY",
+            tricks: [
+              ["Ah", "Jc", "Ad", "9s"],
+              ["Kc", "Kd", "Ts", "Kh"],
+              ["As", "Qh", "9c", "Qd"],
+              ["Ks", "Jh", "Tc", "Jd"],
+              ["Qs", "Th", "Qc", "Td"],
+            ],
+          },
+        ],
+      };
+
+      const result = validateDealGameplay(legalShorthandDeal, {}, 0);
+      expect(result.isValid).toBe(true);
+      expect(result.violations).toHaveLength(0);
+    });
   });
 
   describe("Official Example Files Validation", () => {

@@ -81,11 +81,11 @@ export function encodeCardFromDeck(card: string, deck: string[]): string {
 }
 
 export function encodeR1Call(call: string): string {
-  return call === "Pass" ? "0" : "1";
+  return (call === "Pass" || call === "p") ? "0" : "1";
 }
 
 export function encodeR2Call(call: string, possibleSuits: string[]): string {
-  if (call === "Pass") {
+  if (call === "Pass" || call === "p") {
     return "00";
   } else {
     const char = call[0].toLowerCase();

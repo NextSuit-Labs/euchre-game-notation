@@ -655,6 +655,297 @@ describe("EGN Protobuf Converter Core", () => {
       const cleanBaselineHash = hashBaselineEgn(validMockData);
       expect(baselineHash).toBe(cleanBaselineHash);
     });
+
+    it("should hash a clean game identically for both hashBaselineEgn and hashEgn", () => {
+      const cleanMock: EgnFile = {
+        ...validMockData,
+        deals: [
+          {
+            ...(validMockData.deals[0] as Deal),
+            phases: [
+              {
+                type: "EUCHRE_BIDDING",
+                calls: ["Pass", "Pass", "Pass", "Order"],
+                isAlone: false,
+              },
+            ],
+          },
+        ],
+      };
+      const fullHash = hashEgn(cleanMock);
+      const baselineHash = hashBaselineEgn(cleanMock);
+      expect(fullHash).toBe(baselineHash);
+    });
+
+    it("should produce the same hash whether phaseNumber is present or omitted in both baseline and full hash", () => {
+      const cleanWithPhaseNumber: EgnFile = {
+        ...validMockData,
+        deals: [
+          {
+            ...(validMockData.deals[0] as Deal),
+            phases: [
+              {
+                phaseNumber: 0,
+                type: "EUCHRE_BIDDING",
+                calls: ["Pass", "Pass", "Pass", "Order"],
+                isAlone: false,
+              },
+            ],
+          },
+        ],
+      };
+      const cleanWithoutPhaseNumber: EgnFile = {
+        ...validMockData,
+        deals: [
+          {
+            ...(validMockData.deals[0] as Deal),
+            phases: [
+              {
+                type: "EUCHRE_BIDDING",
+                calls: ["Pass", "Pass", "Pass", "Order"],
+                isAlone: false,
+              },
+            ],
+          },
+        ],
+      };
+
+      // Full hash should be identical whether phaseNumber was provided or not
+      expect(hashEgn(cleanWithPhaseNumber)).toBe(hashEgn(cleanWithoutPhaseNumber));
+      expect(hashFullEgn(cleanWithPhaseNumber)).toBe(hashFullEgn(cleanWithoutPhaseNumber));
+
+      // Baseline hash should be identical whether phaseNumber was provided or not
+      expect(hashBaselineEgn(cleanWithPhaseNumber)).toBe(hashBaselineEgn(cleanWithoutPhaseNumber));
+
+      // Both baseline and full hash should match for clean games
+      expect(hashBaselineEgn(cleanWithoutPhaseNumber)).toBe(hashEgn(cleanWithoutPhaseNumber));
+    });
+
+    it("should produce identical hashes between baseline and full hash when empty playerCards arrays are present or omitted", () => {
+      const cleanWithoutPlayerCards: EgnFile = {
+        ...validMockData,
+        deals: [
+          {
+            dealNumber: 0,
+            initialState: {
+              dealer: 3,
+              upCard: "Jd",
+            },
+            phases: [
+              {
+                type: "EUCHRE_BIDDING",
+                calls: ["Pass", "Pass", "Pass", "Order"],
+                isAlone: false,
+              },
+            ],
+          },
+        ],
+      };
+
+      const cleanWithEmptyPlayerCards: EgnFile = {
+        ...validMockData,
+        deals: [
+          {
+            dealNumber: 0,
+            initialState: {
+              dealer: 3,
+              upCard: "Jd",
+              playerCards: [[], [], [], []],
+            },
+            phases: [
+              {
+                type: "EUCHRE_BIDDING",
+                calls: ["Pass", "Pass", "Pass", "Order"],
+                isAlone: false,
+              },
+            ],
+          },
+        ],
+      };
+
+      const cleanWithEmptyArrayPlayerCards: EgnFile = {
+        ...validMockData,
+        deals: [
+          {
+            dealNumber: 0,
+            initialState: {
+              dealer: 3,
+              upCard: "Jd",
+              playerCards: [],
+            },
+            phases: [
+              {
+                type: "EUCHRE_BIDDING",
+                calls: ["Pass", "Pass", "Pass", "Order"],
+                isAlone: false,
+              },
+            ],
+          },
+        ],
+      };
+
+      // Full hash should be identical whether playerCards has empty hands, empty array, or is omitted
+      expect(hashEgn(cleanWithEmptyPlayerCards)).toBe(hashEgn(cleanWithoutPlayerCards));
+      expect(hashFullEgn(cleanWithEmptyPlayerCards)).toBe(hashFullEgn(cleanWithoutPlayerCards));
+      expect(hashEgn(cleanWithEmptyArrayPlayerCards)).toBe(hashEgn(cleanWithoutPlayerCards));
+
+      // Baseline hash should be identical whether playerCards has empty hands, empty array, or is omitted
+      expect(hashBaselineEgn(cleanWithEmptyPlayerCards)).toBe(hashBaselineEgn(cleanWithoutPlayerCards));
+      expect(hashBaselineEgn(cleanWithEmptyArrayPlayerCards)).toBe(hashBaselineEgn(cleanWithoutPlayerCards));
+
+      // Full hash and baseline hash must match each other for clean games with empty playerCards
+      expect(hashEgn(cleanWithEmptyPlayerCards)).toBe(hashBaselineEgn(cleanWithEmptyPlayerCards));
+      expect(hashEgn(cleanWithEmptyArrayPlayerCards)).toBe(hashBaselineEgn(cleanWithEmptyArrayPlayerCards));
+    });
+
+    it("should remove empty hand arrays inside playerCards consistently for both full and baseline hash", () => {
+      const cleanPartialHands: EgnFile = {
+        ...validMockData,
+        deals: [
+          {
+            dealNumber: 0,
+            initialState: {
+              dealer: 3,
+              upCard: "Jd",
+              playerCards: [["Ah", "Kh", "Qh", "Jh", "Th"], [], [], []],
+            },
+            phases: [
+              {
+                type: "EUCHRE_BIDDING",
+                calls: ["Pass", "Pass", "Pass", "Order"],
+                isAlone: false,
+              },
+            ],
+          },
+        ],
+      };
+
+      const cleanStrippedHands: EgnFile = {
+        ...validMockData,
+        deals: [
+          {
+            dealNumber: 0,
+            initialState: {
+              dealer: 3,
+              upCard: "Jd",
+              playerCards: [["Ah", "Kh", "Qh", "Jh", "Th"]],
+            },
+            phases: [
+              {
+                type: "EUCHRE_BIDDING",
+                calls: ["Pass", "Pass", "Pass", "Order"],
+                isAlone: false,
+              },
+            ],
+          },
+        ],
+      };
+
+      // Both full and baseline hash remove empty hand arrays
+      expect(hashEgn(cleanPartialHands)).toBe(hashEgn(cleanStrippedHands));
+      expect(hashBaselineEgn(cleanPartialHands)).toBe(hashBaselineEgn(cleanStrippedHands));
+      expect(hashEgn(cleanPartialHands)).toBe(hashBaselineEgn(cleanPartialHands));
+    });
+
+    it("should produce the exact same hash for shorthand 'p'/'o' calls as 'Pass'/'Order' across both baseline and full hash", () => {
+      const fullCallGame: EgnFile = {
+        ...validMockData,
+        deals: [
+          {
+            ...(validMockData.deals[0] as Deal),
+            phases: [
+              {
+                type: "EUCHRE_BIDDING",
+                calls: ["Pass", "Pass", "Pass", "Order"],
+                isAlone: false,
+              },
+            ],
+          },
+        ],
+      };
+
+      const shorthandCallGame: EgnFile = {
+        ...validMockData,
+        deals: [
+          {
+            ...(validMockData.deals[0] as Deal),
+            phases: [
+              {
+                type: "EUCHRE_BIDDING",
+                calls: ["p", "p", "p", "o"],
+                isAlone: false,
+              },
+            ],
+          },
+        ],
+      };
+
+      // Both baseline and full hash normalize shorthand calls
+      expect(hashBaselineEgn(shorthandCallGame)).toBe(hashBaselineEgn(fullCallGame));
+      expect(hashEgn(shorthandCallGame)).toBe(hashEgn(fullCallGame));
+      expect(hashFullEgn(shorthandCallGame)).toBe(hashFullEgn(fullCallGame));
+
+      // Clean game with shorthand calls matches baseline hash
+      expect(hashEgn(shorthandCallGame)).toBe(hashBaselineEgn(shorthandCallGame));
+    });
+
+    it("should prune empty arrays and empty objects consistently across baseline and full hash", () => {
+      const cleanBase: EgnFile = {
+        ...validMockData,
+        deals: [
+          {
+            dealNumber: 0,
+            initialState: {
+              dealer: 3,
+              upCard: "Jd",
+            },
+            phases: [
+              {
+                type: "EUCHRE_BIDDING",
+                calls: ["Pass", "Pass", "Pass", "Order"],
+                isAlone: false,
+              },
+            ],
+          },
+        ],
+      };
+
+      const cleanWithEmptyStructures: any = {
+        ...validMockData,
+        metadata: {
+          ...validMockData.metadata,
+          teamNames: [],
+          ruleset: {},
+        },
+        deals: [
+          {
+            dealNumber: 0,
+            initialState: {
+              dealer: 3,
+              upCard: "Jd",
+            },
+            phases: [
+              {
+                type: "EUCHRE_BIDDING",
+                calls: ["Pass", "Pass", "Pass", "Order"],
+                isAlone: false,
+                cardExchanges: [],
+              },
+            ],
+          },
+        ],
+      };
+
+      // Full hash should be identical whether empty optional arrays/objects are omitted or present as empty
+      expect(hashEgn(cleanWithEmptyStructures)).toBe(hashEgn(cleanBase));
+      expect(hashFullEgn(cleanWithEmptyStructures)).toBe(hashFullEgn(cleanBase));
+
+      // Baseline hash should also be identical
+      expect(hashBaselineEgn(cleanWithEmptyStructures)).toBe(hashBaselineEgn(cleanBase));
+
+      // Full and baseline hash must match each other
+      expect(hashEgn(cleanWithEmptyStructures)).toBe(hashBaselineEgn(cleanWithEmptyStructures));
+    });
   });
 
   describe("Binary Decoding Phase Number Normalization", () => {

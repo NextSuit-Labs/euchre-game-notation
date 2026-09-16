@@ -1310,4 +1310,60 @@ describe("V2 Bitpacker — backward compatibility", () => {
       expect(isGenericMatchFile(null)).toBe(false);
     });
   });
+
+  describe("Shorthand bidding calls 'p' and 'o' bitpacking", () => {
+    it("should pack shorthand 'p' and 'o' calls into identical bitstreams as 'Pass' and 'Order'", () => {
+      const fullDeal: Deal = {
+        dealNumber: 1,
+        initialState: { dealer: 0, upCard: "9s" },
+        phases: [{
+          phaseNumber: 0,
+          type: "EUCHRE_BIDDING",
+          calls: ["Pass", "Pass", "Pass", "Order"],
+        }],
+      };
+      const shorthandDeal: Deal = {
+        dealNumber: 1,
+        initialState: { dealer: 0, upCard: "9s" },
+        phases: [{
+          phaseNumber: 0,
+          type: "EUCHRE_BIDDING",
+          calls: ["p", "p", "p", "o"],
+        }],
+      };
+
+      const packedFull = packDeal(fullDeal);
+      const packedShorthand = packDeal(shorthandDeal);
+      expect(packedShorthand).toEqual(packedFull);
+
+      const unpacked = unpackDeal(packedShorthand);
+      const bPhase = unpacked.phases![0] as BiddingPhase;
+      expect(bPhase.calls).toEqual(["Pass", "Pass", "Pass", "Order"]);
+    });
+
+    it("should pack round 2 shorthand 'p' calls identically", () => {
+      const fullDealR2: Deal = {
+        dealNumber: 2,
+        initialState: { dealer: 0, upCard: "9s" },
+        phases: [{
+          phaseNumber: 0,
+          type: "EUCHRE_BIDDING",
+          calls: ["Pass", "Pass", "Pass", "Pass", "Pass", "h"],
+        }],
+      };
+      const shorthandDealR2: Deal = {
+        dealNumber: 2,
+        initialState: { dealer: 0, upCard: "9s" },
+        phases: [{
+          phaseNumber: 0,
+          type: "EUCHRE_BIDDING",
+          calls: ["p", "p", "p", "p", "p", "h"],
+        }],
+      };
+
+      const packedFull = packDeal(fullDealR2);
+      const packedShorthand = packDeal(shorthandDealR2);
+      expect(packedShorthand).toEqual(packedFull);
+    });
+  });
 });

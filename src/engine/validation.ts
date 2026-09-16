@@ -22,6 +22,7 @@ import {
   determineTrump,
   getLeftBowerSuit,
   getWinnerIndex,
+  isPass,
 } from "./rules";
 
 export type GameplayViolationCode =
@@ -195,7 +196,7 @@ export function validateDealGameplay(
     }
 
     // Check round 2 call suit: cannot call the turned-down upcard suit
-    const firstNonPassIdx = calls.findIndex((c) => c !== "Pass");
+    const firstNonPassIdx = calls.findIndex((c) => !isPass(c));
     if (firstNonPassIdx >= numPlayers && firstNonPassIdx !== -1 && upcardSuit) {
       const round2Call = calls[firstNonPassIdx];
       if (typeof round2Call === "string" && round2Call.toLowerCase() === upcardSuit) {
@@ -287,7 +288,7 @@ export function validateDealGameplay(
       // Apply upcard pickup and discard to dealer
       const dealer = unpackedDeal.initialState?.dealer ?? 0;
       const biddingCalls = biddingPhase?.calls || [];
-      const callIdx = biddingCalls.findIndex((c) => c !== "Pass");
+      const callIdx = biddingCalls.findIndex((c) => !isPass(c));
       if (callIdx >= 0 && callIdx < numPlayers && upCard) {
         playerHands[dealer].push(upCard);
         if (biddingPhase?.discard) {

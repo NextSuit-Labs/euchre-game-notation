@@ -4,6 +4,43 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2026-09-11
+
+### Added & Improved
+- **EGN & EMN Web Workbench (`src/workbench/`)**:
+  - Implemented a complete zero-dependency browser workbench supporting all converters, validators, bitpackers, combiners, and extractors across `src/` for both EGN single games and EMN match series.
+  - Interactive UI with NextSuit Labs glassmorphic dark theme, Google Fonts (`Outfit` and `Fira Code`), real-time status badges, live stats, and drag-and-drop file support (`.egn`, `.emn`, `.egnb`, `.emnb`).
+  - Cross-format suite: Match combiner (`combineEgnToEmn`) to merge multiple EGNs into a unified EMN with automatic score calculation, and match extractor (`extractEgnFromEmn`, `extractAllEgnsFromEmn`) with master player name resolution.
+  - Added `generate-workbench-bundle.js` utilizing `esbuild` to compile a standalone browser bundle (`src/workbench/bundle.js`) exporting `window.EuchreNotation`, integrated into `package.json` (`npm run build:workbench` and `npm run prebuild`).
+- **Dealer Discard & Upcard Pickup in Baseline Replayer & Rules Engine**:
+  - Updated `compileDealSteps` (`src/engine/rules.ts`) to support dealer discards: when the dealer is ordered up the upcard in the first 4 calls and a `discard` is specified, the discarded card is removed from the dealer's hand and the upcard is added at the order-up call step and maintained through all subsequent trick play steps.
+  - Added pre-discard hand reconstruction for deals where starting `playerCards` was omitted so the dealer's pre-discard hand is accurately rendered during the initial deal and early bidding passes.
+  - Auto-generated updated `src/baseline-replayer/rules-engine.js` and connected the workbench to the visual replayer with a 1-click launch bridge (`?source=workbench`).
+- **EMN Match Scoring Engine (`src/emn/scoring.ts`)**:
+  - Added `calculateEmnScores` to calculate player point accumulations, game win tallies, team scores, game-by-game summaries, and overall match standings across all match formats (`BEST_OF_N`, `PROGRESSIVE`, `TARGET_SCORE`, etc.).
+  - Added `addScoresToEmn` to calculate standings and persist `metadata.result` in EMN files with schema validation.
+  - Dynamically evaluates game scores from deal sequences when `metadata.finalScore` is omitted.
+  - Wired into the Workbench UI (`#btn-emn-score`) and `combineEgnToEmn` combiner pipeline.
+- **Canonical Hashing Normalization & Parity (`src/hashing.ts`, `src/cli-baseline-egn.ts`)**:
+  - Excluded obsolete `phaseNumber` from all SHA-256 hash calculations across both full game hashing (`hashGame`, `hashEgn`, `hashFullEgn`) and baseline hashing (`hashBaselineGame`, `hashBaselineEgn`, `convertToBaselineEgn`).
+  - Full game hashing now performs identical canonical pruning as baseline hashing: strips empty arrays (including `playerCards`, `teamNames`, `cardExchanges`), empty player hand arrays, empty objects (e.g., empty `ruleset`), and `undefined` entries.
+  - Full game hashing now normalizes shorthand bidding calls (`"p"` -> `"Pass"`, `"o"` -> `"Order"`), ensuring full equivalence between shorthand and full-word games.
+  - Guarantees byte-for-byte identical SHA-256 hashes between full hash and baseline hash for all clean/non-annotated games.
+- **Shorthand Bidding Calls Support (`"p"` and `"o"`)**:
+  - Added support for `"p"` (shorthand for `"Pass"`) and `"o"` (shorthand for `"Order"`) in EGN bidding phases (`schemas/egn-schema-v1.json`, `src/types.ts`).
+  - Strict specification conformance: Round 1 order-up calls only allow `"Order"` and `"o"`.
+  - Seamless bitpacker encoding (`src/card-encoding.ts`): encodes `"p"` and `"o"` identically to `"Pass"` and `"Order"` in binary `.egnb` streams.
+  - Full rules engine & semantic validation integration (`src/engine/rules.ts`, `src/engine/validation.ts`): trump determination, maker deduction, loner rules, dealer pickup/discard, and round 2 bid suit checks recognize shorthand tokens.
+  - Baseline hashing normalization (`src/hashing.ts`, `src/cli-baseline-egn.ts`): maps `"p"` -> `"Pass"` and `"o"` -> `"Order"` during baseline conversion so shorthand games produce the exact same canonical SHA-256 baseline hash as full-word games.
+  - Visual baseline replayer (`src/baseline-replayer/replayer.js`): formats shorthand calls into user-friendly text (`"Pass"`, `"Order"`, `"Order (Alone)"`).
+  - Re-generated updated `src/baseline-replayer/rules-engine.js` and standalone workbench bundle `src/workbench/bundle.js`.
+- **Unit Test Coverage**:
+  - Added unit tests in `test/engine-score.test.ts` for dealer discard, upcard pickup in `compileDealSteps`, and shorthand call handling.
+  - Added unit tests in `test/validator.test.ts` and `test/bitpacker.test.ts` verifying schema validation and condensed bitpacking roundtrips for `"p"` and `"o"`.
+  - Added unit tests in `test/engine-validation.test.ts` testing round 2 suit validation and dealer pickup/discard with shorthand bids.
+  - Added unit tests in `test/emn/scoring.test.ts` covering match play, progressive scoring, deal-based score evaluation, and `addScoresToEmn`.
+  - Added unit tests in `test/converter.test.ts` verifying clean game hash parity, `phaseNumber` independence, and shorthand baseline hash equivalence (421 total passed tests).
+
 ## [1.6.0] - 2026-08-23
 
 ### Added & Improved

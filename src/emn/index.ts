@@ -19,5 +19,6 @@ export * from "./validator";
 export * from "./converter";
 export * from "./combiner";
 export * from "./extractor";
+export * from "./scoring";
 export * from "./version";
 
