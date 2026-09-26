@@ -31,9 +31,9 @@ By bridging digital apps, analysis tools, and video rendering pipelines under a 
 
 ## Latest Release
 
-- **Current npm package:** `1.6.1`
+- **Current npm package:** `1.6.2`
 - **Schema family:** `1.6` (EGN) / `1.2` (EMN)
-- **Highlights:** Added comprehensive browser-based EGN & EMN Web Workbench, added shorthand `"p"` (Pass) and `"o"` (Order) bidding call support, added complete baseline & full hash canonical parity (empty player card / structure pruning and shorthand normalization), added dealer discard & upcard pickup support in the baseline replayer and rules engine (`compileDealSteps`), and added automated zero-dependency browser bundle generation.
+- **Highlights:** Fixed canonical full and baseline hashing to maintain array elements (such as empty player hand arrays) when an array contains cards or actions so seat order is preserved, while pruning entire array properties at the object level when all items are empty arrays or empty objects (e.g. `playerCards: [[], [], [], []]` or `playerCards: []`).
 
 See [changelog.md](changelog.md) for full release details.
 

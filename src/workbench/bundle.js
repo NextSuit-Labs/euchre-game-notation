@@ -14534,6 +14534,7 @@ var EuchreNotation = (() => {
     isEGNFile: () => isEGNFile,
     isEgnFile: () => isEgnFile,
     isEmnFile: () => isEmnFile,
+    isEmptyStructure: () => isEmptyStructure,
     isGenericMatchFile: () => isGenericMatchFile,
     isOrder: () => isOrder,
     isPass: () => isPass,
@@ -14558,7 +14559,7 @@ var EuchreNotation = (() => {
 
   // src/version.ts
   var SCHEMA_VERSION = "1.6";
-  var PACKAGE_VERSION = "1.6.1";
+  var PACKAGE_VERSION = "1.6.2";
   var VERSION = SCHEMA_VERSION;
   var SUPPORTED_SCHEMA_VERSION_RE = /^1\.[23456](?:\.\d+)?$/;
   function isSupportedSchemaVersion(version) {
@@ -14922,13 +14923,22 @@ var EuchreNotation = (() => {
     }
     return JSON.stringify(value);
   }
+  function isEmptyStructure(value) {
+    if (value === void 0 || value === null) {
+      return true;
+    }
+    if (Array.isArray(value)) {
+      return value.length === 0 || value.every(isEmptyStructure);
+    }
+    if (typeof value === "object") {
+      const values = Object.values(value);
+      return values.length === 0 || values.every(isEmptyStructure);
+    }
+    return false;
+  }
   function stripPhaseNumbers(value) {
     if (Array.isArray(value)) {
-      return value.map(stripPhaseNumbers).filter((item) => item !== void 0).filter((item) => {
-        if (Array.isArray(item) && item.length === 0) return false;
-        if (item && typeof item === "object" && item !== null && Object.keys(item).length === 0) return false;
-        return true;
-      });
+      return value.map(stripPhaseNumbers);
     }
     if (value && typeof value === "object" && value !== null) {
       const stripped = {};
@@ -14944,7 +14954,7 @@ var EuchreNotation = (() => {
         if (strippedChild === void 0) {
           continue;
         }
-        if (Array.isArray(strippedChild) && strippedChild.length === 0) {
+        if (Array.isArray(strippedChild) && (strippedChild.length === 0 || strippedChild.every(isEmptyStructure))) {
           continue;
         }
         if (strippedChild && typeof strippedChild === "object" && strippedChild !== null && Object.keys(strippedChild).length === 0) {
@@ -14959,11 +14969,7 @@ var EuchreNotation = (() => {
   function convertToBaselineGame(value, analysisKeys = DEFAULT_TGN_ANALYSIS_KEYS) {
     const keySet = Array.isArray(analysisKeys) ? new Set(analysisKeys) : analysisKeys;
     if (Array.isArray(value)) {
-      return value.map((item) => convertToBaselineGame(item, keySet)).filter((item) => item !== void 0).filter((item) => {
-        if (Array.isArray(item) && item.length === 0) return false;
-        if (item && typeof item === "object" && item !== null && Object.keys(item).length === 0) return false;
-        return true;
-      });
+      return value.map((item) => convertToBaselineGame(item, keySet));
     }
     if (value && typeof value === "object" && value !== null) {
       const stripped = {};
@@ -14979,7 +14985,7 @@ var EuchreNotation = (() => {
         if (strippedChild === void 0) {
           continue;
         }
-        if (Array.isArray(strippedChild) && strippedChild.length === 0) {
+        if (Array.isArray(strippedChild) && (strippedChild.length === 0 || strippedChild.every(isEmptyStructure))) {
           continue;
         }
         if (strippedChild && typeof strippedChild === "object" && strippedChild !== null && Object.keys(strippedChild).length === 0) {

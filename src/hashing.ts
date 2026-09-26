@@ -60,25 +60,36 @@ export function stableStringify(value: unknown): string {
 }
 
 /**
+ * Recursively checks if a value is empty (empty array, empty object, null/undefined,
+ * or an array/object where all nested items are empty arrays or empty objects).
+ */
+export function isEmptyStructure(value: unknown): boolean {
+  if (value === undefined || value === null) {
+    return true;
+  }
+  if (Array.isArray(value)) {
+    return value.length === 0 || value.every(isEmptyStructure);
+  }
+  if (typeof value === "object") {
+    const values = Object.values(value as Record<string, unknown>);
+    return values.length === 0 || values.every(isEmptyStructure);
+  }
+  return false;
+}
+
+/**
  * Recursively cleans a game notation object for canonical full hashing by:
  * - Stripping obsolete phaseNumber and phase_number properties
  * - Normalizing shorthand bidding calls ("p" -> "Pass", "o" -> "Order")
- * - Pruning empty arrays (including empty player hands, empty playerCards, empty teamNames, empty cardExchanges)
- * - Pruning empty objects and filtering out undefined elements
+ * - Pruning empty arrays/objects at the object property level (including arrays where all items are empty arrays or empty objects)
+ * - Preserving element order and empty elements within arrays that contain non-empty items (order matters)
  *
  * This guarantees that non-annotated games produce byte-for-byte identical canonical representations
  * and SHA-256 hashes across both full and baseline hashing algorithms.
  */
 export function stripPhaseNumbers(value: unknown): unknown {
   if (Array.isArray(value)) {
-    return value
-      .map(stripPhaseNumbers)
-      .filter((item) => item !== undefined)
-      .filter((item) => {
-        if (Array.isArray(item) && item.length === 0) return false;
-        if (item && typeof item === "object" && item !== null && Object.keys(item as Record<string, unknown>).length === 0) return false;
-        return true;
-      });
+    return value.map(stripPhaseNumbers);
   }
 
   if (value && typeof value === "object" && value !== null) {
@@ -98,7 +109,7 @@ export function stripPhaseNumbers(value: unknown): unknown {
         continue;
       }
 
-      if (Array.isArray(strippedChild) && strippedChild.length === 0) {
+      if (Array.isArray(strippedChild) && (strippedChild.length === 0 || strippedChild.every(isEmptyStructure))) {
         continue;
       }
 
@@ -116,6 +127,8 @@ export function stripPhaseNumbers(value: unknown): unknown {
 /**
  * Recursively converts a game object into a baseline object by stripping analysis annotations,
  * alternative lines, commentary properties, and obsolete phaseNumbers.
+ * Preserves elements within arrays (such as empty player hand arrays) to maintain positional order,
+ * while pruning array properties at the object level if all items in the array are empty arrays or empty objects.
  */
 export function convertToBaselineGame(
   value: unknown,
@@ -124,14 +137,7 @@ export function convertToBaselineGame(
   const keySet = Array.isArray(analysisKeys) ? new Set(analysisKeys) : analysisKeys;
 
   if (Array.isArray(value)) {
-    return value
-      .map((item) => convertToBaselineGame(item, keySet))
-      .filter((item) => item !== undefined)
-      .filter((item) => {
-        if (Array.isArray(item) && item.length === 0) return false;
-        if (item && typeof item === "object" && item !== null && Object.keys(item as Record<string, unknown>).length === 0) return false;
-        return true;
-      });
+    return value.map((item) => convertToBaselineGame(item, keySet));
   }
 
   if (value && typeof value === "object" && value !== null) {
@@ -151,7 +157,7 @@ export function convertToBaselineGame(
         continue;
       }
 
-      if (Array.isArray(strippedChild) && strippedChild.length === 0) {
+      if (Array.isArray(strippedChild) && (strippedChild.length === 0 || strippedChild.every(isEmptyStructure))) {
         continue;
       }
 

@@ -55,11 +55,13 @@
 
     <!-- Header Actions -->
     <div class="header-links">
-      <span class="badge-version" id="header-version-badge">v1.6.1</span>
-      <a href="../baseline-replayer/index.html" class="btn-link" target="_blank" id="header-link-replayer" title="Launch Interactive Baseline Replayer">
+      <span class="badge-version" id="header-version-badge">v1.6.2</span>
+      <a href="../baseline-replayer/index.html" class="btn-link" target="_blank" id="header-link-replayer"
+        title="Launch Interactive Baseline Replayer">
         <span>▶</span> Replayer
       </a>
-      <a href="../../README.md" class="btn-link" target="_blank" id="header-link-docs" title="View Specification Documentation">
+      <a href="../../README.md" class="btn-link" target="_blank" id="header-link-docs"
+        title="View Specification Documentation">
         <span>📖</span> Docs
       </a>
     </div>
@@ -100,7 +102,8 @@
 
           <!-- Code Textarea -->
           <div class="editor-container">
-            <textarea id="egn-input" class="code-textarea" placeholder="Paste EGN JSON here..." spellcheck="false"></textarea>
+            <textarea id="egn-input" class="code-textarea" placeholder="Paste EGN JSON here..."
+              spellcheck="false"></textarea>
           </div>
         </div>
 
@@ -148,33 +151,40 @@
             <div class="hash-row">
               <span class="hash-label">Baseline Hash:</span>
               <span class="hash-value" id="egn-hash-baseline">-</span>
-              <button class="btn btn-sm btn-secondary btn-copy-hash" data-target="egn-hash-baseline" type="button" title="Copy hash">Copy</button>
+              <button class="btn btn-sm btn-secondary btn-copy-hash" data-target="egn-hash-baseline" type="button"
+                title="Copy hash">Copy</button>
             </div>
             <div class="hash-row">
               <span class="hash-label">Game Hash:</span>
               <span class="hash-value" id="egn-hash-game">-</span>
-              <button class="btn btn-sm btn-secondary btn-copy-hash" data-target="egn-hash-game" type="button" title="Copy hash">Copy</button>
+              <button class="btn btn-sm btn-secondary btn-copy-hash" data-target="egn-hash-game" type="button"
+                title="Copy hash">Copy</button>
             </div>
             <div class="hash-row">
               <span class="hash-label">Full File Hash:</span>
               <span class="hash-value" id="egn-hash-full">-</span>
-              <button class="btn btn-sm btn-secondary btn-copy-hash" data-target="egn-hash-full" type="button" title="Copy hash">Copy</button>
+              <button class="btn btn-sm btn-secondary btn-copy-hash" data-target="egn-hash-full" type="button"
+                title="Copy hash">Copy</button>
             </div>
           </div>
 
           <!-- Converters & Actions Toolbar -->
           <div class="toolbar-row">
             <div class="tool-group">
-              <button class="btn btn-secondary btn-sm" id="btn-egn-pack" type="button" title="Convert full JSON deals into condensed base64 deal strings">
+              <button class="btn btn-secondary btn-sm" id="btn-egn-pack" type="button"
+                title="Convert full JSON deals into condensed base64 deal strings">
                 📦 Pack Deals
               </button>
-              <button class="btn btn-secondary btn-sm" id="btn-egn-unpack" type="button" title="Expand condensed base64 deals into full JSON objects">
+              <button class="btn btn-secondary btn-sm" id="btn-egn-unpack" type="button"
+                title="Expand condensed base64 deals into full JSON objects">
                 📂 Unpack Deals
               </button>
-              <button class="btn btn-secondary btn-sm" id="btn-egn-baseline" type="button" title="Strip analysis annotations and alternative lines">
+              <button class="btn btn-secondary btn-sm" id="btn-egn-baseline" type="button"
+                title="Strip analysis annotations and alternative lines">
                 🧹 Strip Baseline
               </button>
-              <button class="btn btn-secondary btn-sm" id="btn-egn-upgrade" type="button" title="Upgrade older snake_case or legacy schemas to current specification">
+              <button class="btn btn-secondary btn-sm" id="btn-egn-upgrade" type="button"
+                title="Upgrade older snake_case or legacy schemas to current specification">
                 ⚡ Upgrade EGN
               </button>
             </div>
@@ -184,10 +194,12 @@
                 <option value="condensed">Condensed (0x01)</option>
                 <option value="expanded">Expanded (0x00)</option>
               </select>
-              <button class="btn btn-primary btn-sm" id="btn-egn-to-bin" type="button" title="Encode Protobuf binary (.egnb) and download">
+              <button class="btn btn-primary btn-sm" id="btn-egn-to-bin" type="button"
+                title="Encode Protobuf binary (.egnb) and download">
                 💾 Download .egnb
               </button>
-              <button class="btn btn-cyan btn-sm" id="btn-egn-replayer" type="button" title="Launch game in interactive baseline replayer">
+              <button class="btn btn-cyan btn-sm" id="btn-egn-replayer" type="button"
+                title="Launch game in interactive baseline replayer">
                 ▶ Replay Game
               </button>
             </div>
@@ -199,7 +211,8 @@
               <span class="panel-subtitle">Operation Output / Converted View</span>
               <button class="btn btn-sm btn-secondary" id="btn-copy-egn-output" type="button">Copy Output</button>
             </div>
-            <textarea id="egn-output" class="code-textarea" style="min-height: 140px; height: 140px;" placeholder="Converted JSON / Binary metrics will appear here..." readonly></textarea>
+            <textarea id="egn-output" class="code-textarea" style="min-height: 140px; height: 140px;"
+              placeholder="Converted JSON / Binary metrics will appear here..." readonly></textarea>
           </div>
         </div>
 
@@ -230,13 +243,15 @@
           <!-- Drag and Drop Zone -->
           <div class="dropzone" id="emn-dropzone" tabindex="0" role="button" aria-label="Upload EMN or EMNB file">
             <span class="dropzone-icon">📁</span>
-            <div class="dropzone-text"><strong>Drag & Drop</strong> .emn or .emnb match file here, or click to browse</div>
+            <div class="dropzone-text"><strong>Drag & Drop</strong> .emn or .emnb match file here, or click to browse
+            </div>
             <input type="file" id="emn-file-input" accept=".emn,.json,.emnb" style="display: none;">
           </div>
 
           <!-- Code Textarea -->
           <div class="editor-container">
-            <textarea id="emn-input" class="code-textarea" placeholder="Paste EMN JSON here..." spellcheck="false"></textarea>
+            <textarea id="emn-input" class="code-textarea" placeholder="Paste EMN JSON here..."
+              spellcheck="false"></textarea>
           </div>
         </div>
 
@@ -282,22 +297,27 @@
           <!-- EMN Toolbar -->
           <div class="toolbar-row">
             <div class="tool-group">
-              <button class="btn btn-secondary btn-sm" id="btn-emn-pack" type="button" title="Pack all deals in all games to base64">
+              <button class="btn btn-secondary btn-sm" id="btn-emn-pack" type="button"
+                title="Pack all deals in all games to base64">
                 📦 Bitpack All Games
               </button>
-              <button class="btn btn-secondary btn-sm" id="btn-emn-unpack" type="button" title="Unpack all deals in all games to full JSON">
+              <button class="btn btn-secondary btn-sm" id="btn-emn-unpack" type="button"
+                title="Unpack all deals in all games to full JSON">
                 📂 Unpack All Games
               </button>
-              <button class="btn btn-secondary btn-sm" id="btn-emn-score" type="button" title="Calculate match results and standings">
+              <button class="btn btn-secondary btn-sm" id="btn-emn-score" type="button"
+                title="Calculate match results and standings">
                 📊 Calculate Scores
               </button>
             </div>
 
             <div class="tool-group">
-              <label style="font-size: 0.78rem; display: inline-flex; align-items: center; gap: 4px; color: var(--text-secondary);">
+              <label
+                style="font-size: 0.78rem; display: inline-flex; align-items: center; gap: 4px; color: var(--text-secondary);">
                 <input type="checkbox" id="emn-bin-condense-chk" checked> Condense Games
               </label>
-              <button class="btn btn-purple btn-sm" id="btn-emn-to-bin" type="button" title="Encode Protobuf match binary (.emnb) and download">
+              <button class="btn btn-purple btn-sm" id="btn-emn-to-bin" type="button"
+                title="Encode Protobuf match binary (.emnb) and download">
                 💾 Download .emnb
               </button>
             </div>
@@ -309,7 +329,8 @@
               <span class="panel-subtitle">EMN Output / Standings Preview</span>
               <button class="btn btn-sm btn-secondary" id="btn-copy-emn-output" type="button">Copy Output</button>
             </div>
-            <textarea id="emn-output" class="code-textarea" style="min-height: 140px; height: 140px;" placeholder="EMN output or calculated standings will appear here..." readonly></textarea>
+            <textarea id="emn-output" class="code-textarea" style="min-height: 140px; height: 140px;"
+              placeholder="EMN output or calculated standings will appear here..." readonly></textarea>
           </div>
         </div>
 
@@ -347,20 +368,24 @@
 
             <div>
               <label for="combiner-target-input" class="panel-subtitle">Target:</label>
-              <input type="number" id="combiner-target-input" class="text-input" placeholder="e.g. 3" style="width: 70px;" value="3">
+              <input type="number" id="combiner-target-input" class="text-input" placeholder="e.g. 3"
+                style="width: 70px;" value="3">
             </div>
 
             <div style="flex: 1;">
               <label for="combiner-title-input" class="panel-subtitle">Match Title:</label>
-              <input type="text" id="combiner-title-input" class="text-input" placeholder="Championship Series" style="width: 100%;">
+              <input type="text" id="combiner-title-input" class="text-input" placeholder="Championship Series"
+                style="width: 100%;">
             </div>
           </div>
 
-          <div id="combiner-input-list" style="display: flex; flex-direction: column; max-height: 280px; overflow-y: auto;">
+          <div id="combiner-input-list"
+            style="display: flex; flex-direction: column; max-height: 280px; overflow-y: auto;">
             <!-- Sub-game entries added here -->
             <div class="combiner-entry" style="margin-bottom: 12px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">Sub-Game #1 (Sample)</span>
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">Sub-Game #1
+                  (Sample)</span>
               </div>
               <textarea class="code-textarea subgame-textarea" style="min-height: 100px; height: 100px;">{
   "fileType": "Euchre Game Notation",
@@ -382,7 +407,8 @@
             <button class="btn btn-secondary btn-sm" id="btn-copy-combiner-output" type="button">Copy EMN JSON</button>
           </div>
 
-          <textarea id="combiner-output" class="code-textarea" style="min-height: 140px; height: 140px;" placeholder="Combined EMN match file will appear here..." readonly></textarea>
+          <textarea id="combiner-output" class="code-textarea" style="min-height: 140px; height: 140px;"
+            placeholder="Combined EMN match file will appear here..." readonly></textarea>
         </div>
 
         <!-- Extractor Panel -->
@@ -392,10 +418,12 @@
               <h2 class="panel-title"><span>✂️</span> EMN to EGN Game Extractor</h2>
               <p class="panel-subtitle">Extract single or all games from an EMN file with master player resolution</p>
             </div>
-            <button class="btn btn-secondary btn-sm" id="btn-load-sample-extractor" type="button">Load Match Sample</button>
+            <button class="btn btn-secondary btn-sm" id="btn-load-sample-extractor" type="button">Load Match
+              Sample</button>
           </div>
 
-          <textarea id="extractor-emn-input" class="code-textarea" style="min-height: 180px; height: 180px;" placeholder="Paste EMN JSON here to extract games..."></textarea>
+          <textarea id="extractor-emn-input" class="code-textarea" style="min-height: 180px; height: 180px;"
+            placeholder="Paste EMN JSON here to extract games..."></textarea>
 
           <div class="toolbar-row">
             <div class="tool-group">
@@ -418,7 +446,8 @@
               <span class="panel-subtitle">Extracted EGN Game(s)</span>
               <button class="btn btn-sm btn-secondary" id="btn-copy-extractor-output" type="button">Copy EGN</button>
             </div>
-            <textarea id="extractor-output" class="code-textarea" style="min-height: 160px; height: 160px;" placeholder="Extracted EGN JSON will appear here..." readonly></textarea>
+            <textarea id="extractor-output" class="code-textarea" style="min-height: 160px; height: 160px;"
+              placeholder="Extracted EGN JSON will appear here..." readonly></textarea>
           </div>
         </div>
 

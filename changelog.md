@@ -4,6 +4,15 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.2] - 2026-09-26
+
+### Fixed
+- **Empty Player Arrays & Array Element Preservation in Canonical Hashing (`src/hashing.ts`, `src/cli-baseline-egn.ts`)**:
+  - Maintained empty player arrays (`[]`) and any empty structures inside arrays during full hashing (`hashGame`, `hashEgn`, `hashFullEgn`) and baseline hashing (`hashBaselineGame`, `hashBaselineEgn`, `convertToBaselineEgn`).
+  - Previously, filtering empty arrays or objects inside an array shifted array indices and collapsed player card seats (e.g. `playerCards: [["Ah", ...], [], [], []]` was collapsed to 1 element, or seat 1 cards shifted to seat 0). Array elements are now strictly preserved by index so that player seat assignments and action orders remain immutable.
+  - Implemented `isEmptyStructure` to prune an entire array property at the object level if all items in the array are empty arrays or empty objects (e.g., `playerCards: [[], [], [], []]` or `playerCards: []`), ensuring equivalence with omitted properties.
+  - Updated unit tests in `test/converter.test.ts` verifying that arrays with all empty elements are pruned, partially populated hands maintain seats and produce distinct hashes, and baseline/full hashes remain deterministic.
+
 ## [1.6.1] - 2026-09-11
 
 ### Added & Improved

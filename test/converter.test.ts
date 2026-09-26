@@ -721,7 +721,7 @@ describe("EGN Protobuf Converter Core", () => {
       expect(hashBaselineEgn(cleanWithoutPhaseNumber)).toBe(hashEgn(cleanWithoutPhaseNumber));
     });
 
-    it("should produce identical hashes between baseline and full hash when empty playerCards arrays are present or omitted", () => {
+    it("should prune entire array property when all items are empty arrays or empty objects, matching omitted property", () => {
       const cleanWithoutPlayerCards: EgnFile = {
         ...validMockData,
         deals: [
@@ -784,22 +784,23 @@ describe("EGN Protobuf Converter Core", () => {
         ],
       };
 
-      // Full hash should be identical whether playerCards has empty hands, empty array, or is omitted
-      expect(hashEgn(cleanWithEmptyPlayerCards)).toBe(hashEgn(cleanWithoutPlayerCards));
-      expect(hashFullEgn(cleanWithEmptyPlayerCards)).toBe(hashFullEgn(cleanWithoutPlayerCards));
+      // When playerCards is empty array ([]), it is pruned and matches cleanWithoutPlayerCards
       expect(hashEgn(cleanWithEmptyArrayPlayerCards)).toBe(hashEgn(cleanWithoutPlayerCards));
-
-      // Baseline hash should be identical whether playerCards has empty hands, empty array, or is omitted
-      expect(hashBaselineEgn(cleanWithEmptyPlayerCards)).toBe(hashBaselineEgn(cleanWithoutPlayerCards));
+      expect(hashFullEgn(cleanWithEmptyArrayPlayerCards)).toBe(hashFullEgn(cleanWithoutPlayerCards));
       expect(hashBaselineEgn(cleanWithEmptyArrayPlayerCards)).toBe(hashBaselineEgn(cleanWithoutPlayerCards));
 
-      // Full hash and baseline hash must match each other for clean games with empty playerCards
+      // When all items in the array are empty arrays ([[], [], [], []]), the entire array property is pruned
+      expect(hashEgn(cleanWithEmptyPlayerCards)).toBe(hashEgn(cleanWithoutPlayerCards));
+      expect(hashFullEgn(cleanWithEmptyPlayerCards)).toBe(hashFullEgn(cleanWithoutPlayerCards));
+      expect(hashBaselineEgn(cleanWithEmptyPlayerCards)).toBe(hashBaselineEgn(cleanWithoutPlayerCards));
+
+      // Full hash and baseline hash must match each other
       expect(hashEgn(cleanWithEmptyPlayerCards)).toBe(hashBaselineEgn(cleanWithEmptyPlayerCards));
       expect(hashEgn(cleanWithEmptyArrayPlayerCards)).toBe(hashBaselineEgn(cleanWithEmptyArrayPlayerCards));
     });
 
-    it("should remove empty hand arrays inside playerCards consistently for both full and baseline hash", () => {
-      const cleanPartialHands: EgnFile = {
+    it("should maintain empty player arrays inside playerCards consistently for both full and baseline hash", () => {
+      const cleanPartialHandsSeat0: EgnFile = {
         ...validMockData,
         deals: [
           {
@@ -808,6 +809,27 @@ describe("EGN Protobuf Converter Core", () => {
               dealer: 3,
               upCard: "Jd",
               playerCards: [["Ah", "Kh", "Qh", "Jh", "Th"], [], [], []],
+            },
+            phases: [
+              {
+                type: "EUCHRE_BIDDING",
+                calls: ["Pass", "Pass", "Pass", "Order"],
+                isAlone: false,
+              },
+            ],
+          },
+        ],
+      };
+
+      const cleanPartialHandsSeat1: EgnFile = {
+        ...validMockData,
+        deals: [
+          {
+            dealNumber: 0,
+            initialState: {
+              dealer: 3,
+              upCard: "Jd",
+              playerCards: [[], ["Ah", "Kh", "Qh", "Jh", "Th"], [], []],
             },
             phases: [
               {
@@ -841,10 +863,18 @@ describe("EGN Protobuf Converter Core", () => {
         ],
       };
 
-      // Both full and baseline hash remove empty hand arrays
-      expect(hashEgn(cleanPartialHands)).toBe(hashEgn(cleanStrippedHands));
-      expect(hashBaselineEgn(cleanPartialHands)).toBe(hashBaselineEgn(cleanStrippedHands));
-      expect(hashEgn(cleanPartialHands)).toBe(hashBaselineEgn(cleanPartialHands));
+      // Both full and baseline hash maintain empty player arrays
+      expect(hashEgn(cleanPartialHandsSeat0)).toBe(hashBaselineEgn(cleanPartialHandsSeat0));
+      expect(hashFullEgn(cleanPartialHandsSeat0)).toBe(hashBaselineEgn(cleanPartialHandsSeat0));
+      expect(hashEgn(cleanPartialHandsSeat1)).toBe(hashBaselineEgn(cleanPartialHandsSeat1));
+
+      // Seat 0 and Seat 1 holding cards must produce different hashes because seat order matters
+      expect(hashEgn(cleanPartialHandsSeat0)).not.toBe(hashEgn(cleanPartialHandsSeat1));
+      expect(hashBaselineEgn(cleanPartialHandsSeat0)).not.toBe(hashBaselineEgn(cleanPartialHandsSeat1));
+
+      // 4-seat array with empty hands does not equal truncated 1-element array
+      expect(hashEgn(cleanPartialHandsSeat0)).not.toBe(hashEgn(cleanStrippedHands));
+      expect(hashBaselineEgn(cleanPartialHandsSeat0)).not.toBe(hashBaselineEgn(cleanStrippedHands));
     });
 
     it("should produce the exact same hash for shorthand 'p'/'o' calls as 'Pass'/'Order' across both baseline and full hash", () => {

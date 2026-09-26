@@ -22,7 +22,7 @@ import { convertBinToEgnJson, convertEgnJsonToBin } from "./converter";
 import { validateEgn } from "./validator";
 import { EgnFile } from "./types";
 import { PACKAGE_VERSION } from "./version";
-import { hashBaselineGame } from "./hashing";
+import { hashBaselineGame, isEmptyStructure } from "./hashing";
 
 function showHelp() {
   console.log(`
@@ -97,14 +97,7 @@ function shouldStripProperty(key: string): boolean {
 
 export function convertToBaselineEgn(value: unknown): unknown {
   if (Array.isArray(value)) {
-    return value
-      .map((item) => convertToBaselineEgn(item))
-      .filter((item) => item !== undefined)
-      .filter((item) => {
-        if (Array.isArray(item) && item.length === 0) return false;
-        if (item && typeof item === "object" && Object.keys(item as Record<string, unknown>).length === 0) return false;
-        return true;
-      });
+    return value.map((item) => convertToBaselineEgn(item));
   }
 
   if (value && typeof value === "object") {
@@ -124,7 +117,7 @@ export function convertToBaselineEgn(value: unknown): unknown {
         continue;
       }
 
-      if (Array.isArray(strippedChild) && strippedChild.length === 0) {
+      if (Array.isArray(strippedChild) && (strippedChild.length === 0 || strippedChild.every(isEmptyStructure))) {
         continue;
       }
 
@@ -148,7 +141,7 @@ export function hashBaselineEgn(egn: EgnFile): string {
   return hashBaselineGame(egn, convertToBaselineEgn);
 }
 
-export { stableStringify, hashEgn, hashFullEgn, convertToBaselineGame, hashGame, hashFullGame, hashBaselineGame, stripPhaseNumbers } from "./hashing";
+export { stableStringify, hashEgn, hashFullEgn, convertToBaselineGame, hashGame, hashFullGame, hashBaselineGame, stripPhaseNumbers, isEmptyStructure } from "./hashing";
 
 function loadEgnFromInput(inputPath: string, condensed: boolean): EgnFile {
   const ext = path.extname(inputPath).toLowerCase();
