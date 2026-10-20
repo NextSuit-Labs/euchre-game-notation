@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-import Ajv, { ErrorObject } from "ajv";
-import addFormats from "ajv-formats";
-import egnSchema from "../schemas/egn-schema-v1.json";
+import { ErrorObject } from "ajv";
 import { Deal, EgnFile } from "./types";
+import {
+  validateEgn as compiledValidateEgn,
+  validateDeal as compiledValidateDeal,
+} from "./generated/validators";
 
-const ajv = new Ajv();
-addFormats(ajv);
-const validate = ajv.compile(egnSchema);
-
-const dealSchema = {
-  $schema: "http://json-schema.org/draft-07/schema#",
-  definitions: (egnSchema as any).definitions,
-  ...(egnSchema as any).properties.deals.items.oneOf[0],
+type CompiledValidator = ((data: unknown, ...args: any[]) => boolean) & {
+  errors?: ErrorObject[] | null;
 };
-const validateDealSchema = ajv.compile(dealSchema);
+
+const precompiledValidateEgn = compiledValidateEgn as CompiledValidator;
+const precompiledValidateDeal = compiledValidateDeal as CompiledValidator;
 
 export interface ValidationResult {
   isValid: boolean;
@@ -42,10 +40,10 @@ export interface ValidationResult {
  * @returns A ValidationResult indicating success and containing any schema errors.
  */
 export function validateEgn(data: unknown): ValidationResult {
-  const isValid = validate(data);
+  const isValid = Boolean(precompiledValidateEgn(data));
   return {
     isValid,
-    errors: validate.errors,
+    errors: precompiledValidateEgn.errors ?? null,
   };
 }
 
@@ -56,10 +54,10 @@ export function validateEgn(data: unknown): ValidationResult {
  * @returns A ValidationResult indicating success and containing any schema errors.
  */
 export function validateDeal(data: unknown): ValidationResult {
-  const isValid = validateDealSchema(data);
+  const isValid = Boolean(precompiledValidateDeal(data));
   return {
     isValid,
-    errors: validateDealSchema.errors,
+    errors: precompiledValidateDeal.errors ?? null,
   };
 }
 
@@ -67,14 +65,14 @@ export function validateDeal(data: unknown): ValidationResult {
  * Type guard that validates if an unknown object is a conformant EgnFile.
  */
 export function isEgnFile(data: unknown): data is EgnFile {
-  return validate(data);
+  return Boolean(precompiledValidateEgn(data));
 }
 
 /**
  * Type guard that validates if an unknown object is a conformant Deal.
  */
 export function isDeal(data: unknown): data is Deal {
-  return validateDealSchema(data);
+  return Boolean(precompiledValidateDeal(data));
 }
 
 /**

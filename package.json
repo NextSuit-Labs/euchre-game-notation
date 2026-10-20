@@ -1,6 +1,6 @@
 {
   "name": "euchre-game-notation",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Euchre Game Notation (EGN) file format specification, JSON schemas, and TypeScript utilities.",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -9,12 +9,25 @@
       "types": "./dist/src/index.d.ts",
       "default": "./dist/src/index.js"
     },
+    "./engine": {
+      "types": "./dist/src/engine/index.d.ts",
+      "default": "./dist/src/engine/index.js"
+    },
+    "./types": {
+      "types": "./dist/src/types.d.ts",
+      "default": "./dist/src/types.js"
+    },
+    "./validator": {
+      "types": "./dist/src/validator.d.ts",
+      "default": "./dist/src/validator.js"
+    },
     "./emn": {
       "types": "./dist/src/emn/index.d.ts",
       "default": "./dist/src/emn/index.js"
     },
     "./package.json": "./package.json"
   },
+  "sideEffects": false,
   "bin": {
     "egn-convert": "./dist/src/cli-convert.js",
     "egn-bitpack-deal": "./dist/src/cli-bitpack.js",
@@ -41,10 +54,11 @@
     "generate:proto-schemas": "node generate-proto-schemas.js",
     "generate:replayer-rules": "node generate-replayer-rules.js",
     "generate:workbench-bundle": "node generate-workbench-bundle.js",
-    "prebuild": "npm run generate:proto-schemas && npm run generate:replayer-rules && npm run generate:workbench-bundle",
+    "generate:validators": "node generate-validators.js",
+    "prebuild": "npm run generate:proto-schemas && npm run generate:replayer-rules && npm run generate:validators && npm run generate:workbench-bundle",
     "build": "tsc",
     "build:workbench": "node generate-workbench-bundle.js",
-    "pretest": "npm run generate:proto-schemas && npm run generate:replayer-rules && npm run generate:workbench-bundle",
+    "pretest": "npm run generate:proto-schemas && npm run generate:replayer-rules && npm run generate:validators && npm run generate:workbench-bundle",
     "test": "jest",
     "prepublishOnly": "npm run build && npm test"
   },

@@ -382,5 +382,22 @@ describe("EMN Combine Utility", () => {
       expect(res.isValid).toBe(false);
       expect(res.errors?.some((e) => e.message?.includes("not found in metadata.players"))).toBe(true);
     });
+
+    it("validates successfully when Function constructor throws EvalError (CSP restricted)", () => {
+      const originalFunction = global.Function;
+      try {
+        (global as any).Function = function () {
+          throw new EvalError(
+            "Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive"
+          );
+        };
+
+        const res = validateEmn(validEmnMock);
+        expect(res.isValid).toBe(true);
+        expect(isEmnFile(validEmnMock)).toBe(true);
+      } finally {
+        global.Function = originalFunction;
+      }
+    });
   });
 });

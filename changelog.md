@@ -4,6 +4,22 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.3] - 2026-10-20
+
+### Added & Improved
+- **CSP-Safe Standalone JSON Schema Pre-compilation (`generate-validators.js`, `src/validator.ts`, `src/emn/validator.ts`)**:
+  - Implemented Ahead-of-Time (AOT) standalone schema pre-compilation using `ajv/dist/standalone` to generate pure, static JavaScript validation functions (`src/generated/validators.ts` for EGN/Deal and `src/generated/emn-validators.ts` for EMN).
+  - Eliminates dynamic `new Function(...)` and `eval(...)` JIT compilation at runtime, ensuring complete compatibility with strict Content Security Policy (CSP) environments that disallow `'unsafe-eval'` (e.g. Reddit Devvit webviews, Chrome Extensions Manifest V3, SES, Electron).
+  - Prevents top-level `EvalError` runtime crashes during vendor chunk loading before React or client applications can mount.
+  - Fully preserves the existing validation API, including `validateEgn`, `validateDeal`, `validateEmn`, type guards (`isEgnFile`, `isDeal`, `isEmnFile`), and standard Ajv `ErrorObject` error structures.
+  - Significantly reduces schema compilation overhead, improving test suite execution speed and eliminating startup parsing latency.
+- **Package Tree-Shaking & Subpath Exports (`package.json`)**:
+  - Declared `"sideEffects": false` in `package.json`, allowing modern bundlers (Webpack, Vite, Rollup, esbuild) to prune validator code when consumers only import pure data models, card encodings, or engine utilities.
+  - Added granular subpath exports for `"./engine"` and `"./types"`.
+- **Workbench Standalone Bundle (`src/workbench/bundle.js`)**:
+  - Integrated `generate:validators` into the prebuild pipeline (`generate-validators.js` runs prior to `generate-workbench-bundle.js`).
+  - Recompiled the zero-dependency browser workbench bundle (`src/workbench/bundle.js`), completely removing dynamic `new Function(...)` calls and runtime JIT compilers from the browser distribution.
+
 ## [1.6.2] - 2026-09-26
 
 ### Fixed

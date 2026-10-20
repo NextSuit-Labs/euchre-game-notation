@@ -776,4 +776,27 @@ describe("EgnDeal Bitpacker", () => {
       expect(isDeal(dealWithShorthand)).toBe(true);
     });
   });
+
+  describe("CSP Safety (no unsafe-eval / new Function)", () => {
+    it("validates successfully when Function constructor throws EvalError", () => {
+      const originalFunction = global.Function;
+      try {
+        (global as any).Function = function () {
+          throw new EvalError(
+            "Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive"
+          );
+        };
+
+        const result = validateEgn(validMockData);
+        expect(result.isValid).toBe(true);
+        expect(isEgnFile(validMockData)).toBe(true);
+
+        const dealResult = validateDeal(validMockData.deals[0]);
+        expect(dealResult.isValid).toBe(true);
+        expect(isDeal(validMockData.deals[0])).toBe(true);
+      } finally {
+        global.Function = originalFunction;
+      }
+    });
+  });
 });

@@ -31,9 +31,9 @@ By bridging digital apps, analysis tools, and video rendering pipelines under a 
 
 ## Latest Release
 
-- **Current npm package:** `1.6.2`
+- **Current npm package:** `1.6.3`
 - **Schema family:** `1.6` (EGN) / `1.2` (EMN)
-- **Highlights:** Fixed canonical full and baseline hashing to maintain array elements (such as empty player hand arrays) when an array contains cards or actions so seat order is preserved, while pruning entire array properties at the object level when all items are empty arrays or empty objects (e.g. `playerCards: [[], [], [], []]` or `playerCards: []`).
+- **Highlights:** CSP-safe pre-compiled JSON schema validators (`ajv/dist/standalone`) eliminating dynamic `new Function(...)` / `eval` for strict webviews (Reddit Devvit, Chrome MV3), added `"sideEffects": false` and granular subpath exports (`./engine`, `./types`), and improved workbench bundling.
 
 See [changelog.md](changelog.md) for full release details.
 

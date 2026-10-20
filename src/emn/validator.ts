@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-import Ajv, { ErrorObject } from "ajv";
-import addFormats from "ajv-formats";
-import egnSchema from "../../schemas/egn-schema-v1.json";
-import emnSchema from "../../schemas/emn/emn-schema-v1.json";
+import { ErrorObject } from "ajv";
 import { validateEgn } from "../validator";
 import { EmnFile } from "./types";
 import { isSupportedEmnSchemaVersion } from "./version";
+import { validateEmn as compiledValidateEmn } from "../generated/emn-validators";
 
-const ajv = new Ajv();
-addFormats(ajv);
-ajv.addSchema(egnSchema, "../egn-schema-v1.json");
-ajv.addSchema(egnSchema, "egn-schema-v1.json");
+type CompiledValidator = ((data: unknown, ...args: any[]) => boolean) & {
+  errors?: ErrorObject[] | null;
+};
 
-const validateSchema = ajv.compile(emnSchema);
+const precompiledValidateEmn = compiledValidateEmn as CompiledValidator;
 
 export interface EmnValidationResult {
   isValid: boolean;
@@ -41,11 +38,11 @@ export interface EmnValidationResult {
  * @returns An EmnValidationResult indicating success and containing any errors.
  */
 export function validateEmn(data: unknown): EmnValidationResult {
-  const isSchemaValid = validateSchema(data);
+  const isSchemaValid = Boolean(precompiledValidateEmn(data));
   if (!isSchemaValid) {
     return {
       isValid: false,
-      errors: validateSchema.errors,
+      errors: precompiledValidateEmn.errors ?? null,
     };
   }
 
