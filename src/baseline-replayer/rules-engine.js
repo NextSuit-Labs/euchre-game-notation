@@ -30,6 +30,8 @@ exports.getLeftBowerSuit = getLeftBowerSuit;
 exports.getCardValue = getCardValue;
 exports.getWinnerIndex = getWinnerIndex;
 exports.getPlayerIndexInTrick = getPlayerIndexInTrick;
+exports.inferPlayerCards = inferPlayerCards;
+exports.calculatePlayerCards = calculatePlayerCards;
 exports.compileDealSteps = compileDealSteps;
 const isPass = (c) => c === "Pass" || c === "p";
 exports.isPass = isPass;
@@ -178,11 +180,155 @@ function getPlayerIndexInTrick(leadSeat, cardIndex, sitOutSeat) {
     return player;
 }
 /**
+ * Safely parses a Deal from a Deal object, a JSON string, or a bitpacked Base64 string.
+ * Bitpacked strings are decoded dynamically via require or browser global when available,
+ * ensuring rules.ts can be transpiled for direct browser use without bundling.
+ */
+function parseDealInput(deal) {
+    if (typeof deal !== "string") {
+        return deal;
+    }
+    const trimmed = deal.trim();
+    if (trimmed.startsWith("{")) {
+        return JSON.parse(trimmed);
+    }
+    // Attempt dynamic Node.js require without top-level import
+    if (typeof require !== "undefined") {
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const bp = require("../bitpacker");
+            if (typeof bp.unpackDeal === "function") {
+                return bp.unpackDeal(trimmed, 0);
+            }
+        }
+        catch (_a) {
+            // Ignored if ../bitpacker is not resolvable
+        }
+    }
+    // Attempt browser global (e.g. from bundle.js)
+    if (typeof window !== "undefined") {
+        const win = window;
+        if (win.EuchreNotation && typeof win.EuchreNotation.unpackDeal === "function") {
+            return win.EuchreNotation.unpackDeal(trimmed, 0);
+        }
+        if (typeof win.unpackDeal === "function") {
+            return win.unpackDeal(trimmed, 0);
+        }
+    }
+    throw new Error("Cannot unpack condensed base64 deal string: unpackDeal is not available in this environment.");
+}
+/**
+ * Returns the starting playerCards for each player for a given Deal.
+ * If initialState.playerCards is already provided (non-empty), returns them directly.
+ * Otherwise, infers them from the bidding and trick play phases based on who won
+ * each trick to determine who leads the next trick, restoring any dealer discard
+ * if ordered up.
+ *
+ * @param deal A Deal object, or a condensed Base64 string / JSON string representing a Deal.
+ * @param ruleset Optional ruleset configuration (e.g. loner_lead)
+ * @returns Array of 4 Card arrays [Seat 0, Seat 1, Seat 2, Seat 3]
+ */
+function inferPlayerCards(deal, ruleset) {
+    var _a, _b, _c, _d, _e;
+    const parsedDeal = parseDealInput(deal);
+    // 1. Only rely on playerCards if all 4 seats are filled with 5 cards each.
+    // If any have less than 5 cards (or are omitted/empty), infer from bidding, discard, and trick play.
+    const rawPlayerCards = (_a = parsedDeal.initialState) === null || _a === void 0 ? void 0 : _a.playerCards;
+    if (Array.isArray(rawPlayerCards) &&
+        rawPlayerCards.length === 4 &&
+        rawPlayerCards.every((hand) => Array.isArray(hand) && hand.length === 5)) {
+        return rawPlayerCards.map((h) => [...h]);
+    }
+    // 2. Otherwise, infer them from bidding and trick play phases
+    const dealer = (_c = (_b = parsedDeal.initialState) === null || _b === void 0 ? void 0 : _b.dealer) !== null && _c !== void 0 ? _c : 0;
+    const biddingPhase = parsedDeal.phases
+        ? parsedDeal.phases.find((p) => p.type === "EUCHRE_BIDDING")
+        : null;
+    let sitOutSeat = null;
+    if (biddingPhase && biddingPhase.type === "EUCHRE_BIDDING") {
+        const isAlone = Boolean(biddingPhase.isAlone);
+        const callIndex = biddingPhase.calls.findIndex((c) => !(0, exports.isPass)(c));
+        if (callIndex !== -1 && isAlone) {
+            const callerSeat = (dealer + 1 + callIndex) % 4;
+            sitOutSeat = (callerSeat + 2) % 4;
+        }
+    }
+    const hands = [[], [], [], []];
+    // Helper to ensure sitting-out partners (maker's partner on a loner, or defender's partner)
+    // retain their cards specified by playerCards if provided.
+    const preserveSitOutHands = () => {
+        if (sitOutSeat !== null &&
+            Array.isArray(rawPlayerCards === null || rawPlayerCards === void 0 ? void 0 : rawPlayerCards[sitOutSeat]) &&
+            rawPlayerCards[sitOutSeat].length > 0) {
+            hands[sitOutSeat] = [...rawPlayerCards[sitOutSeat]];
+        }
+        if (biddingPhase &&
+            biddingPhase.type === "EUCHRE_BIDDING" &&
+            (ruleset === null || ruleset === void 0 ? void 0 : ruleset.defend_alone) &&
+            biddingPhase.aloneDefender !== undefined) {
+            const defenderPartner = (biddingPhase.aloneDefender + 2) % 4;
+            if (Array.isArray(rawPlayerCards === null || rawPlayerCards === void 0 ? void 0 : rawPlayerCards[defenderPartner]) &&
+                rawPlayerCards[defenderPartner].length > 0) {
+                hands[defenderPartner] = [...rawPlayerCards[defenderPartner]];
+            }
+        }
+    };
+    if (!parsedDeal.phases) {
+        preserveSitOutHands();
+        return hands;
+    }
+    const playPhase = parsedDeal.phases.find((p) => p.type === "TRICK_PLAY");
+    if (!playPhase || !Array.isArray(playPhase.tricks)) {
+        preserveSitOutHands();
+        return hands;
+    }
+    const trump = determineTrump(parsedDeal);
+    let leadSeat = determineLeadSeat(parsedDeal, (_d = ruleset === null || ruleset === void 0 ? void 0 : ruleset.loner_lead) !== null && _d !== void 0 ? _d : "LEFT_OF_DEALER");
+    const numExpectedPlayers = sitOutSeat !== null ? 3 : 4;
+    playPhase.tricks.forEach((trickCards) => {
+        trickCards.forEach((card, cardIndex) => {
+            const playerIndex = getPlayerIndexInTrick(leadSeat, cardIndex, sitOutSeat);
+            hands[playerIndex].push(card);
+        });
+        if (trickCards.length === numExpectedPlayers && trump) {
+            const winnerIndex = getWinnerIndex(trickCards, trump);
+            leadSeat = getPlayerIndexInTrick(leadSeat, winnerIndex, sitOutSeat);
+        }
+        else {
+            leadSeat = getPlayerIndexInTrick(leadSeat, 1, sitOutSeat);
+        }
+    });
+    // If dealer was ordered up and a discard was given, dealer's original dealt hand
+    // had the discard instead of the upcard:
+    const orderCallIndex = biddingPhase ? biddingPhase.calls.findIndex((c) => !(0, exports.isPass)(c)) : -1;
+    const isOrderedUp = orderCallIndex >= 0 && orderCallIndex < 4;
+    const discard = biddingPhase === null || biddingPhase === void 0 ? void 0 : biddingPhase.discard;
+    const upCard = (_e = parsedDeal.initialState) === null || _e === void 0 ? void 0 : _e.upCard;
+    if (isOrderedUp && upCard && discard) {
+        const upcardIdx = hands[dealer].indexOf(upCard);
+        if (upcardIdx !== -1) {
+            hands[dealer].splice(upcardIdx, 1);
+            hands[dealer].push(discard);
+        }
+        else if (!hands[dealer].includes(discard)) {
+            hands[dealer].push(discard);
+        }
+    }
+    preserveSitOutHands();
+    return hands;
+}
+/**
+ * Alias for inferPlayerCards.
+ */
+function calculatePlayerCards(deal, ruleset) {
+    return inferPlayerCards(deal, ruleset);
+}
+/**
  * Compiles a raw EGN Deal structure into a chronological list of game state steps,
  * evaluating trick winners and computing the deal's score change.
  */
 function compileDealSteps(deal, metadata = {}) {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d;
     const players = (metadata.players || ["Player 0", "Player 1", "Player 2", "Player 3"]).map((p) => typeof p === "string" ? p : p.name);
     const ruleset = metadata.ruleset;
     let aloneSeat = null;
@@ -205,46 +351,8 @@ function compileDealSteps(deal, metadata = {}) {
         }
     }
     // Reconstruct starting player hands if not explicitly present in the EGN
-    let initialHands = deal.initialState.playerCards
-        ? deal.initialState.playerCards.map((h) => [...h])
-        : [[], [], [], []];
-    const hasEmptyHand = initialHands.some((h, i) => i !== sitOutSeat && h.length === 0);
-    if (hasEmptyHand && deal.phases) {
-        const playPhase = deal.phases.find((p) => p.type === "TRICK_PLAY");
-        if (playPhase && playPhase.type === "TRICK_PLAY") {
-            initialHands = [[], [], [], []];
-            const trump = determineTrump(deal);
-            let leadSeat = determineLeadSeat(deal, (_b = ruleset === null || ruleset === void 0 ? void 0 : ruleset.loner_lead) !== null && _b !== void 0 ? _b : "LEFT_OF_DEALER");
-            playPhase.tricks.forEach((trickCards) => {
-                trickCards.forEach((card, cardIndex) => {
-                    const playerIndex = getPlayerIndexInTrick(leadSeat, cardIndex, sitOutSeat);
-                    initialHands[playerIndex].push(card);
-                });
-                if (trickCards.length === (sitOutSeat !== null ? 3 : 4) && trump) {
-                    const winnerIndex = getWinnerIndex(trickCards, trump);
-                    leadSeat = getPlayerIndexInTrick(leadSeat, winnerIndex, sitOutSeat);
-                }
-                else {
-                    leadSeat = getPlayerIndexInTrick(leadSeat, 1, sitOutSeat);
-                }
-            });
-            // If dealer was ordered up and a discard was given, dealer's original dealt hand
-            // had the discard instead of the upcard:
-            const dealer = (_c = deal.initialState.dealer) !== null && _c !== void 0 ? _c : 0;
-            const orderCallIndex = biddingPhase ? biddingPhase.calls.findIndex((c) => !(0, exports.isPass)(c)) : -1;
-            const isOrderedUp = orderCallIndex >= 0 && orderCallIndex < 4;
-            const discard = biddingPhase === null || biddingPhase === void 0 ? void 0 : biddingPhase.discard;
-            const upCard = deal.initialState.upCard;
-            if (isOrderedUp && upCard && discard) {
-                const upcardIdx = initialHands[dealer].indexOf(upCard);
-                if (upcardIdx !== -1) {
-                    initialHands[dealer].splice(upcardIdx, 1);
-                    initialHands[dealer].push(discard);
-                }
-            }
-        }
-    }
-    const dealer = (_d = deal.initialState.dealer) !== null && _d !== void 0 ? _d : 0;
+    const initialHands = inferPlayerCards(deal, ruleset);
+    const dealer = (_b = deal.initialState.dealer) !== null && _b !== void 0 ? _b : 0;
     const upCard = deal.initialState.upCard;
     const orderCallIndex = biddingPhase ? biddingPhase.calls.findIndex((c) => !(0, exports.isPass)(c)) : -1;
     const isOrderedUp = orderCallIndex >= 0 && orderCallIndex < 4;
@@ -270,6 +378,7 @@ function compileDealSteps(deal, metadata = {}) {
     if (biddingPhase && biddingPhase.type === "EUCHRE_BIDDING") {
         let caller = (dealer + 1) % 4;
         biddingPhase.calls.forEach((call, index) => {
+            var _a;
             const annot = biddingPhase.callAnnotations ? biddingPhase.callAnnotations[index] : null;
             const currentHands = compiled[compiled.length - 1].hands.map((h) => [...h]);
             // If dealer is ordered up the upcard in first 4 calls and discard is given:
@@ -286,10 +395,20 @@ function compileDealSteps(deal, metadata = {}) {
                     currentHands[dealer].push(upCard);
                 }
             }
+            let stepAnnotation = Array.isArray(annot) ? annot.join("\n") : annot || `Player ${caller} called: ${call}`;
+            if (hasDiscard && index === orderCallIndex && biddingPhase.callAnnotations) {
+                const discardAnnot = (_a = biddingPhase.callAnnotations[16]) !== null && _a !== void 0 ? _a : biddingPhase.callAnnotations["16"];
+                if (discardAnnot) {
+                    const discardText = Array.isArray(discardAnnot) ? discardAnnot.join("\n") : String(discardAnnot);
+                    stepAnnotation = annot
+                        ? `${stepAnnotation}\n[Discard] ${discardText}`
+                        : `Player ${caller} called: ${call}\n[Discard] ${discardText}`;
+                }
+            }
             compiled.push({
                 type: "BID",
                 description: `Bidding: ${players[caller]}`,
-                annotation: Array.isArray(annot) ? annot.join("\n") : annot || `Player ${caller} called: ${call}`,
+                annotation: stepAnnotation,
                 hands: currentHands,
                 playedCards: [null, null, null, null],
                 bidCall: { seat: caller, call: call },
@@ -318,7 +437,7 @@ function compileDealSteps(deal, metadata = {}) {
             }
         }
         const trump = determineTrump(deal);
-        let leadSeat = determineLeadSeat(deal, (_e = ruleset === null || ruleset === void 0 ? void 0 : ruleset.loner_lead) !== null && _e !== void 0 ? _e : "LEFT_OF_DEALER");
+        let leadSeat = determineLeadSeat(deal, (_c = ruleset === null || ruleset === void 0 ? void 0 : ruleset.loner_lead) !== null && _c !== void 0 ? _c : "LEFT_OF_DEALER");
         playPhase.tricks.forEach((trickCards, trickIndex) => {
             const currentTrickPlayed = [null, null, null, null];
             trickCards.forEach((card, cardIndex) => {
@@ -366,7 +485,7 @@ function compileDealSteps(deal, metadata = {}) {
     let team0Change = 0;
     let team1Change = 0;
     if (callingTeamTricks >= 3) {
-        const lonerMarchScore = (_f = ruleset === null || ruleset === void 0 ? void 0 : ruleset.loner_march_score) !== null && _f !== void 0 ? _f : 4;
+        const lonerMarchScore = (_d = ruleset === null || ruleset === void 0 ? void 0 : ruleset.loner_march_score) !== null && _d !== void 0 ? _d : 4;
         const points = callingTeamTricks === 5 ? (isAlone ? lonerMarchScore : 2) : 1;
         if (callingTeam === 0)
             team0Change = points;
@@ -390,27 +509,21 @@ function compileDealSteps(deal, metadata = {}) {
 
 // Universal browser global & CommonJS export attachment
 if (typeof window !== "undefined") {
-  window.determineTrump = determineTrump;
-  window.determineMaker = determineMaker;
-  window.determineIsAlone = determineIsAlone;
-  window.determineLeadSeat = determineLeadSeat;
-  window.getLeftBowerSuit = getLeftBowerSuit;
-  window.getCardValue = getCardValue;
-  window.getWinnerIndex = getWinnerIndex;
-  window.getPlayerIndexInTrick = getPlayerIndexInTrick;
-  window.compileDealSteps = compileDealSteps;
+  window.isPass = exports.isPass;
+  window.isOrder = exports.isOrder;
+  window.determineTrump = exports.determineTrump;
+  window.determineMaker = exports.determineMaker;
+  window.determineIsAlone = exports.determineIsAlone;
+  window.determineLeadSeat = exports.determineLeadSeat;
+  window.getLeftBowerSuit = exports.getLeftBowerSuit;
+  window.getCardValue = exports.getCardValue;
+  window.getWinnerIndex = exports.getWinnerIndex;
+  window.getPlayerIndexInTrick = exports.getPlayerIndexInTrick;
+  window.compileDealSteps = exports.compileDealSteps;
+  window.inferPlayerCards = exports.inferPlayerCards;
+  window.calculatePlayerCards = exports.calculatePlayerCards;
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = {
-    determineTrump,
-    determineMaker,
-    determineIsAlone,
-    determineLeadSeat,
-    getLeftBowerSuit,
-    getCardValue,
-    getWinnerIndex,
-    getPlayerIndexInTrick,
-    compileDealSteps,
-  };
+  module.exports = exports;
 }

@@ -145,6 +145,7 @@ body {
   letter-spacing: -0.02em;
   background: linear-gradient(90deg, #ffffff, var(--accent-green));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -259,6 +260,7 @@ body {
     opacity: 0;
     transform: translateY(6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -387,7 +389,8 @@ body {
   gap: 8px;
 }
 
-.dropzone:hover, .dropzone.dragover {
+.dropzone:hover,
+.dropzone.dragover {
   border-color: var(--accent-green);
   background: rgba(0, 245, 160, 0.05);
 }
@@ -474,7 +477,8 @@ body {
 }
 
 /* Select inputs */
-.select-input, .text-input {
+.select-input,
+.text-input {
   background-color: var(--bg-darker);
   color: var(--text-primary);
   border: 1px solid var(--border-subtle);
@@ -486,7 +490,8 @@ body {
   transition: var(--transition);
 }
 
-.select-input:focus, .text-input:focus {
+.select-input:focus,
+.text-input:focus {
   border-color: var(--accent-green);
   box-shadow: 0 0 0 2px rgba(0, 245, 160, 0.2);
 }
@@ -737,4 +742,86 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.25);
+}
+
+/* Deal Player Cards Seat Grid & Chips */
+.seat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 640px) {
+  .seat-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.seat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.seat-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--bg-card-hover);
+}
+
+.seat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.seat-card-title {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text-heading);
+}
+
+.cards-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 32px;
+  align-items: center;
+}
+
+.card-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 9px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.88rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  transition: transform 0.1s ease;
+}
+
+.card-chip:hover {
+  transform: translateY(-1px);
+}
+
+.card-chip.suit-red {
+  color: #ff6b6b;
+  border-color: rgba(255, 107, 107, 0.45);
+  background: rgba(255, 107, 107, 0.12);
+}
+
+.card-chip.suit-black {
+  color: #70b8ff;
+  border-color: rgba(112, 184, 255, 0.45);
+  background: rgba(112, 184, 255, 0.12);
 }

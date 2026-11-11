@@ -25,6 +25,7 @@ function buildWorkbenchBundle() {
   console.log("Generating Workbench standalone browser bundle...");
 
   const args = [
+    "--yes",
     "esbuild",
     "src/workbench/entry.ts",
     "--bundle",
@@ -41,14 +42,14 @@ function buildWorkbenchBundle() {
 
   const result = spawnSync(npxCmd, args, { cwd: repoRoot, stdio: "inherit", shell: true });
 
-  if (result.error) {
-    throw result.error;
-  }
-  if (result.status !== 0) {
-    throw new Error(`esbuild exited with code ${result.status}`);
-  }
-
   const outJs = path.join(repoRoot, "src", "workbench", "bundle.js");
+  if (result.error || result.status !== 0) {
+    if (fs.existsSync(outJs)) {
+      console.warn(`⚠ Warning: esbuild exited with code ${result.status || 1} (possibly offline). Retaining existing bundle "${outJs}".`);
+      return;
+    }
+    throw result.error || new Error(`esbuild exited with code ${result.status}`);
+  }
   const stats = fs.statSync(outJs);
   console.log(`✓ Successfully generated "${outJs}" (${(stats.size / 1024).toFixed(1)} KB)`);
 }

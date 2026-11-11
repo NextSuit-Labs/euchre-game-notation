@@ -51,11 +51,14 @@
       <button class="tab-btn" data-tab="tab-suite" id="nav-tab-suite">
         <span>🔄</span> Combiner & Extractor
       </button>
+      <button class="tab-btn" data-tab="tab-deal" id="nav-tab-deal">
+        <span>🃏</span> Deal Player Cards
+      </button>
     </nav>
 
     <!-- Header Actions -->
     <div class="header-links">
-      <span class="badge-version" id="header-version-badge">v1.6.3</span>
+      <span class="badge-version" id="header-version-badge">v1.6.4</span>
       <a href="../baseline-replayer/index.html" class="btn-link" target="_blank" id="header-link-replayer"
         title="Launch Interactive Baseline Replayer">
         <span>▶</span> Replayer
@@ -186,6 +189,10 @@
               <button class="btn btn-secondary btn-sm" id="btn-egn-upgrade" type="button"
                 title="Upgrade older snake_case or legacy schemas to current specification">
                 ⚡ Upgrade EGN
+              </button>
+              <button class="btn btn-secondary btn-sm" id="btn-egn-deal-cards" type="button"
+                title="Inspect and calculate starting player cards for deals in this game">
+                🃏 Deal Player Cards
               </button>
             </div>
 
@@ -448,6 +455,152 @@
             </div>
             <textarea id="extractor-output" class="code-textarea" style="min-height: 160px; height: 160px;"
               placeholder="Extracted EGN JSON will appear here..." readonly></textarea>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 4: DEAL PLAYER CARDS UTILITY -->
+    <!-- ==================================================================== -->
+    <section class="tab-pane" id="tab-deal" aria-labelledby="nav-tab-deal">
+      <div class="workspace-grid">
+
+        <!-- Left Column: Deal Input -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Deal Definition & Input</h2>
+              <p class="panel-subtitle">Paste a single Deal JSON, an EGN game file, or a condensed Base64 deal string.</p>
+            </div>
+            <div class="sample-loader">
+              <label for="deal-sample-select" class="sample-label">Sample Deal:</label>
+              <select id="deal-sample-select" class="select-input">
+                <option value="">Load Sample Deal...</option>
+                <option value="inferred">Inferred Cards (Omitted playerCards)</option>
+                <option value="explicit">Explicit Cards (Provided directly)</option>
+                <option value="loner">Loner Deal (Sit-Out Partner)</option>
+                <option value="orderedUp">Dealer Ordered Up & Discard</option>
+                <option value="condensed">Condensed Base64 Deal String</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="dropzone" id="deal-dropzone" tabindex="0" role="button" aria-label="Upload Deal or EGN file">
+            <span class="dropzone-icon">📂</span>
+            <span class="dropzone-text">Drop <code>.json</code> or <code>.egn</code> file here, or click to browse</span>
+            <input type="file" id="deal-file-input" accept=".egn,.json,.txt" style="display: none;">
+          </div>
+
+          <div id="deal-file-index-container" style="display: none; margin-bottom: 12px; align-items: center; gap: 8px;">
+            <label for="deal-file-index-select" class="sample-label" style="font-weight: 600;">EGN Deal Index:</label>
+            <select id="deal-file-index-select" class="select-input" style="flex: 1;"></select>
+          </div>
+
+          <div class="editor-container">
+            <textarea id="deal-input" class="code-textarea" placeholder="Paste Deal JSON or condensed Base64 deal string here..." spellcheck="false"></textarea>
+          </div>
+
+          <div class="toolbar-row" style="margin-top: 12px;">
+            <div class="tool-group">
+              <button class="btn btn-primary btn-sm" id="btn-deal-calc" type="button" title="Calculate player cards using the engine">
+                ⚡ Calculate Player Cards
+              </button>
+              <button class="btn btn-secondary btn-sm" id="btn-deal-format" type="button" title="Format input JSON">
+                🔄 Format JSON
+              </button>
+              <button class="btn btn-secondary btn-sm" id="btn-deal-clear" type="button" title="Clear input">
+                🧹 Clear
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Player Cards & Visual Analysis -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Initial Player Cards</h2>
+              <p class="panel-subtitle">Calculated starting hand for each seat [Seat 0..3].</p>
+            </div>
+            <div class="badge-group">
+              <span class="badge badge-neutral" id="deal-source-badge">Awaiting Input</span>
+            </div>
+          </div>
+
+          <!-- Metadata info banner -->
+          <div class="stats-row" style="margin-bottom: 16px;">
+            <div class="stat-card">
+              <span class="stat-label">Dealer Seat</span>
+              <span class="stat-value" id="deal-stat-dealer">-</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">UpCard</span>
+              <span class="stat-value" id="deal-stat-upcard">-</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Trump Suit</span>
+              <span class="stat-value" id="deal-stat-trump">-</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Calling Team</span>
+              <span class="stat-value" id="deal-stat-maker">-</span>
+            </div>
+          </div>
+
+          <!-- 4-Seat Card Grid Display -->
+          <div class="seat-grid" id="deal-seat-grid">
+            <div class="seat-card" id="seat-card-0">
+              <div class="seat-card-header">
+                <span class="seat-card-title">Seat 0 (North)</span>
+                <span class="badge badge-neutral" id="seat-badge-0">Waiting</span>
+              </div>
+              <div class="cards-row" id="seat-cards-0">
+                <span style="color: var(--text-muted); font-size: 0.8rem;">No cards calculated</span>
+              </div>
+            </div>
+            <div class="seat-card" id="seat-card-1">
+              <div class="seat-card-header">
+                <span class="seat-card-title">Seat 1 (East)</span>
+                <span class="badge badge-neutral" id="seat-badge-1">Waiting</span>
+              </div>
+              <div class="cards-row" id="seat-cards-1">
+                <span style="color: var(--text-muted); font-size: 0.8rem;">No cards calculated</span>
+              </div>
+            </div>
+            <div class="seat-card" id="seat-card-2">
+              <div class="seat-card-header">
+                <span class="seat-card-title">Seat 2 (South)</span>
+                <span class="badge badge-neutral" id="seat-badge-2">Waiting</span>
+              </div>
+              <div class="cards-row" id="seat-cards-2">
+                <span style="color: var(--text-muted); font-size: 0.8rem;">No cards calculated</span>
+              </div>
+            </div>
+            <div class="seat-card" id="seat-card-3">
+              <div class="seat-card-header">
+                <span class="seat-card-title">Seat 3 (West)</span>
+                <span class="badge badge-neutral" id="seat-badge-3">Waiting</span>
+              </div>
+              <div class="cards-row" id="seat-cards-3">
+                <span style="color: var(--text-muted); font-size: 0.8rem;">No cards calculated</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- JSON Output Area -->
+          <div class="output-area">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span class="panel-subtitle">Output: <code>playerCards</code> JSON Array</span>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <label style="font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                  <input type="checkbox" id="chk-deal-compact"> Compact
+                </label>
+                <button class="btn btn-sm btn-secondary" id="btn-copy-deal-output" type="button">Copy JSON</button>
+              </div>
+            </div>
+            <textarea id="deal-output" class="code-textarea" style="min-height: 140px; height: 140px;" placeholder="Resulting playerCards [Seat 0..3] will appear here..." readonly></textarea>
           </div>
         </div>
 

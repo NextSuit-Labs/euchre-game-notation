@@ -1,6 +1,6 @@
 {
   "name": "euchre-game-notation",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "description": "Euchre Game Notation (EGN) file format specification, JSON schemas, and TypeScript utilities.",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -34,6 +34,8 @@
     "egn-baseline": "./dist/src/cli-baseline-egn.js",
     "egn-upgrade": "./dist/src/cli-upgrade.js",
     "egn-engine": "./dist/src/cli-engine.js",
+    "egn-deal-cards": "./dist/src/cli-deal-cards.js",
+    "egn-player-cards": "./dist/src/cli-deal-cards.js",
     "emn-match-combine": "./dist/src/emn/cli-combine.js",
     "emn-match-extract": "./dist/src/emn/cli-extract.js",
     "emn-match-convert": "./dist/src/emn/cli-convert.js"
@@ -80,6 +82,7 @@
   "devDependencies": {
     "@types/jest": "^29.5.0",
     "@types/node": "^26.1.1",
+    "esbuild": "^0.28.2",
     "jest": "^29.5.0",
     "ts-jest": "^29.1.0",
     "typescript": "^5.0.0"

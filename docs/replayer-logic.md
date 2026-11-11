@@ -289,7 +289,10 @@ EGN files can store branching analysis paths or "what-if" scenarios (e.g. demons
 
 ### 2. Rich Action Annotations
 EGN supports step-level commentary within `callAnnotations` and `playAnnotations`.
-* **Visual Syncing**: Annotations are keyed by the 0-indexed call/play action index. Replayers should render these annotations in sync with the step scrubber (e.g. as callout boxes or a side-panel timeline).
+* **Visual Syncing**: Annotations are keyed by the 0-indexed call/play action index. Replayers should render these annotations in sync with the step scrubber (e.g. as callout boxes or a side-panel timeline):
+  - **Bidding Calls**: Keyed by 0-based index into the `calls` array (e.g., `0` through `7` for 4-player games).
+  - **Dealer Discard Action (`"16"`)**: Keyed by reserved index **`"16"`** in `callAnnotations`. Replayers should display this commentary during the dealer order-up/discard step.
+  - **Trick Plays**: Keyed by 0-based play index across all tricks (`0` through `19` in standard 4-player play).
 * **Semantic Prefixes**: Annotations frequently begin with markup indicators:
   - `[!]`: Highlights a great play.
   - `[?]`: Highlights a mistake.

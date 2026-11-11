@@ -12,6 +12,14 @@ var EuchreNotation = (() => {
     if (typeof require !== "undefined") return require.apply(this, arguments);
     throw Error('Dynamic require of "' + x + '" is not supported');
   });
+  var __esm = (fn, res, err) => function __init() {
+    if (err) throw err[0];
+    try {
+      return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+    } catch (e) {
+      throw err = [e], e;
+    }
+  };
   var __commonJS = (cb, mod) => function __require2() {
     try {
       return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
@@ -7795,6 +7803,995 @@ var EuchreNotation = (() => {
     }
   });
 
+  // src/bitstream.ts
+  function bytesToBase64(bytes) {
+    if (typeof Buffer !== "undefined") {
+      return Buffer.from(bytes).toString("base64");
+    }
+    let binary = "";
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
+  function base64ToBytes(base64) {
+    if (typeof Buffer !== "undefined") {
+      return new Uint8Array(Buffer.from(base64, "base64"));
+    }
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+  }
+  function encodeInteger(value, maxValue) {
+    const bitLen = maxValue.toString(2).length;
+    return value.toString(2).padStart(bitLen, "0");
+  }
+  function encodeBoolean(value) {
+    return value ? "1" : "0";
+  }
+  function binaryStringToBase64Url(binaryStr) {
+    if (!binaryStr) return "";
+    const paddedStr = binaryStr.padEnd(Math.ceil(binaryStr.length / 8) * 8, "0");
+    const byteCount = paddedStr.length / 8;
+    const bytes = new Uint8Array(byteCount);
+    for (let i = 0; i < byteCount; i++) {
+      bytes[i] = parseInt(paddedStr.slice(i * 8, (i + 1) * 8), 2);
+    }
+    const base64 = bytesToBase64(bytes);
+    return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+  function base64UrlToBinaryString(base64Url) {
+    if (!base64Url) return "";
+    let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const padding = base64.length % 4;
+    if (padding > 0) {
+      base64 += "=".repeat(4 - padding);
+    }
+    const bytes = base64ToBytes(base64);
+    let result = "";
+    for (let i = 0; i < bytes.length; i++) {
+      result += bytes[i].toString(2).padStart(8, "0");
+    }
+    return result;
+  }
+  function encodeString(str) {
+    const bytes = textEncoder.encode(str);
+    let bitStr = encodeInteger(bytes.length, 65535);
+    for (let i = 0; i < bytes.length; i++) {
+      bitStr += bytes[i].toString(2).padStart(8, "0");
+    }
+    return bitStr;
+  }
+  function decodeString(reader) {
+    const length = reader.readInteger(65535);
+    const bytes = new Uint8Array(length);
+    for (let i = 0; i < length; i++) {
+      const byteBits = reader.readBits(8);
+      bytes[i] = parseInt(byteBits, 2);
+    }
+    return textDecoder.decode(bytes);
+  }
+  var textEncoder, textDecoder, BitReader;
+  var init_bitstream = __esm({
+    "src/bitstream.ts"() {
+      "use strict";
+      textEncoder = new TextEncoder();
+      textDecoder = new TextDecoder();
+      BitReader = class {
+        constructor(binaryStr) {
+          this.binaryStr = binaryStr;
+          this.pos = 0;
+        }
+        readBits(numBits) {
+          if (this.pos + numBits > this.binaryStr.length) {
+            throw new Error("Not enough bits to read");
+          }
+          const bits = this.binaryStr.slice(this.pos, this.pos + numBits);
+          this.pos += numBits;
+          return bits;
+        }
+        remainingBits() {
+          return this.binaryStr.length - this.pos;
+        }
+        readInteger(maxValue) {
+          const bitLen = maxValue.toString(2).length;
+          const bits = this.readBits(bitLen);
+          const val = parseInt(bits, 2);
+          if (val > maxValue) {
+            throw new Error(`Read integer value ${val} exceeds maximum allowed value ${maxValue}.`);
+          }
+          return val;
+        }
+        readBoolean() {
+          return this.readBits(1) === "1";
+        }
+        hasMoreBits() {
+          return this.pos < this.binaryStr.length;
+        }
+        peekRemaining() {
+          return this.binaryStr.slice(this.pos);
+        }
+      };
+    }
+  });
+
+  // src/card-encoding.ts
+  function buildDeck(minRank = 9, includeCavalier = false, includeTriumphs = false) {
+    const rankStr = String(minRank);
+    const rankArray = includeCavalier ? ALL_RANKS_WITH_CAVALIER : ALL_RANKS;
+    const startIdx = rankArray.indexOf(rankStr);
+    const ranks = startIdx >= 0 ? rankArray.slice(startIdx) : rankArray.slice(rankArray.indexOf("9"));
+    return ranks.flatMap((rank) => SUITS.map((suit) => rank + suit)).concat(includeTriumphs ? TRIUMPHS : []);
+  }
+  function encodeCard(card, cardsRemaining) {
+    const index = cardsRemaining.indexOf(card);
+    if (index === -1) {
+      throw new Error(`Card ${card} not found in remaining cards.`);
+    }
+    return encodeInteger(index, cardsRemaining.length - 1);
+  }
+  function encodeCardFromDeck(card, deck) {
+    const index = deck.indexOf(card);
+    if (index === -1) {
+      throw new Error(`Card ${card} not found in deck.`);
+    }
+    return encodeInteger(index, deck.length - 1);
+  }
+  function encodeR1Call(call) {
+    return call === "Pass" || call === "p" ? "0" : "1";
+  }
+  function encodeR2Call(call, possibleSuits) {
+    if (call === "Pass" || call === "p") {
+      return "00";
+    } else {
+      const char = call[0].toLowerCase();
+      const index = possibleSuits.indexOf(char) + 1;
+      return encodeInteger(index, 3);
+    }
+  }
+  var SUITS, ALL_RANKS, ALL_RANKS_WITH_CAVALIER, TRIUMPHS, MIN_RANK_TO_CODE, CODE_TO_MIN_RANK, STANDARD_DECK, FULL_52_CARD_DECK, FULL_78_CARD_DECK;
+  var init_card_encoding = __esm({
+    "src/card-encoding.ts"() {
+      "use strict";
+      init_bitstream();
+      SUITS = ["s", "h", "c", "d"];
+      ALL_RANKS = [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "T",
+        "J",
+        "Q",
+        "K",
+        "A"
+      ];
+      ALL_RANKS_WITH_CAVALIER = [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "T",
+        "J",
+        "C",
+        "Q",
+        "K",
+        "A"
+      ];
+      TRIUMPHS = [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21"
+      ];
+      MIN_RANK_TO_CODE = { 9: 0, 8: 1, 7: 2, 6: 3, 2: 4 };
+      CODE_TO_MIN_RANK = [9, 8, 7, 6, 2];
+      STANDARD_DECK = buildDeck(9);
+      FULL_52_CARD_DECK = buildDeck(2);
+      FULL_78_CARD_DECK = buildDeck(2, true, true);
+    }
+  });
+
+  // src/bitpacker.ts
+  var bitpacker_exports = {};
+  __export(bitpacker_exports, {
+    base64UrlToBinaryString: () => base64UrlToBinaryString,
+    binaryStringToBase64Url: () => binaryStringToBase64Url,
+    packDeal: () => packDeal,
+    unpackDeal: () => unpackDeal
+  });
+  function encodeAnnotations(annotations) {
+    const keys = Object.keys(annotations || {}).map(Number).filter((n) => !isNaN(n)).sort((a, b) => a - b);
+    if (keys.length === 0) {
+      return "0";
+    }
+    let bits = "1";
+    bits += encodeInteger(keys.length, 255);
+    for (const key of keys) {
+      bits += encodeInteger(key, 255);
+      const texts = annotations[key] || [];
+      bits += encodeInteger(texts.length, 255);
+      for (const text of texts) {
+        bits += encodeString(text);
+      }
+    }
+    return bits;
+  }
+  function decodeAnnotations(reader) {
+    const hasAnn = reader.readBoolean();
+    if (!hasAnn) {
+      return void 0;
+    }
+    const annotations = {};
+    const numItems = reader.readInteger(255);
+    for (let i = 0; i < numItems; i++) {
+      const key = reader.readInteger(255);
+      const numTexts = reader.readInteger(255);
+      const texts = [];
+      for (let j = 0; j < numTexts; j++) {
+        texts.push(decodeString(reader));
+      }
+      annotations[key] = texts;
+    }
+    return annotations;
+  }
+  function encodeBiddingPhase(bidding, upCard, startActionIndex = 0, numPlayers = 4, version = 1, deck = STANDARD_DECK) {
+    let bits = "";
+    bidding.calls.forEach((call, callIndex) => {
+      const actualIndex = startActionIndex + callIndex;
+      if (actualIndex < numPlayers) {
+        bits += encodeR1Call(call);
+      } else {
+        const remainingSuits = SUITS.filter(
+          (suit) => suit !== upCard[1].toLowerCase()
+        );
+        bits += encodeR2Call(call, remainingSuits);
+      }
+    });
+    bits += encodeBoolean(bidding.isAlone ?? false);
+    if (version >= 2 && (bidding.isAlone ?? false)) {
+      const hasDefendAlone = bidding.aloneDefender !== void 0 && bidding.aloneDefender >= 0;
+      bits += encodeBoolean(hasDefendAlone);
+      if (hasDefendAlone) {
+        bits += encodeInteger(bidding.aloneDefender, 7);
+      }
+    }
+    if (version >= 3) {
+      const hasDiscard = bidding.discard !== void 0;
+      bits += encodeBoolean(hasDiscard);
+      if (hasDiscard) {
+        bits += encodeCardFromDeck(bidding.discard, deck);
+      }
+    }
+    bits += encodeAnnotations(bidding.callAnnotations);
+    return bits;
+  }
+  function decodeBiddingPhase(reader, upCard, startActionIndex = 0, numPlayers = 4, version = 1, deck = STANDARD_DECK) {
+    const calls = [];
+    let orderedUp = false;
+    if (startActionIndex < numPlayers) {
+      for (let i = startActionIndex; i < numPlayers; i++) {
+        const bit = reader.readBits(1);
+        if (bit === "0") {
+          calls.push("Pass");
+        } else {
+          calls.push("Order");
+          orderedUp = true;
+          break;
+        }
+      }
+    }
+    if (!orderedUp) {
+      const remainingSuits = SUITS.filter((suit) => suit !== upCard[1].toLowerCase());
+      const round2Start = Math.max(0, startActionIndex - numPlayers);
+      for (let i = round2Start; i < numPlayers; i++) {
+        const val = reader.readInteger(3);
+        if (val === 0) {
+          calls.push("Pass");
+        } else {
+          calls.push(remainingSuits[val - 1]);
+          orderedUp = true;
+          break;
+        }
+      }
+    }
+    const isAlone = reader.readBoolean();
+    let aloneDefender = void 0;
+    if (version >= 2 && isAlone) {
+      const hasDefendAlone = reader.readBoolean();
+      if (hasDefendAlone) {
+        aloneDefender = reader.readInteger(7);
+      }
+    }
+    let discard = void 0;
+    if (version >= 3) {
+      const hasDiscard = reader.readBoolean();
+      if (hasDiscard) {
+        const discardIndex = reader.readInteger(deck.length - 1);
+        discard = deck[discardIndex];
+      }
+    }
+    const callAnnotations = decodeAnnotations(reader);
+    const phase = {
+      phaseNumber: 0,
+      type: "EUCHRE_BIDDING",
+      calls,
+      isAlone
+    };
+    if (aloneDefender !== void 0) {
+      phase.aloneDefender = aloneDefender;
+    }
+    if (discard !== void 0) {
+      phase.discard = discard;
+    }
+    if (callAnnotations) {
+      phase.callAnnotations = callAnnotations;
+    }
+    return phase;
+  }
+  function encodePlayerCards(playerCards, deck, numPlayers) {
+    const hasPlayerCards = Array.isArray(playerCards);
+    let bits = encodeBoolean(hasPlayerCards);
+    if (!hasPlayerCards) {
+      return bits;
+    }
+    for (let seat = 0; seat < numPlayers; seat++) {
+      const hand = Array.isArray(playerCards[seat]) ? playerCards[seat] : [];
+      bits += encodeInteger(hand.length, 15);
+      for (const card of hand) {
+        bits += encodeCardFromDeck(card, deck);
+      }
+    }
+    return bits;
+  }
+  function decodePlayerCards(reader, deck, numPlayers) {
+    const hasPlayerCards = reader.readBoolean();
+    if (!hasPlayerCards) {
+      return void 0;
+    }
+    const playerCards = [];
+    for (let seat = 0; seat < numPlayers; seat++) {
+      const handLen = reader.readInteger(15);
+      if (handLen > deck.length || handLen > 5) {
+        throw new Error(`Invalid player hand length ${handLen} in bitpacked player cards.`);
+      }
+      const hand = [];
+      for (let i = 0; i < handLen; i++) {
+        const cardIndex = reader.readInteger(deck.length - 1);
+        hand.push(deck[cardIndex]);
+      }
+      playerCards.push(hand);
+    }
+    return playerCards;
+  }
+  function encodePlayPhase(play, cardsRemaining) {
+    let bits = "";
+    bits += encodeInteger(play.tricks.length, 7);
+    play.tricks.forEach((trick) => {
+      trick.forEach((card) => {
+        bits += encodeCard(card, cardsRemaining);
+        const idx = cardsRemaining.indexOf(card);
+        if (idx !== -1) {
+          cardsRemaining.splice(idx, 1);
+        }
+      });
+    });
+    bits += encodeAnnotations(play.playAnnotations);
+    return bits;
+  }
+  function computeCardsPerTrick(numPlayers, isAlone, hasDefendAlone) {
+    if (!isAlone) return numPlayers;
+    return hasDefendAlone ? numPlayers - 2 : numPlayers - 1;
+  }
+  function decodePlayPhase(reader, isAlone, cardsRemaining, numPlayers = 4, firstTrickCards, hasDefendAlone = false) {
+    const numTricks = reader.readInteger(7);
+    const tricks = [];
+    const cardsPerTrick = computeCardsPerTrick(numPlayers, isAlone, hasDefendAlone);
+    for (let t = 0; t < numTricks; t++) {
+      const trick = [];
+      const limit = t === 0 && firstTrickCards !== void 0 ? firstTrickCards : cardsPerTrick;
+      for (let c = 0; c < limit; c++) {
+        const maxVal = cardsRemaining.length - 1;
+        if (maxVal < 0) break;
+        const cardIndex = reader.readInteger(maxVal);
+        const card = cardsRemaining[cardIndex];
+        cardsRemaining.splice(cardIndex, 1);
+        trick.push(card);
+      }
+      tricks.push(trick);
+    }
+    const playAnnotations = decodeAnnotations(reader);
+    const phase = {
+      phaseNumber: 1,
+      type: "TRICK_PLAY",
+      tricks
+    };
+    if (playAnnotations) {
+      phase.playAnnotations = playAnnotations;
+    }
+    return phase;
+  }
+  function getCardsRemainingAtActionIndex(deal, branchIndex, deck = STANDARD_DECK) {
+    const cardsRemaining = [...deck];
+    let actionCount = 0;
+    for (const phase of deal.phases) {
+      if (phase.type === "EUCHRE_BIDDING") {
+        const bidding = phase;
+        const numCalls = bidding.calls.length;
+        if (actionCount + numCalls <= branchIndex) {
+          actionCount += numCalls;
+        } else {
+          actionCount = branchIndex;
+          break;
+        }
+      } else if (phase.type === "TRICK_PLAY") {
+        const play = phase;
+        for (const trick of play.tricks) {
+          for (const card of trick) {
+            if (actionCount < branchIndex) {
+              const idx = cardsRemaining.indexOf(card);
+              if (idx !== -1) {
+                cardsRemaining.splice(idx, 1);
+              }
+              actionCount++;
+            } else {
+              break;
+            }
+          }
+          if (actionCount >= branchIndex) {
+            break;
+          }
+        }
+      }
+      if (actionCount >= branchIndex) {
+        break;
+      }
+    }
+    return cardsRemaining;
+  }
+  function packDeal(deal, options) {
+    let version = options?.version;
+    if (version === void 0) {
+      const numPlayers = options?.numPlayers ?? 4;
+      const minRank = options?.minRank ?? 9;
+      const dealer = deal.initialState.dealer ?? 0;
+      const hasDefendAlone = deal.phases?.some((p) => p.type === "EUCHRE_BIDDING" && p.aloneDefender !== void 0 && p.aloneDefender !== -1);
+      const hasDiscard = deal.phases?.some((p) => p.type === "EUCHRE_BIDDING" && p.discard !== void 0 && p.discard.length > 0) || deal.alternativeLines?.some((line) => line.phases?.some((p) => p.type === "EUCHRE_BIDDING" && p.discard !== void 0 && p.discard.length > 0));
+      const hasPlayerCards = Array.isArray(deal.initialState.playerCards) && deal.initialState.playerCards.some((cards) => Array.isArray(cards) && cards.length > 0);
+      const needsV3 = hasDiscard || hasPlayerCards;
+      const needsV2 = numPlayers !== 4 || minRank !== 9 || hasDefendAlone || dealer >= 4;
+      version = needsV3 ? 3 : needsV2 ? 2 : 1;
+    }
+    const binaryString = version === 3 ? packDealV3(deal, options) : version === 2 ? packDealV2(deal, options) : packDealV1(deal);
+    if (options?.asBinary) {
+      return binaryString;
+    }
+    return binaryStringToBase64Url(binaryString);
+  }
+  function packDealV1(deal) {
+    let binaryString = "0001";
+    binaryString += encodeInteger(deal.initialState.dealer, 3);
+    const cardsRemaining = [...STANDARD_DECK];
+    binaryString += encodeCard(deal.initialState.upCard, cardsRemaining);
+    binaryString += encodeInteger(deal.phases.length, 7);
+    let isAlone = false;
+    deal.phases.forEach((phase) => {
+      if (phase.type === "EUCHRE_BIDDING") {
+        binaryString += "0";
+        binaryString += encodeBiddingPhase(phase, deal.initialState.upCard, 0, 4, 1, STANDARD_DECK);
+        isAlone = phase.isAlone ?? false;
+      } else if (phase.type === "TRICK_PLAY") {
+        binaryString += "1";
+        binaryString += encodePlayPhase(phase, cardsRemaining);
+      }
+    });
+    if (deal.alternativeLines && deal.alternativeLines.length > 0) {
+      binaryString += "1";
+      binaryString += encodeInteger(deal.alternativeLines.length, 255);
+      deal.alternativeLines.forEach((altLine) => {
+        binaryString += encodeInteger(altLine.branchIndex, 65535);
+        const altCardsRemaining = getCardsRemainingAtActionIndex(deal, altLine.branchIndex, STANDARD_DECK);
+        binaryString += encodeInteger(altLine.phases.length, 15);
+        let altIsAlone = isAlone;
+        altLine.phases.forEach((phase) => {
+          if (phase.type === "EUCHRE_BIDDING") {
+            binaryString += "0";
+            binaryString += encodeBiddingPhase(phase, deal.initialState.upCard, altLine.branchIndex, 4, 1, STANDARD_DECK);
+            altIsAlone = phase.isAlone ?? false;
+          } else if (phase.type === "TRICK_PLAY") {
+            binaryString += "1";
+            binaryString += encodePlayPhase(phase, altCardsRemaining);
+          }
+        });
+      });
+    } else {
+      binaryString += "0";
+    }
+    binaryString += "1010";
+    return binaryString;
+  }
+  function packDealV2(deal, options) {
+    const numPlayers = options?.numPlayers ?? 4;
+    const minRank = options?.minRank ?? 9;
+    const minRankCode = MIN_RANK_TO_CODE[minRank] ?? 0;
+    const deck = buildDeck(minRank);
+    let binaryString = "0010";
+    binaryString += encodeInteger(deal.initialState.dealer, 7);
+    binaryString += encodeInteger(numPlayers - 1, 7);
+    binaryString += encodeInteger(minRankCode, 3);
+    const cardsRemaining = [...deck];
+    binaryString += encodeCard(deal.initialState.upCard, cardsRemaining);
+    binaryString += encodeInteger(deal.phases.length, 7);
+    let isAlone = false;
+    deal.phases.forEach((phase) => {
+      if (phase.type === "EUCHRE_BIDDING") {
+        binaryString += "0";
+        binaryString += encodeBiddingPhase(phase, deal.initialState.upCard, 0, numPlayers, 2, deck);
+        isAlone = phase.isAlone ?? false;
+      } else if (phase.type === "TRICK_PLAY") {
+        binaryString += "1";
+        binaryString += encodePlayPhase(phase, cardsRemaining);
+      }
+    });
+    if (deal.alternativeLines && deal.alternativeLines.length > 0) {
+      binaryString += "1";
+      binaryString += encodeInteger(deal.alternativeLines.length, 255);
+      deal.alternativeLines.forEach((altLine) => {
+        binaryString += encodeInteger(altLine.branchIndex, 65535);
+        const altCardsRemaining = getCardsRemainingAtActionIndex(deal, altLine.branchIndex, deck);
+        binaryString += encodeInteger(altLine.phases.length, 15);
+        let altIsAlone = isAlone;
+        altLine.phases.forEach((phase) => {
+          if (phase.type === "EUCHRE_BIDDING") {
+            binaryString += "0";
+            binaryString += encodeBiddingPhase(phase, deal.initialState.upCard, altLine.branchIndex, numPlayers, 2, deck);
+            altIsAlone = phase.isAlone ?? false;
+          } else if (phase.type === "TRICK_PLAY") {
+            binaryString += "1";
+            binaryString += encodePlayPhase(phase, altCardsRemaining);
+          }
+        });
+      });
+    } else {
+      binaryString += "0";
+    }
+    binaryString += "1010";
+    return binaryString;
+  }
+  function packDealV3(deal, options) {
+    const numPlayers = options?.numPlayers ?? 4;
+    const minRank = options?.minRank ?? 9;
+    const minRankCode = MIN_RANK_TO_CODE[minRank] ?? 0;
+    const deck = buildDeck(minRank);
+    let binaryString = "0011";
+    binaryString += encodeInteger(deal.initialState.dealer, 7);
+    binaryString += encodeInteger(numPlayers - 1, 7);
+    binaryString += encodeInteger(minRankCode, 3);
+    const cardsRemaining = [...deck];
+    binaryString += encodeCard(deal.initialState.upCard, cardsRemaining);
+    binaryString += encodePlayerCards(deal.initialState.playerCards, deck, numPlayers);
+    binaryString += encodeInteger(deal.phases.length, 7);
+    let isAlone = false;
+    deal.phases.forEach((phase) => {
+      if (phase.type === "EUCHRE_BIDDING") {
+        binaryString += "0";
+        binaryString += encodeBiddingPhase(phase, deal.initialState.upCard, 0, numPlayers, 3, deck);
+        isAlone = phase.isAlone ?? false;
+      } else if (phase.type === "TRICK_PLAY") {
+        binaryString += "1";
+        binaryString += encodePlayPhase(phase, cardsRemaining);
+      }
+    });
+    if (deal.alternativeLines && deal.alternativeLines.length > 0) {
+      binaryString += "1";
+      binaryString += encodeInteger(deal.alternativeLines.length, 255);
+      deal.alternativeLines.forEach((altLine) => {
+        binaryString += encodeInteger(altLine.branchIndex, 65535);
+        const altCardsRemaining = getCardsRemainingAtActionIndex(deal, altLine.branchIndex, deck);
+        binaryString += encodeInteger(altLine.phases.length, 15);
+        let altIsAlone = isAlone;
+        altLine.phases.forEach((phase) => {
+          if (phase.type === "EUCHRE_BIDDING") {
+            binaryString += "0";
+            binaryString += encodeBiddingPhase(phase, deal.initialState.upCard, altLine.branchIndex, numPlayers, 3, deck);
+            altIsAlone = phase.isAlone ?? false;
+          } else if (phase.type === "TRICK_PLAY") {
+            binaryString += "1";
+            binaryString += encodePlayPhase(phase, altCardsRemaining);
+          }
+        });
+      });
+    } else {
+      binaryString += "0";
+    }
+    binaryString += "1010";
+    return binaryString;
+  }
+  function unpackDeal(input, dealNumber = 0, isBinary = false) {
+    const binaryString = isBinary ? input : base64UrlToBinaryString(input);
+    const reader = new BitReader(binaryString);
+    const headerBits = binaryString.slice(0, 4);
+    if (reader.remainingBits() >= 4 && headerBits === "0011") {
+      try {
+        return unpackDealV3(reader, binaryString, dealNumber);
+      } catch (e) {
+        return unpackDealV0(binaryString, dealNumber);
+      }
+    }
+    if (reader.remainingBits() >= 4 && headerBits === "0010") {
+      try {
+        return unpackDealV2(reader, binaryString, dealNumber);
+      } catch (e) {
+        return unpackDealV0(binaryString, dealNumber);
+      }
+    }
+    if (reader.remainingBits() >= 4 && headerBits === "0001") {
+      try {
+        return unpackDealV1(reader, binaryString, dealNumber);
+      } catch (e) {
+        return unpackDealV0(binaryString, dealNumber);
+      }
+    }
+    return unpackDealV0(binaryString, dealNumber);
+  }
+  function unpackDealV2(reader, binaryString, dealNumber) {
+    reader.readBits(4);
+    const dealer = reader.readInteger(7);
+    const numPlayersOffset = reader.readInteger(7);
+    const numPlayers = numPlayersOffset + 1;
+    const minRankCode = reader.readInteger(3);
+    const minRank = CODE_TO_MIN_RANK[minRankCode] ?? 9;
+    const deck = buildDeck(minRank);
+    const cardsRemaining = [...deck];
+    const upCardIndex = reader.readInteger(cardsRemaining.length - 1);
+    const upCard = cardsRemaining[upCardIndex];
+    const deal = {
+      dealNumber,
+      initialState: { dealer, upCard },
+      phases: []
+    };
+    const numPhases = reader.readInteger(7);
+    let isAlone = false;
+    let hasDefendAlone = false;
+    for (let p = 0; p < numPhases; p++) {
+      const phaseType = reader.readBits(1);
+      if (phaseType === "0") {
+        const biddingPhase = decodeBiddingPhase(reader, upCard, 0, numPlayers, 2, deck);
+        biddingPhase.phaseNumber = p;
+        isAlone = biddingPhase.isAlone ?? false;
+        hasDefendAlone = biddingPhase.aloneDefender !== void 0 && biddingPhase.aloneDefender >= 0;
+        deal.phases.push(biddingPhase);
+      } else {
+        const playPhase = decodePlayPhase(reader, isAlone, cardsRemaining, numPlayers, void 0, hasDefendAlone);
+        playPhase.phaseNumber = p;
+        deal.phases.push(playPhase);
+      }
+    }
+    const hasAltLines = reader.readBoolean();
+    if (hasAltLines) {
+      const numAltLines = reader.readInteger(255);
+      const alternativeLines = [];
+      for (let a = 0; a < numAltLines; a++) {
+        const branchIndex = reader.readInteger(65535);
+        const altCardsRemaining = getCardsRemainingAtActionIndex(deal, branchIndex, deck);
+        const numAltPhases = reader.readInteger(15);
+        const phases = [];
+        let altIsAlone = isAlone;
+        let altHasDefendAlone = hasDefendAlone;
+        for (let p = 0; p < numAltPhases; p++) {
+          const phaseType = reader.readBits(1);
+          if (phaseType === "0") {
+            const biddingPhase = decodeBiddingPhase(reader, upCard, branchIndex, numPlayers, 2, deck);
+            biddingPhase.phaseNumber = 0;
+            altIsAlone = biddingPhase.isAlone ?? false;
+            altHasDefendAlone = biddingPhase.aloneDefender !== void 0 && biddingPhase.aloneDefender >= 0;
+            phases.push(biddingPhase);
+          } else {
+            let firstTrickCards = void 0;
+            if (p === 0) {
+              const mainBiddingPhase = deal.phases.find((ph) => ph.type === "EUCHRE_BIDDING");
+              const biddingDecisionsCount = mainBiddingPhase ? mainBiddingPhase.calls.length : 0;
+              const branchPlayIndex = branchIndex - biddingDecisionsCount;
+              if (branchPlayIndex > 0) {
+                const cardsPerTrick = computeCardsPerTrick(numPlayers, altIsAlone, altHasDefendAlone);
+                const cardsAlreadyPlayed = branchPlayIndex % cardsPerTrick;
+                if (cardsAlreadyPlayed > 0) {
+                  firstTrickCards = cardsPerTrick - cardsAlreadyPlayed;
+                }
+              }
+            }
+            const playPhase = decodePlayPhase(reader, altIsAlone, altCardsRemaining, numPlayers, firstTrickCards, altHasDefendAlone);
+            playPhase.phaseNumber = 1;
+            phases.push(playPhase);
+          }
+        }
+        alternativeLines.push({ branchIndex, phases });
+      }
+      deal.alternativeLines = alternativeLines;
+    }
+    const endMarker = reader.readBits(4);
+    if (endMarker !== "1010") {
+      throw new Error("Invalid end marker. Bitpack data may be corrupted.");
+    }
+    return deal;
+  }
+  function unpackDealV3(reader, binaryString, dealNumber) {
+    reader.readBits(4);
+    const dealer = reader.readInteger(7);
+    const numPlayersOffset = reader.readInteger(7);
+    const numPlayers = numPlayersOffset + 1;
+    const minRankCode = reader.readInteger(3);
+    const minRank = CODE_TO_MIN_RANK[minRankCode] ?? 9;
+    const deck = buildDeck(minRank);
+    const cardsRemaining = [...deck];
+    const upCardIndex = reader.readInteger(cardsRemaining.length - 1);
+    const upCard = cardsRemaining[upCardIndex];
+    const playerCards = decodePlayerCards(reader, deck, numPlayers);
+    const deal = {
+      dealNumber,
+      initialState: { dealer, upCard },
+      phases: []
+    };
+    if (playerCards !== void 0) {
+      deal.initialState.playerCards = playerCards;
+    }
+    const numPhases = reader.readInteger(7);
+    let isAlone = false;
+    let hasDefendAlone = false;
+    for (let p = 0; p < numPhases; p++) {
+      const phaseType = reader.readBits(1);
+      if (phaseType === "0") {
+        const biddingPhase = decodeBiddingPhase(reader, upCard, 0, numPlayers, 3, deck);
+        biddingPhase.phaseNumber = p;
+        isAlone = biddingPhase.isAlone ?? false;
+        hasDefendAlone = biddingPhase.aloneDefender !== void 0 && biddingPhase.aloneDefender >= 0;
+        deal.phases.push(biddingPhase);
+      } else {
+        const playPhase = decodePlayPhase(reader, isAlone, cardsRemaining, numPlayers, void 0, hasDefendAlone);
+        playPhase.phaseNumber = p;
+        deal.phases.push(playPhase);
+      }
+    }
+    const hasAltLines = reader.readBoolean();
+    if (hasAltLines) {
+      const numAltLines = reader.readInteger(255);
+      const alternativeLines = [];
+      for (let a = 0; a < numAltLines; a++) {
+        const branchIndex = reader.readInteger(65535);
+        const altCardsRemaining = getCardsRemainingAtActionIndex(deal, branchIndex, deck);
+        const numAltPhases = reader.readInteger(15);
+        const phases = [];
+        let altIsAlone = isAlone;
+        let altHasDefendAlone = hasDefendAlone;
+        for (let p = 0; p < numAltPhases; p++) {
+          const phaseType = reader.readBits(1);
+          if (phaseType === "0") {
+            const biddingPhase = decodeBiddingPhase(reader, upCard, branchIndex, numPlayers, 3, deck);
+            biddingPhase.phaseNumber = 0;
+            altIsAlone = biddingPhase.isAlone ?? false;
+            altHasDefendAlone = biddingPhase.aloneDefender !== void 0 && biddingPhase.aloneDefender >= 0;
+            phases.push(biddingPhase);
+          } else {
+            let firstTrickCards = void 0;
+            if (p === 0) {
+              const mainBiddingPhase = deal.phases.find((ph) => ph.type === "EUCHRE_BIDDING");
+              const biddingDecisionsCount = mainBiddingPhase ? mainBiddingPhase.calls.length : 0;
+              const branchPlayIndex = branchIndex - biddingDecisionsCount;
+              if (branchPlayIndex > 0) {
+                const cardsPerTrick = computeCardsPerTrick(numPlayers, altIsAlone, altHasDefendAlone);
+                const cardsAlreadyPlayed = branchPlayIndex % cardsPerTrick;
+                if (cardsAlreadyPlayed > 0) {
+                  firstTrickCards = cardsPerTrick - cardsAlreadyPlayed;
+                }
+              }
+            }
+            const playPhase = decodePlayPhase(reader, altIsAlone, altCardsRemaining, numPlayers, firstTrickCards, altHasDefendAlone);
+            playPhase.phaseNumber = 1;
+            phases.push(playPhase);
+          }
+        }
+        alternativeLines.push({ branchIndex, phases });
+      }
+      deal.alternativeLines = alternativeLines;
+    }
+    const endMarker = reader.readBits(4);
+    if (endMarker !== "1010") {
+      throw new Error("Invalid end marker. Bitpack data may be corrupted.");
+    }
+    return deal;
+  }
+  function unpackDealV1(reader, binaryString, dealNumber) {
+    reader.readBits(4);
+    const dealer = reader.readInteger(3);
+    const cardsRemaining = [...STANDARD_DECK];
+    const upCardIndex = reader.readInteger(cardsRemaining.length - 1);
+    const upCard = cardsRemaining[upCardIndex];
+    const deal = {
+      dealNumber,
+      initialState: { dealer, upCard },
+      phases: []
+    };
+    const numPhases = reader.readInteger(7);
+    let isAlone = false;
+    for (let p = 0; p < numPhases; p++) {
+      const phaseType = reader.readBits(1);
+      if (phaseType === "0") {
+        const biddingPhase = decodeBiddingPhase(reader, upCard, 0, 4, 1, STANDARD_DECK);
+        biddingPhase.phaseNumber = p;
+        isAlone = biddingPhase.isAlone ?? false;
+        deal.phases.push(biddingPhase);
+      } else {
+        const playPhase = decodePlayPhase(reader, isAlone, cardsRemaining, 4);
+        playPhase.phaseNumber = p;
+        deal.phases.push(playPhase);
+      }
+    }
+    const hasAltLines = reader.readBoolean();
+    if (hasAltLines) {
+      const numAltLines = reader.readInteger(255);
+      const alternativeLines = [];
+      for (let a = 0; a < numAltLines; a++) {
+        const branchIndex = reader.readInteger(65535);
+        const altCardsRemaining = getCardsRemainingAtActionIndex(deal, branchIndex, STANDARD_DECK);
+        const numAltPhases = reader.readInteger(15);
+        const phases = [];
+        let altIsAlone = isAlone;
+        for (let p = 0; p < numAltPhases; p++) {
+          const phaseType = reader.readBits(1);
+          if (phaseType === "0") {
+            const biddingPhase = decodeBiddingPhase(reader, upCard, branchIndex, 4, 1, STANDARD_DECK);
+            biddingPhase.phaseNumber = 0;
+            altIsAlone = biddingPhase.isAlone ?? false;
+            phases.push(biddingPhase);
+          } else {
+            let firstTrickCards = void 0;
+            if (p === 0) {
+              const mainBiddingPhase = deal.phases.find((ph) => ph.type === "EUCHRE_BIDDING");
+              const biddingDecisionsCount = mainBiddingPhase ? mainBiddingPhase.calls.length : 0;
+              const branchPlayIndex = branchIndex - biddingDecisionsCount;
+              if (branchPlayIndex > 0) {
+                const cardsPerTrick = altIsAlone ? 3 : 4;
+                const cardsAlreadyPlayed = branchPlayIndex % cardsPerTrick;
+                if (cardsAlreadyPlayed > 0) {
+                  firstTrickCards = cardsPerTrick - cardsAlreadyPlayed;
+                }
+              }
+            }
+            const playPhase = decodePlayPhase(reader, altIsAlone, altCardsRemaining, 4, firstTrickCards);
+            playPhase.phaseNumber = 1;
+            phases.push(playPhase);
+          }
+        }
+        alternativeLines.push({ branchIndex, phases });
+      }
+      deal.alternativeLines = alternativeLines;
+    }
+    const endMarker = reader.readBits(4);
+    if (endMarker !== "1010") {
+      throw new Error("Invalid end marker. Bitpack data may be corrupted.");
+    }
+    return deal;
+  }
+  function unpackDealV0(binaryString, dealNumber) {
+    const reader = new BitReader(binaryString);
+    const legacyDealer = reader.readInteger(3);
+    let cardsRemaining = [...STANDARD_DECK];
+    const upCardIndex = reader.readInteger(cardsRemaining.length - 1);
+    const upCard = cardsRemaining[upCardIndex];
+    const deal = {
+      dealNumber,
+      initialState: { dealer: legacyDealer, upCard },
+      phases: []
+    };
+    if (!reader.hasMoreBits() || reader.remainingBits() < 8 && reader.peekRemaining().indexOf("1") === -1) {
+      return deal;
+    }
+    const calls = [];
+    let orderedUp = false;
+    for (let i = 0; i < 4; i++) {
+      const bit = reader.readBits(1);
+      if (bit === "0") {
+        calls.push("Pass");
+      } else {
+        calls.push("Order");
+        orderedUp = true;
+        break;
+      }
+    }
+    if (!orderedUp) {
+      const remainingSuits = SUITS.filter((suit) => suit !== upCard[1].toLowerCase());
+      for (let i = 0; i < 4; i++) {
+        const val = reader.readInteger(3);
+        if (val === 0) {
+          calls.push("Pass");
+        } else {
+          calls.push(remainingSuits[val - 1]);
+          orderedUp = true;
+          break;
+        }
+      }
+    }
+    const isAlone = reader.readBoolean();
+    deal.phases.push({
+      phaseNumber: 0,
+      type: "EUCHRE_BIDDING",
+      calls,
+      isAlone
+    });
+    if (!reader.hasMoreBits() || reader.remainingBits() < 8 && reader.peekRemaining().indexOf("1") === -1) {
+      deal.phases[0].phaseNumber = 0;
+      return deal;
+    }
+    const tricks = [];
+    let currentTrick = [];
+    const cardsPerTrick = isAlone ? 3 : 4;
+    while (reader.hasMoreBits()) {
+      const maxVal = cardsRemaining.length - 1;
+      if (maxVal < 0) break;
+      const bitLen = maxVal.toString(2).length;
+      if (reader.remainingBits() < bitLen) {
+        break;
+      }
+      if (currentTrick.length === 0 && reader.remainingBits() < 8 && reader.peekRemaining().indexOf("1") === -1) {
+        break;
+      }
+      const cardIndex = reader.readInteger(maxVal);
+      const card = cardsRemaining[cardIndex];
+      cardsRemaining = cardsRemaining.filter((c) => c !== card);
+      currentTrick.push(card);
+      if (currentTrick.length === cardsPerTrick) {
+        tricks.push(currentTrick);
+        currentTrick = [];
+      }
+    }
+    if (currentTrick.length > 0) {
+      tricks.push(currentTrick);
+    }
+    deal.phases[0].phaseNumber = 0;
+    deal.phases.push({
+      phaseNumber: 1,
+      type: "TRICK_PLAY",
+      tricks
+    });
+    return deal;
+  }
+  var init_bitpacker = __esm({
+    "src/bitpacker.ts"() {
+      "use strict";
+      init_card_encoding();
+      init_bitstream();
+    }
+  });
+
   // node_modules/fast-deep-equal/index.js
   var require_fast_deep_equal = __commonJS({
     "node_modules/fast-deep-equal/index.js"(exports, module) {
@@ -7872,6 +8869,7 @@ var EuchreNotation = (() => {
     calculateDealScoreChange: () => calculateDealScoreChange,
     calculateEmnScores: () => calculateEmnScores,
     calculateFinalScore: () => calculateFinalScore,
+    calculatePlayerCards: () => calculatePlayerCards,
     combineEgnToEmn: () => combineEgnToEmn,
     compileDealSteps: () => compileDealSteps,
     convertBinDataToEgnFile: () => convertBinDataToEgnFile,
@@ -7923,6 +8921,7 @@ var EuchreNotation = (() => {
     hashFullEgn: () => hashFullEgn,
     hashFullGame: () => hashFullGame,
     hashGame: () => hashGame,
+    inferPlayerCards: () => inferPlayerCards,
     isDeal: () => isDeal,
     isEGNFile: () => isEGNFile,
     isEgnFile: () => isEgnFile,
@@ -7952,7 +8951,7 @@ var EuchreNotation = (() => {
 
   // src/version.ts
   var SCHEMA_VERSION = "1.6";
-  var PACKAGE_VERSION = "1.6.3";
+  var PACKAGE_VERSION = "1.6.4";
   var VERSION = SCHEMA_VERSION;
   var SUPPORTED_SCHEMA_VERSION_RE = /^1\.[23456](?:\.\d+)?$/;
   function isSupportedSchemaVersion(version) {
@@ -11672,968 +12671,7 @@ var EuchreNotation = (() => {
   // src/converter.ts
   var fs = __toESM(require_browser_shims());
   var import_protobufjs = __toESM(require_protobufjs());
-
-  // src/bitstream.ts
-  var textEncoder = new TextEncoder();
-  var textDecoder = new TextDecoder();
-  function bytesToBase64(bytes) {
-    if (typeof Buffer !== "undefined") {
-      return Buffer.from(bytes).toString("base64");
-    }
-    let binary = "";
-    for (let i = 0; i < bytes.length; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return btoa(binary);
-  }
-  function base64ToBytes(base64) {
-    if (typeof Buffer !== "undefined") {
-      return new Uint8Array(Buffer.from(base64, "base64"));
-    }
-    const binary = atob(base64);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i);
-    }
-    return bytes;
-  }
-  function encodeInteger(value, maxValue) {
-    const bitLen = maxValue.toString(2).length;
-    return value.toString(2).padStart(bitLen, "0");
-  }
-  function encodeBoolean(value) {
-    return value ? "1" : "0";
-  }
-  function binaryStringToBase64Url(binaryStr) {
-    if (!binaryStr) return "";
-    const paddedStr = binaryStr.padEnd(Math.ceil(binaryStr.length / 8) * 8, "0");
-    const byteCount = paddedStr.length / 8;
-    const bytes = new Uint8Array(byteCount);
-    for (let i = 0; i < byteCount; i++) {
-      bytes[i] = parseInt(paddedStr.slice(i * 8, (i + 1) * 8), 2);
-    }
-    const base64 = bytesToBase64(bytes);
-    return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-  }
-  function base64UrlToBinaryString(base64Url) {
-    if (!base64Url) return "";
-    let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const padding = base64.length % 4;
-    if (padding > 0) {
-      base64 += "=".repeat(4 - padding);
-    }
-    const bytes = base64ToBytes(base64);
-    let result = "";
-    for (let i = 0; i < bytes.length; i++) {
-      result += bytes[i].toString(2).padStart(8, "0");
-    }
-    return result;
-  }
-  var BitReader = class {
-    constructor(binaryStr) {
-      this.binaryStr = binaryStr;
-      this.pos = 0;
-    }
-    readBits(numBits) {
-      if (this.pos + numBits > this.binaryStr.length) {
-        throw new Error("Not enough bits to read");
-      }
-      const bits = this.binaryStr.slice(this.pos, this.pos + numBits);
-      this.pos += numBits;
-      return bits;
-    }
-    remainingBits() {
-      return this.binaryStr.length - this.pos;
-    }
-    readInteger(maxValue) {
-      const bitLen = maxValue.toString(2).length;
-      const bits = this.readBits(bitLen);
-      const val = parseInt(bits, 2);
-      if (val > maxValue) {
-        throw new Error(`Read integer value ${val} exceeds maximum allowed value ${maxValue}.`);
-      }
-      return val;
-    }
-    readBoolean() {
-      return this.readBits(1) === "1";
-    }
-    hasMoreBits() {
-      return this.pos < this.binaryStr.length;
-    }
-    peekRemaining() {
-      return this.binaryStr.slice(this.pos);
-    }
-  };
-  function encodeString(str) {
-    const bytes = textEncoder.encode(str);
-    let bitStr = encodeInteger(bytes.length, 65535);
-    for (let i = 0; i < bytes.length; i++) {
-      bitStr += bytes[i].toString(2).padStart(8, "0");
-    }
-    return bitStr;
-  }
-  function decodeString(reader) {
-    const length = reader.readInteger(65535);
-    const bytes = new Uint8Array(length);
-    for (let i = 0; i < length; i++) {
-      const byteBits = reader.readBits(8);
-      bytes[i] = parseInt(byteBits, 2);
-    }
-    return textDecoder.decode(bytes);
-  }
-
-  // src/card-encoding.ts
-  var SUITS = ["s", "h", "c", "d"];
-  var ALL_RANKS = [
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "T",
-    "J",
-    "Q",
-    "K",
-    "A"
-  ];
-  var ALL_RANKS_WITH_CAVALIER = [
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "T",
-    "J",
-    "C",
-    "Q",
-    "K",
-    "A"
-  ];
-  var TRIUMPHS = [
-    "0",
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "11",
-    "12",
-    "13",
-    "14",
-    "15",
-    "16",
-    "17",
-    "18",
-    "19",
-    "20",
-    "21"
-  ];
-  var MIN_RANK_TO_CODE = { 9: 0, 8: 1, 7: 2, 6: 3, 2: 4 };
-  var CODE_TO_MIN_RANK = [9, 8, 7, 6, 2];
-  function buildDeck(minRank = 9, includeCavalier = false, includeTriumphs = false) {
-    const rankStr = String(minRank);
-    const rankArray = includeCavalier ? ALL_RANKS_WITH_CAVALIER : ALL_RANKS;
-    const startIdx = rankArray.indexOf(rankStr);
-    const ranks = startIdx >= 0 ? rankArray.slice(startIdx) : rankArray.slice(rankArray.indexOf("9"));
-    return ranks.flatMap((rank) => SUITS.map((suit) => rank + suit)).concat(includeTriumphs ? TRIUMPHS : []);
-  }
-  var STANDARD_DECK = buildDeck(9);
-  var FULL_52_CARD_DECK = buildDeck(2);
-  var FULL_78_CARD_DECK = buildDeck(2, true, true);
-  function encodeCard(card, cardsRemaining) {
-    const index = cardsRemaining.indexOf(card);
-    if (index === -1) {
-      throw new Error(`Card ${card} not found in remaining cards.`);
-    }
-    return encodeInteger(index, cardsRemaining.length - 1);
-  }
-  function encodeCardFromDeck(card, deck) {
-    const index = deck.indexOf(card);
-    if (index === -1) {
-      throw new Error(`Card ${card} not found in deck.`);
-    }
-    return encodeInteger(index, deck.length - 1);
-  }
-  function encodeR1Call(call) {
-    return call === "Pass" || call === "p" ? "0" : "1";
-  }
-  function encodeR2Call(call, possibleSuits) {
-    if (call === "Pass" || call === "p") {
-      return "00";
-    } else {
-      const char = call[0].toLowerCase();
-      const index = possibleSuits.indexOf(char) + 1;
-      return encodeInteger(index, 3);
-    }
-  }
-
-  // src/bitpacker.ts
-  function encodeAnnotations(annotations) {
-    const keys = Object.keys(annotations || {}).map(Number).filter((n) => !isNaN(n)).sort((a, b) => a - b);
-    if (keys.length === 0) {
-      return "0";
-    }
-    let bits = "1";
-    bits += encodeInteger(keys.length, 255);
-    for (const key of keys) {
-      bits += encodeInteger(key, 255);
-      const texts = annotations[key] || [];
-      bits += encodeInteger(texts.length, 255);
-      for (const text of texts) {
-        bits += encodeString(text);
-      }
-    }
-    return bits;
-  }
-  function decodeAnnotations(reader) {
-    const hasAnn = reader.readBoolean();
-    if (!hasAnn) {
-      return void 0;
-    }
-    const annotations = {};
-    const numItems = reader.readInteger(255);
-    for (let i = 0; i < numItems; i++) {
-      const key = reader.readInteger(255);
-      const numTexts = reader.readInteger(255);
-      const texts = [];
-      for (let j = 0; j < numTexts; j++) {
-        texts.push(decodeString(reader));
-      }
-      annotations[key] = texts;
-    }
-    return annotations;
-  }
-  function encodeBiddingPhase(bidding, upCard, startActionIndex = 0, numPlayers = 4, version = 1, deck = STANDARD_DECK) {
-    let bits = "";
-    bidding.calls.forEach((call, callIndex) => {
-      const actualIndex = startActionIndex + callIndex;
-      if (actualIndex < numPlayers) {
-        bits += encodeR1Call(call);
-      } else {
-        const remainingSuits = SUITS.filter(
-          (suit) => suit !== upCard[1].toLowerCase()
-        );
-        bits += encodeR2Call(call, remainingSuits);
-      }
-    });
-    bits += encodeBoolean(bidding.isAlone ?? false);
-    if (version >= 2 && (bidding.isAlone ?? false)) {
-      const hasDefendAlone = bidding.aloneDefender !== void 0 && bidding.aloneDefender >= 0;
-      bits += encodeBoolean(hasDefendAlone);
-      if (hasDefendAlone) {
-        bits += encodeInteger(bidding.aloneDefender, 7);
-      }
-    }
-    if (version >= 3) {
-      const hasDiscard = bidding.discard !== void 0;
-      bits += encodeBoolean(hasDiscard);
-      if (hasDiscard) {
-        bits += encodeCardFromDeck(bidding.discard, deck);
-      }
-    }
-    bits += encodeAnnotations(bidding.callAnnotations);
-    return bits;
-  }
-  function decodeBiddingPhase(reader, upCard, startActionIndex = 0, numPlayers = 4, version = 1, deck = STANDARD_DECK) {
-    const calls = [];
-    let orderedUp = false;
-    if (startActionIndex < numPlayers) {
-      for (let i = startActionIndex; i < numPlayers; i++) {
-        const bit = reader.readBits(1);
-        if (bit === "0") {
-          calls.push("Pass");
-        } else {
-          calls.push("Order");
-          orderedUp = true;
-          break;
-        }
-      }
-    }
-    if (!orderedUp) {
-      const remainingSuits = SUITS.filter((suit) => suit !== upCard[1].toLowerCase());
-      const round2Start = Math.max(0, startActionIndex - numPlayers);
-      for (let i = round2Start; i < numPlayers; i++) {
-        const val = reader.readInteger(3);
-        if (val === 0) {
-          calls.push("Pass");
-        } else {
-          calls.push(remainingSuits[val - 1]);
-          orderedUp = true;
-          break;
-        }
-      }
-    }
-    const isAlone = reader.readBoolean();
-    let aloneDefender = void 0;
-    if (version >= 2 && isAlone) {
-      const hasDefendAlone = reader.readBoolean();
-      if (hasDefendAlone) {
-        aloneDefender = reader.readInteger(7);
-      }
-    }
-    let discard = void 0;
-    if (version >= 3) {
-      const hasDiscard = reader.readBoolean();
-      if (hasDiscard) {
-        const discardIndex = reader.readInteger(deck.length - 1);
-        discard = deck[discardIndex];
-      }
-    }
-    const callAnnotations = decodeAnnotations(reader);
-    const phase = {
-      phaseNumber: 0,
-      type: "EUCHRE_BIDDING",
-      calls,
-      isAlone
-    };
-    if (aloneDefender !== void 0) {
-      phase.aloneDefender = aloneDefender;
-    }
-    if (discard !== void 0) {
-      phase.discard = discard;
-    }
-    if (callAnnotations) {
-      phase.callAnnotations = callAnnotations;
-    }
-    return phase;
-  }
-  function encodePlayerCards(playerCards, deck, numPlayers) {
-    const hasPlayerCards = Array.isArray(playerCards);
-    let bits = encodeBoolean(hasPlayerCards);
-    if (!hasPlayerCards) {
-      return bits;
-    }
-    for (let seat = 0; seat < numPlayers; seat++) {
-      const hand = Array.isArray(playerCards[seat]) ? playerCards[seat] : [];
-      bits += encodeInteger(hand.length, 15);
-      for (const card of hand) {
-        bits += encodeCardFromDeck(card, deck);
-      }
-    }
-    return bits;
-  }
-  function decodePlayerCards(reader, deck, numPlayers) {
-    const hasPlayerCards = reader.readBoolean();
-    if (!hasPlayerCards) {
-      return void 0;
-    }
-    const playerCards = [];
-    for (let seat = 0; seat < numPlayers; seat++) {
-      const handLen = reader.readInteger(15);
-      if (handLen > deck.length || handLen > 5) {
-        throw new Error(`Invalid player hand length ${handLen} in bitpacked player cards.`);
-      }
-      const hand = [];
-      for (let i = 0; i < handLen; i++) {
-        const cardIndex = reader.readInteger(deck.length - 1);
-        hand.push(deck[cardIndex]);
-      }
-      playerCards.push(hand);
-    }
-    return playerCards;
-  }
-  function encodePlayPhase(play, cardsRemaining) {
-    let bits = "";
-    bits += encodeInteger(play.tricks.length, 7);
-    play.tricks.forEach((trick) => {
-      trick.forEach((card) => {
-        bits += encodeCard(card, cardsRemaining);
-        const idx = cardsRemaining.indexOf(card);
-        if (idx !== -1) {
-          cardsRemaining.splice(idx, 1);
-        }
-      });
-    });
-    bits += encodeAnnotations(play.playAnnotations);
-    return bits;
-  }
-  function computeCardsPerTrick(numPlayers, isAlone, hasDefendAlone) {
-    if (!isAlone) return numPlayers;
-    return hasDefendAlone ? numPlayers - 2 : numPlayers - 1;
-  }
-  function decodePlayPhase(reader, isAlone, cardsRemaining, numPlayers = 4, firstTrickCards, hasDefendAlone = false) {
-    const numTricks = reader.readInteger(7);
-    const tricks = [];
-    const cardsPerTrick = computeCardsPerTrick(numPlayers, isAlone, hasDefendAlone);
-    for (let t = 0; t < numTricks; t++) {
-      const trick = [];
-      const limit = t === 0 && firstTrickCards !== void 0 ? firstTrickCards : cardsPerTrick;
-      for (let c = 0; c < limit; c++) {
-        const maxVal = cardsRemaining.length - 1;
-        if (maxVal < 0) break;
-        const cardIndex = reader.readInteger(maxVal);
-        const card = cardsRemaining[cardIndex];
-        cardsRemaining.splice(cardIndex, 1);
-        trick.push(card);
-      }
-      tricks.push(trick);
-    }
-    const playAnnotations = decodeAnnotations(reader);
-    const phase = {
-      phaseNumber: 1,
-      type: "TRICK_PLAY",
-      tricks
-    };
-    if (playAnnotations) {
-      phase.playAnnotations = playAnnotations;
-    }
-    return phase;
-  }
-  function getCardsRemainingAtActionIndex(deal, branchIndex, deck = STANDARD_DECK) {
-    const cardsRemaining = [...deck];
-    let actionCount = 0;
-    for (const phase of deal.phases) {
-      if (phase.type === "EUCHRE_BIDDING") {
-        const bidding = phase;
-        const numCalls = bidding.calls.length;
-        if (actionCount + numCalls <= branchIndex) {
-          actionCount += numCalls;
-        } else {
-          actionCount = branchIndex;
-          break;
-        }
-      } else if (phase.type === "TRICK_PLAY") {
-        const play = phase;
-        for (const trick of play.tricks) {
-          for (const card of trick) {
-            if (actionCount < branchIndex) {
-              const idx = cardsRemaining.indexOf(card);
-              if (idx !== -1) {
-                cardsRemaining.splice(idx, 1);
-              }
-              actionCount++;
-            } else {
-              break;
-            }
-          }
-          if (actionCount >= branchIndex) {
-            break;
-          }
-        }
-      }
-      if (actionCount >= branchIndex) {
-        break;
-      }
-    }
-    return cardsRemaining;
-  }
-  function packDeal(deal, options) {
-    let version = options?.version;
-    if (version === void 0) {
-      const numPlayers = options?.numPlayers ?? 4;
-      const minRank = options?.minRank ?? 9;
-      const dealer = deal.initialState.dealer ?? 0;
-      const hasDefendAlone = deal.phases?.some((p) => p.type === "EUCHRE_BIDDING" && p.aloneDefender !== void 0 && p.aloneDefender !== -1);
-      const hasDiscard = deal.phases?.some((p) => p.type === "EUCHRE_BIDDING" && p.discard !== void 0 && p.discard.length > 0) || deal.alternativeLines?.some((line) => line.phases?.some((p) => p.type === "EUCHRE_BIDDING" && p.discard !== void 0 && p.discard.length > 0));
-      const hasPlayerCards = Array.isArray(deal.initialState.playerCards) && deal.initialState.playerCards.some((cards) => Array.isArray(cards) && cards.length > 0);
-      const needsV3 = hasDiscard || hasPlayerCards;
-      const needsV2 = numPlayers !== 4 || minRank !== 9 || hasDefendAlone || dealer >= 4;
-      version = needsV3 ? 3 : needsV2 ? 2 : 1;
-    }
-    const binaryString = version === 3 ? packDealV3(deal, options) : version === 2 ? packDealV2(deal, options) : packDealV1(deal);
-    if (options?.asBinary) {
-      return binaryString;
-    }
-    return binaryStringToBase64Url(binaryString);
-  }
-  function packDealV1(deal) {
-    let binaryString = "0001";
-    binaryString += encodeInteger(deal.initialState.dealer, 3);
-    const cardsRemaining = [...STANDARD_DECK];
-    binaryString += encodeCard(deal.initialState.upCard, cardsRemaining);
-    binaryString += encodeInteger(deal.phases.length, 7);
-    let isAlone = false;
-    deal.phases.forEach((phase) => {
-      if (phase.type === "EUCHRE_BIDDING") {
-        binaryString += "0";
-        binaryString += encodeBiddingPhase(phase, deal.initialState.upCard, 0, 4, 1, STANDARD_DECK);
-        isAlone = phase.isAlone ?? false;
-      } else if (phase.type === "TRICK_PLAY") {
-        binaryString += "1";
-        binaryString += encodePlayPhase(phase, cardsRemaining);
-      }
-    });
-    if (deal.alternativeLines && deal.alternativeLines.length > 0) {
-      binaryString += "1";
-      binaryString += encodeInteger(deal.alternativeLines.length, 255);
-      deal.alternativeLines.forEach((altLine) => {
-        binaryString += encodeInteger(altLine.branchIndex, 65535);
-        const altCardsRemaining = getCardsRemainingAtActionIndex(deal, altLine.branchIndex, STANDARD_DECK);
-        binaryString += encodeInteger(altLine.phases.length, 15);
-        let altIsAlone = isAlone;
-        altLine.phases.forEach((phase) => {
-          if (phase.type === "EUCHRE_BIDDING") {
-            binaryString += "0";
-            binaryString += encodeBiddingPhase(phase, deal.initialState.upCard, altLine.branchIndex, 4, 1, STANDARD_DECK);
-            altIsAlone = phase.isAlone ?? false;
-          } else if (phase.type === "TRICK_PLAY") {
-            binaryString += "1";
-            binaryString += encodePlayPhase(phase, altCardsRemaining);
-          }
-        });
-      });
-    } else {
-      binaryString += "0";
-    }
-    binaryString += "1010";
-    return binaryString;
-  }
-  function packDealV2(deal, options) {
-    const numPlayers = options?.numPlayers ?? 4;
-    const minRank = options?.minRank ?? 9;
-    const minRankCode = MIN_RANK_TO_CODE[minRank] ?? 0;
-    const deck = buildDeck(minRank);
-    let binaryString = "0010";
-    binaryString += encodeInteger(deal.initialState.dealer, 7);
-    binaryString += encodeInteger(numPlayers - 1, 7);
-    binaryString += encodeInteger(minRankCode, 3);
-    const cardsRemaining = [...deck];
-    binaryString += encodeCard(deal.initialState.upCard, cardsRemaining);
-    binaryString += encodeInteger(deal.phases.length, 7);
-    let isAlone = false;
-    deal.phases.forEach((phase) => {
-      if (phase.type === "EUCHRE_BIDDING") {
-        binaryString += "0";
-        binaryString += encodeBiddingPhase(phase, deal.initialState.upCard, 0, numPlayers, 2, deck);
-        isAlone = phase.isAlone ?? false;
-      } else if (phase.type === "TRICK_PLAY") {
-        binaryString += "1";
-        binaryString += encodePlayPhase(phase, cardsRemaining);
-      }
-    });
-    if (deal.alternativeLines && deal.alternativeLines.length > 0) {
-      binaryString += "1";
-      binaryString += encodeInteger(deal.alternativeLines.length, 255);
-      deal.alternativeLines.forEach((altLine) => {
-        binaryString += encodeInteger(altLine.branchIndex, 65535);
-        const altCardsRemaining = getCardsRemainingAtActionIndex(deal, altLine.branchIndex, deck);
-        binaryString += encodeInteger(altLine.phases.length, 15);
-        let altIsAlone = isAlone;
-        altLine.phases.forEach((phase) => {
-          if (phase.type === "EUCHRE_BIDDING") {
-            binaryString += "0";
-            binaryString += encodeBiddingPhase(phase, deal.initialState.upCard, altLine.branchIndex, numPlayers, 2, deck);
-            altIsAlone = phase.isAlone ?? false;
-          } else if (phase.type === "TRICK_PLAY") {
-            binaryString += "1";
-            binaryString += encodePlayPhase(phase, altCardsRemaining);
-          }
-        });
-      });
-    } else {
-      binaryString += "0";
-    }
-    binaryString += "1010";
-    return binaryString;
-  }
-  function packDealV3(deal, options) {
-    const numPlayers = options?.numPlayers ?? 4;
-    const minRank = options?.minRank ?? 9;
-    const minRankCode = MIN_RANK_TO_CODE[minRank] ?? 0;
-    const deck = buildDeck(minRank);
-    let binaryString = "0011";
-    binaryString += encodeInteger(deal.initialState.dealer, 7);
-    binaryString += encodeInteger(numPlayers - 1, 7);
-    binaryString += encodeInteger(minRankCode, 3);
-    const cardsRemaining = [...deck];
-    binaryString += encodeCard(deal.initialState.upCard, cardsRemaining);
-    binaryString += encodePlayerCards(deal.initialState.playerCards, deck, numPlayers);
-    binaryString += encodeInteger(deal.phases.length, 7);
-    let isAlone = false;
-    deal.phases.forEach((phase) => {
-      if (phase.type === "EUCHRE_BIDDING") {
-        binaryString += "0";
-        binaryString += encodeBiddingPhase(phase, deal.initialState.upCard, 0, numPlayers, 3, deck);
-        isAlone = phase.isAlone ?? false;
-      } else if (phase.type === "TRICK_PLAY") {
-        binaryString += "1";
-        binaryString += encodePlayPhase(phase, cardsRemaining);
-      }
-    });
-    if (deal.alternativeLines && deal.alternativeLines.length > 0) {
-      binaryString += "1";
-      binaryString += encodeInteger(deal.alternativeLines.length, 255);
-      deal.alternativeLines.forEach((altLine) => {
-        binaryString += encodeInteger(altLine.branchIndex, 65535);
-        const altCardsRemaining = getCardsRemainingAtActionIndex(deal, altLine.branchIndex, deck);
-        binaryString += encodeInteger(altLine.phases.length, 15);
-        let altIsAlone = isAlone;
-        altLine.phases.forEach((phase) => {
-          if (phase.type === "EUCHRE_BIDDING") {
-            binaryString += "0";
-            binaryString += encodeBiddingPhase(phase, deal.initialState.upCard, altLine.branchIndex, numPlayers, 3, deck);
-            altIsAlone = phase.isAlone ?? false;
-          } else if (phase.type === "TRICK_PLAY") {
-            binaryString += "1";
-            binaryString += encodePlayPhase(phase, altCardsRemaining);
-          }
-        });
-      });
-    } else {
-      binaryString += "0";
-    }
-    binaryString += "1010";
-    return binaryString;
-  }
-  function unpackDeal(input, dealNumber = 0, isBinary = false) {
-    const binaryString = isBinary ? input : base64UrlToBinaryString(input);
-    const reader = new BitReader(binaryString);
-    const headerBits = binaryString.slice(0, 4);
-    if (reader.remainingBits() >= 4 && headerBits === "0011") {
-      try {
-        return unpackDealV3(reader, binaryString, dealNumber);
-      } catch (e) {
-        return unpackDealV0(binaryString, dealNumber);
-      }
-    }
-    if (reader.remainingBits() >= 4 && headerBits === "0010") {
-      try {
-        return unpackDealV2(reader, binaryString, dealNumber);
-      } catch (e) {
-        return unpackDealV0(binaryString, dealNumber);
-      }
-    }
-    if (reader.remainingBits() >= 4 && headerBits === "0001") {
-      try {
-        return unpackDealV1(reader, binaryString, dealNumber);
-      } catch (e) {
-        return unpackDealV0(binaryString, dealNumber);
-      }
-    }
-    return unpackDealV0(binaryString, dealNumber);
-  }
-  function unpackDealV2(reader, binaryString, dealNumber) {
-    reader.readBits(4);
-    const dealer = reader.readInteger(7);
-    const numPlayersOffset = reader.readInteger(7);
-    const numPlayers = numPlayersOffset + 1;
-    const minRankCode = reader.readInteger(3);
-    const minRank = CODE_TO_MIN_RANK[minRankCode] ?? 9;
-    const deck = buildDeck(minRank);
-    const cardsRemaining = [...deck];
-    const upCardIndex = reader.readInteger(cardsRemaining.length - 1);
-    const upCard = cardsRemaining[upCardIndex];
-    const deal = {
-      dealNumber,
-      initialState: { dealer, upCard },
-      phases: []
-    };
-    const numPhases = reader.readInteger(7);
-    let isAlone = false;
-    let hasDefendAlone = false;
-    for (let p = 0; p < numPhases; p++) {
-      const phaseType = reader.readBits(1);
-      if (phaseType === "0") {
-        const biddingPhase = decodeBiddingPhase(reader, upCard, 0, numPlayers, 2, deck);
-        biddingPhase.phaseNumber = p;
-        isAlone = biddingPhase.isAlone ?? false;
-        hasDefendAlone = biddingPhase.aloneDefender !== void 0 && biddingPhase.aloneDefender >= 0;
-        deal.phases.push(biddingPhase);
-      } else {
-        const playPhase = decodePlayPhase(reader, isAlone, cardsRemaining, numPlayers, void 0, hasDefendAlone);
-        playPhase.phaseNumber = p;
-        deal.phases.push(playPhase);
-      }
-    }
-    const hasAltLines = reader.readBoolean();
-    if (hasAltLines) {
-      const numAltLines = reader.readInteger(255);
-      const alternativeLines = [];
-      for (let a = 0; a < numAltLines; a++) {
-        const branchIndex = reader.readInteger(65535);
-        const altCardsRemaining = getCardsRemainingAtActionIndex(deal, branchIndex, deck);
-        const numAltPhases = reader.readInteger(15);
-        const phases = [];
-        let altIsAlone = isAlone;
-        let altHasDefendAlone = hasDefendAlone;
-        for (let p = 0; p < numAltPhases; p++) {
-          const phaseType = reader.readBits(1);
-          if (phaseType === "0") {
-            const biddingPhase = decodeBiddingPhase(reader, upCard, branchIndex, numPlayers, 2, deck);
-            biddingPhase.phaseNumber = 0;
-            altIsAlone = biddingPhase.isAlone ?? false;
-            altHasDefendAlone = biddingPhase.aloneDefender !== void 0 && biddingPhase.aloneDefender >= 0;
-            phases.push(biddingPhase);
-          } else {
-            let firstTrickCards = void 0;
-            if (p === 0) {
-              const mainBiddingPhase = deal.phases.find((ph) => ph.type === "EUCHRE_BIDDING");
-              const biddingDecisionsCount = mainBiddingPhase ? mainBiddingPhase.calls.length : 0;
-              const branchPlayIndex = branchIndex - biddingDecisionsCount;
-              if (branchPlayIndex > 0) {
-                const cardsPerTrick = computeCardsPerTrick(numPlayers, altIsAlone, altHasDefendAlone);
-                const cardsAlreadyPlayed = branchPlayIndex % cardsPerTrick;
-                if (cardsAlreadyPlayed > 0) {
-                  firstTrickCards = cardsPerTrick - cardsAlreadyPlayed;
-                }
-              }
-            }
-            const playPhase = decodePlayPhase(reader, altIsAlone, altCardsRemaining, numPlayers, firstTrickCards, altHasDefendAlone);
-            playPhase.phaseNumber = 1;
-            phases.push(playPhase);
-          }
-        }
-        alternativeLines.push({ branchIndex, phases });
-      }
-      deal.alternativeLines = alternativeLines;
-    }
-    const endMarker = reader.readBits(4);
-    if (endMarker !== "1010") {
-      throw new Error("Invalid end marker. Bitpack data may be corrupted.");
-    }
-    return deal;
-  }
-  function unpackDealV3(reader, binaryString, dealNumber) {
-    reader.readBits(4);
-    const dealer = reader.readInteger(7);
-    const numPlayersOffset = reader.readInteger(7);
-    const numPlayers = numPlayersOffset + 1;
-    const minRankCode = reader.readInteger(3);
-    const minRank = CODE_TO_MIN_RANK[minRankCode] ?? 9;
-    const deck = buildDeck(minRank);
-    const cardsRemaining = [...deck];
-    const upCardIndex = reader.readInteger(cardsRemaining.length - 1);
-    const upCard = cardsRemaining[upCardIndex];
-    const playerCards = decodePlayerCards(reader, deck, numPlayers);
-    const deal = {
-      dealNumber,
-      initialState: { dealer, upCard },
-      phases: []
-    };
-    if (playerCards !== void 0) {
-      deal.initialState.playerCards = playerCards;
-    }
-    const numPhases = reader.readInteger(7);
-    let isAlone = false;
-    let hasDefendAlone = false;
-    for (let p = 0; p < numPhases; p++) {
-      const phaseType = reader.readBits(1);
-      if (phaseType === "0") {
-        const biddingPhase = decodeBiddingPhase(reader, upCard, 0, numPlayers, 3, deck);
-        biddingPhase.phaseNumber = p;
-        isAlone = biddingPhase.isAlone ?? false;
-        hasDefendAlone = biddingPhase.aloneDefender !== void 0 && biddingPhase.aloneDefender >= 0;
-        deal.phases.push(biddingPhase);
-      } else {
-        const playPhase = decodePlayPhase(reader, isAlone, cardsRemaining, numPlayers, void 0, hasDefendAlone);
-        playPhase.phaseNumber = p;
-        deal.phases.push(playPhase);
-      }
-    }
-    const hasAltLines = reader.readBoolean();
-    if (hasAltLines) {
-      const numAltLines = reader.readInteger(255);
-      const alternativeLines = [];
-      for (let a = 0; a < numAltLines; a++) {
-        const branchIndex = reader.readInteger(65535);
-        const altCardsRemaining = getCardsRemainingAtActionIndex(deal, branchIndex, deck);
-        const numAltPhases = reader.readInteger(15);
-        const phases = [];
-        let altIsAlone = isAlone;
-        let altHasDefendAlone = hasDefendAlone;
-        for (let p = 0; p < numAltPhases; p++) {
-          const phaseType = reader.readBits(1);
-          if (phaseType === "0") {
-            const biddingPhase = decodeBiddingPhase(reader, upCard, branchIndex, numPlayers, 3, deck);
-            biddingPhase.phaseNumber = 0;
-            altIsAlone = biddingPhase.isAlone ?? false;
-            altHasDefendAlone = biddingPhase.aloneDefender !== void 0 && biddingPhase.aloneDefender >= 0;
-            phases.push(biddingPhase);
-          } else {
-            let firstTrickCards = void 0;
-            if (p === 0) {
-              const mainBiddingPhase = deal.phases.find((ph) => ph.type === "EUCHRE_BIDDING");
-              const biddingDecisionsCount = mainBiddingPhase ? mainBiddingPhase.calls.length : 0;
-              const branchPlayIndex = branchIndex - biddingDecisionsCount;
-              if (branchPlayIndex > 0) {
-                const cardsPerTrick = computeCardsPerTrick(numPlayers, altIsAlone, altHasDefendAlone);
-                const cardsAlreadyPlayed = branchPlayIndex % cardsPerTrick;
-                if (cardsAlreadyPlayed > 0) {
-                  firstTrickCards = cardsPerTrick - cardsAlreadyPlayed;
-                }
-              }
-            }
-            const playPhase = decodePlayPhase(reader, altIsAlone, altCardsRemaining, numPlayers, firstTrickCards, altHasDefendAlone);
-            playPhase.phaseNumber = 1;
-            phases.push(playPhase);
-          }
-        }
-        alternativeLines.push({ branchIndex, phases });
-      }
-      deal.alternativeLines = alternativeLines;
-    }
-    const endMarker = reader.readBits(4);
-    if (endMarker !== "1010") {
-      throw new Error("Invalid end marker. Bitpack data may be corrupted.");
-    }
-    return deal;
-  }
-  function unpackDealV1(reader, binaryString, dealNumber) {
-    reader.readBits(4);
-    const dealer = reader.readInteger(3);
-    const cardsRemaining = [...STANDARD_DECK];
-    const upCardIndex = reader.readInteger(cardsRemaining.length - 1);
-    const upCard = cardsRemaining[upCardIndex];
-    const deal = {
-      dealNumber,
-      initialState: { dealer, upCard },
-      phases: []
-    };
-    const numPhases = reader.readInteger(7);
-    let isAlone = false;
-    for (let p = 0; p < numPhases; p++) {
-      const phaseType = reader.readBits(1);
-      if (phaseType === "0") {
-        const biddingPhase = decodeBiddingPhase(reader, upCard, 0, 4, 1, STANDARD_DECK);
-        biddingPhase.phaseNumber = p;
-        isAlone = biddingPhase.isAlone ?? false;
-        deal.phases.push(biddingPhase);
-      } else {
-        const playPhase = decodePlayPhase(reader, isAlone, cardsRemaining, 4);
-        playPhase.phaseNumber = p;
-        deal.phases.push(playPhase);
-      }
-    }
-    const hasAltLines = reader.readBoolean();
-    if (hasAltLines) {
-      const numAltLines = reader.readInteger(255);
-      const alternativeLines = [];
-      for (let a = 0; a < numAltLines; a++) {
-        const branchIndex = reader.readInteger(65535);
-        const altCardsRemaining = getCardsRemainingAtActionIndex(deal, branchIndex, STANDARD_DECK);
-        const numAltPhases = reader.readInteger(15);
-        const phases = [];
-        let altIsAlone = isAlone;
-        for (let p = 0; p < numAltPhases; p++) {
-          const phaseType = reader.readBits(1);
-          if (phaseType === "0") {
-            const biddingPhase = decodeBiddingPhase(reader, upCard, branchIndex, 4, 1, STANDARD_DECK);
-            biddingPhase.phaseNumber = 0;
-            altIsAlone = biddingPhase.isAlone ?? false;
-            phases.push(biddingPhase);
-          } else {
-            let firstTrickCards = void 0;
-            if (p === 0) {
-              const mainBiddingPhase = deal.phases.find((ph) => ph.type === "EUCHRE_BIDDING");
-              const biddingDecisionsCount = mainBiddingPhase ? mainBiddingPhase.calls.length : 0;
-              const branchPlayIndex = branchIndex - biddingDecisionsCount;
-              if (branchPlayIndex > 0) {
-                const cardsPerTrick = altIsAlone ? 3 : 4;
-                const cardsAlreadyPlayed = branchPlayIndex % cardsPerTrick;
-                if (cardsAlreadyPlayed > 0) {
-                  firstTrickCards = cardsPerTrick - cardsAlreadyPlayed;
-                }
-              }
-            }
-            const playPhase = decodePlayPhase(reader, altIsAlone, altCardsRemaining, 4, firstTrickCards);
-            playPhase.phaseNumber = 1;
-            phases.push(playPhase);
-          }
-        }
-        alternativeLines.push({ branchIndex, phases });
-      }
-      deal.alternativeLines = alternativeLines;
-    }
-    const endMarker = reader.readBits(4);
-    if (endMarker !== "1010") {
-      throw new Error("Invalid end marker. Bitpack data may be corrupted.");
-    }
-    return deal;
-  }
-  function unpackDealV0(binaryString, dealNumber) {
-    const reader = new BitReader(binaryString);
-    const legacyDealer = reader.readInteger(3);
-    let cardsRemaining = [...STANDARD_DECK];
-    const upCardIndex = reader.readInteger(cardsRemaining.length - 1);
-    const upCard = cardsRemaining[upCardIndex];
-    const deal = {
-      dealNumber,
-      initialState: { dealer: legacyDealer, upCard },
-      phases: []
-    };
-    if (!reader.hasMoreBits() || reader.remainingBits() < 8 && reader.peekRemaining().indexOf("1") === -1) {
-      return deal;
-    }
-    const calls = [];
-    let orderedUp = false;
-    for (let i = 0; i < 4; i++) {
-      const bit = reader.readBits(1);
-      if (bit === "0") {
-        calls.push("Pass");
-      } else {
-        calls.push("Order");
-        orderedUp = true;
-        break;
-      }
-    }
-    if (!orderedUp) {
-      const remainingSuits = SUITS.filter((suit) => suit !== upCard[1].toLowerCase());
-      for (let i = 0; i < 4; i++) {
-        const val = reader.readInteger(3);
-        if (val === 0) {
-          calls.push("Pass");
-        } else {
-          calls.push(remainingSuits[val - 1]);
-          orderedUp = true;
-          break;
-        }
-      }
-    }
-    const isAlone = reader.readBoolean();
-    deal.phases.push({
-      phaseNumber: 0,
-      type: "EUCHRE_BIDDING",
-      calls,
-      isAlone
-    });
-    if (!reader.hasMoreBits() || reader.remainingBits() < 8 && reader.peekRemaining().indexOf("1") === -1) {
-      deal.phases[0].phaseNumber = 0;
-      return deal;
-    }
-    const tricks = [];
-    let currentTrick = [];
-    const cardsPerTrick = isAlone ? 3 : 4;
-    while (reader.hasMoreBits()) {
-      const maxVal = cardsRemaining.length - 1;
-      if (maxVal < 0) break;
-      const bitLen = maxVal.toString(2).length;
-      if (reader.remainingBits() < bitLen) {
-        break;
-      }
-      if (currentTrick.length === 0 && reader.remainingBits() < 8 && reader.peekRemaining().indexOf("1") === -1) {
-        break;
-      }
-      const cardIndex = reader.readInteger(maxVal);
-      const card = cardsRemaining[cardIndex];
-      cardsRemaining = cardsRemaining.filter((c) => c !== card);
-      currentTrick.push(card);
-      if (currentTrick.length === cardsPerTrick) {
-        tricks.push(currentTrick);
-        currentTrick = [];
-      }
-    }
-    if (currentTrick.length > 0) {
-      tricks.push(currentTrick);
-    }
-    deal.phases[0].phaseNumber = 0;
-    deal.phases.push({
-      phaseNumber: 1,
-      type: "TRICK_PLAY",
-      tricks
-    });
-    return deal;
-  }
+  init_bitpacker();
 
   // src/proto-schemas.ts
   var COMMON_PROTO_SCHEMA = 'syntax = "proto3";\n\npackage egn;\n\nmessage Ruleset {\n  optional bool std = 1;\n  optional int32 min_rank = 2;\n  optional int32 winning_score = 3;\n  optional bool canadian = 4;\n\n  enum LonerLead {\n    LEFT_OF_DEALER = 0;\n    LEFT_OF_LONER = 1;\n  }\n  optional LonerLead loner_lead = 5;\n\n  optional bool farmers = 6;\n  optional bool partners_best = 7;\n  optional bool go_under = 8;\n  optional bool joker = 9;\n  optional bool allow_no_trump = 10;\n  optional bool fast_break = 11;\n  optional bool four_trick_tokens = 12;\n  optional int32 loner_march_score = 13;\n  optional int32 loner_euchred_score = 14;\n  optional bool defend_alone = 15;\n  optional int32 num_players = 16;\n  optional int32 num_deals = 17;\n}\n\nmessage Metadata {\n  optional string game_id = 1;\n  optional string title = 2;\n  optional string description = 3;\n  repeated Player players = 4;\n  repeated int32 initial_score = 5;\n  repeated int32 final_score = 8;\n  optional string date = 6; // ISO 8601 formatted date-time string\n  Ruleset ruleset = 7;\n  repeated string team_names = 9;\n}\n\nmessage Player {\n  oneof player {\n    string name = 1;\n    PlayerWithId player_with_id = 2;\n  }\n}\n\nmessage PlayerWithId {\n  string name = 1;\n  repeated Id ids = 2;\n}\n\nmessage MatchPlayer {\n  string id = 1;\n  string name = 2;\n  repeated Id player_ids = 3;\n}\n\nmessage Id {\n  string id = 1;\n  string source = 2;\n}\n';
@@ -13066,6 +13104,11 @@ var EuchreNotation = (() => {
     return cloned;
   }
 
+  // src/workbench/entry.ts
+  init_bitpacker();
+  init_bitstream();
+  init_card_encoding();
+
   // src/match-engine.ts
   function isGenericMatchFile(data) {
     if (!data || typeof data !== "object" || data === null) return false;
@@ -13208,6 +13251,106 @@ var EuchreNotation = (() => {
     }
     return player;
   }
+  function parseDealInput(deal) {
+    if (typeof deal !== "string") {
+      return deal;
+    }
+    const trimmed = deal.trim();
+    if (trimmed.startsWith("{")) {
+      return JSON.parse(trimmed);
+    }
+    if (typeof __require !== "undefined") {
+      try {
+        const bp = (init_bitpacker(), __toCommonJS(bitpacker_exports));
+        if (typeof bp.unpackDeal === "function") {
+          return bp.unpackDeal(trimmed, 0);
+        }
+      } catch {
+      }
+    }
+    if (typeof window !== "undefined") {
+      const win = window;
+      if (win.EuchreNotation && typeof win.EuchreNotation.unpackDeal === "function") {
+        return win.EuchreNotation.unpackDeal(trimmed, 0);
+      }
+      if (typeof win.unpackDeal === "function") {
+        return win.unpackDeal(trimmed, 0);
+      }
+    }
+    throw new Error("Cannot unpack condensed base64 deal string: unpackDeal is not available in this environment.");
+  }
+  function inferPlayerCards(deal, ruleset) {
+    const parsedDeal = parseDealInput(deal);
+    const rawPlayerCards = parsedDeal.initialState?.playerCards;
+    if (Array.isArray(rawPlayerCards) && rawPlayerCards.length === 4 && rawPlayerCards.every((hand) => Array.isArray(hand) && hand.length === 5)) {
+      return rawPlayerCards.map((h) => [...h]);
+    }
+    const dealer = parsedDeal.initialState?.dealer ?? 0;
+    const biddingPhase = parsedDeal.phases ? parsedDeal.phases.find((p) => p.type === "EUCHRE_BIDDING") : null;
+    let sitOutSeat = null;
+    if (biddingPhase && biddingPhase.type === "EUCHRE_BIDDING") {
+      const isAlone = Boolean(biddingPhase.isAlone);
+      const callIndex = biddingPhase.calls.findIndex((c) => !isPass(c));
+      if (callIndex !== -1 && isAlone) {
+        const callerSeat = (dealer + 1 + callIndex) % 4;
+        sitOutSeat = (callerSeat + 2) % 4;
+      }
+    }
+    const hands = [[], [], [], []];
+    const preserveSitOutHands = () => {
+      if (sitOutSeat !== null && Array.isArray(rawPlayerCards?.[sitOutSeat]) && rawPlayerCards[sitOutSeat].length > 0) {
+        hands[sitOutSeat] = [...rawPlayerCards[sitOutSeat]];
+      }
+      if (biddingPhase && biddingPhase.type === "EUCHRE_BIDDING" && ruleset?.defend_alone && biddingPhase.aloneDefender !== void 0) {
+        const defenderPartner = (biddingPhase.aloneDefender + 2) % 4;
+        if (Array.isArray(rawPlayerCards?.[defenderPartner]) && rawPlayerCards[defenderPartner].length > 0) {
+          hands[defenderPartner] = [...rawPlayerCards[defenderPartner]];
+        }
+      }
+    };
+    if (!parsedDeal.phases) {
+      preserveSitOutHands();
+      return hands;
+    }
+    const playPhase = parsedDeal.phases.find((p) => p.type === "TRICK_PLAY");
+    if (!playPhase || !Array.isArray(playPhase.tricks)) {
+      preserveSitOutHands();
+      return hands;
+    }
+    const trump = determineTrump(parsedDeal);
+    let leadSeat = determineLeadSeat(parsedDeal, ruleset?.loner_lead ?? "LEFT_OF_DEALER");
+    const numExpectedPlayers = sitOutSeat !== null ? 3 : 4;
+    playPhase.tricks.forEach((trickCards) => {
+      trickCards.forEach((card, cardIndex) => {
+        const playerIndex = getPlayerIndexInTrick(leadSeat, cardIndex, sitOutSeat);
+        hands[playerIndex].push(card);
+      });
+      if (trickCards.length === numExpectedPlayers && trump) {
+        const winnerIndex = getWinnerIndex(trickCards, trump);
+        leadSeat = getPlayerIndexInTrick(leadSeat, winnerIndex, sitOutSeat);
+      } else {
+        leadSeat = getPlayerIndexInTrick(leadSeat, 1, sitOutSeat);
+      }
+    });
+    const orderCallIndex = biddingPhase ? biddingPhase.calls.findIndex((c) => !isPass(c)) : -1;
+    const isOrderedUp = orderCallIndex >= 0 && orderCallIndex < 4;
+    const discard = biddingPhase?.discard;
+    const upCard = parsedDeal.initialState?.upCard;
+    if (isOrderedUp && upCard && discard) {
+      const upcardIdx = hands[dealer].indexOf(upCard);
+      if (upcardIdx !== -1) {
+        hands[dealer].splice(upcardIdx, 1);
+        hands[dealer].push(discard);
+      } else if (!hands[dealer].includes(discard)) {
+        hands[dealer].push(discard);
+      }
+    }
+    preserveSitOutHands();
+    return hands;
+  }
+  function calculatePlayerCards(deal, ruleset) {
+    return inferPlayerCards(deal, ruleset);
+  }
   function compileDealSteps(deal, metadata = {}) {
     const players = (metadata.players || ["Player 0", "Player 1", "Player 2", "Player 3"]).map(
       (p) => typeof p === "string" ? p : p.name
@@ -13232,40 +13375,7 @@ var EuchreNotation = (() => {
         callingTeam = callerSeat % 2;
       }
     }
-    let initialHands = deal.initialState.playerCards ? deal.initialState.playerCards.map((h) => [...h]) : [[], [], [], []];
-    const hasEmptyHand = initialHands.some((h, i) => i !== sitOutSeat && h.length === 0);
-    if (hasEmptyHand && deal.phases) {
-      const playPhase2 = deal.phases.find((p) => p.type === "TRICK_PLAY");
-      if (playPhase2 && playPhase2.type === "TRICK_PLAY") {
-        initialHands = [[], [], [], []];
-        const trump = determineTrump(deal);
-        let leadSeat = determineLeadSeat(deal, ruleset?.loner_lead ?? "LEFT_OF_DEALER");
-        playPhase2.tricks.forEach((trickCards) => {
-          trickCards.forEach((card, cardIndex) => {
-            const playerIndex = getPlayerIndexInTrick(leadSeat, cardIndex, sitOutSeat);
-            initialHands[playerIndex].push(card);
-          });
-          if (trickCards.length === (sitOutSeat !== null ? 3 : 4) && trump) {
-            const winnerIndex = getWinnerIndex(trickCards, trump);
-            leadSeat = getPlayerIndexInTrick(leadSeat, winnerIndex, sitOutSeat);
-          } else {
-            leadSeat = getPlayerIndexInTrick(leadSeat, 1, sitOutSeat);
-          }
-        });
-        const dealer2 = deal.initialState.dealer ?? 0;
-        const orderCallIndex2 = biddingPhase ? biddingPhase.calls.findIndex((c) => !isPass(c)) : -1;
-        const isOrderedUp2 = orderCallIndex2 >= 0 && orderCallIndex2 < 4;
-        const discard2 = biddingPhase?.discard;
-        const upCard2 = deal.initialState.upCard;
-        if (isOrderedUp2 && upCard2 && discard2) {
-          const upcardIdx = initialHands[dealer2].indexOf(upCard2);
-          if (upcardIdx !== -1) {
-            initialHands[dealer2].splice(upcardIdx, 1);
-            initialHands[dealer2].push(discard2);
-          }
-        }
-      }
-    }
+    const initialHands = inferPlayerCards(deal, ruleset);
     const dealer = deal.initialState.dealer ?? 0;
     const upCard = deal.initialState.upCard;
     const orderCallIndex = biddingPhase ? biddingPhase.calls.findIndex((c) => !isPass(c)) : -1;
@@ -13302,10 +13412,20 @@ var EuchreNotation = (() => {
             currentHands[dealer].push(upCard);
           }
         }
+        let stepAnnotation = Array.isArray(annot) ? annot.join("\n") : annot || `Player ${caller} called: ${call}`;
+        if (hasDiscard && index === orderCallIndex && biddingPhase.callAnnotations) {
+          const discardAnnot = biddingPhase.callAnnotations[16] ?? biddingPhase.callAnnotations["16"];
+          if (discardAnnot) {
+            const discardText = Array.isArray(discardAnnot) ? discardAnnot.join("\n") : String(discardAnnot);
+            stepAnnotation = annot ? `${stepAnnotation}
+[Discard] ${discardText}` : `Player ${caller} called: ${call}
+[Discard] ${discardText}`;
+          }
+        }
         compiled.push({
           type: "BID",
           description: `Bidding: ${players[caller]}`,
-          annotation: Array.isArray(annot) ? annot.join("\n") : annot || `Player ${caller} called: ${call}`,
+          annotation: stepAnnotation,
           hands: currentHands,
           playedCards: [null, null, null, null],
           bidCall: { seat: caller, call },
@@ -13395,6 +13515,7 @@ var EuchreNotation = (() => {
   }
 
   // src/engine/scoring.ts
+  init_bitpacker();
   function getFs() {
     if (typeof __require !== "undefined") {
       try {
@@ -13456,6 +13577,7 @@ var EuchreNotation = (() => {
   }
 
   // src/engine/validation.ts
+  init_bitpacker();
   function getEffectiveSuit(card, trump) {
     if (!card || card.length < 2) return "";
     const rank = card[0];

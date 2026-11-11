@@ -62,29 +62,23 @@ var exports = typeof exports !== "undefined" ? exports : {};
   const footer = `
 // Universal browser global & CommonJS export attachment
 if (typeof window !== "undefined") {
-  window.determineTrump = determineTrump;
-  window.determineMaker = determineMaker;
-  window.determineIsAlone = determineIsAlone;
-  window.determineLeadSeat = determineLeadSeat;
-  window.getLeftBowerSuit = getLeftBowerSuit;
-  window.getCardValue = getCardValue;
-  window.getWinnerIndex = getWinnerIndex;
-  window.getPlayerIndexInTrick = getPlayerIndexInTrick;
-  window.compileDealSteps = compileDealSteps;
+  window.isPass = exports.isPass;
+  window.isOrder = exports.isOrder;
+  window.determineTrump = exports.determineTrump;
+  window.determineMaker = exports.determineMaker;
+  window.determineIsAlone = exports.determineIsAlone;
+  window.determineLeadSeat = exports.determineLeadSeat;
+  window.getLeftBowerSuit = exports.getLeftBowerSuit;
+  window.getCardValue = exports.getCardValue;
+  window.getWinnerIndex = exports.getWinnerIndex;
+  window.getPlayerIndexInTrick = exports.getPlayerIndexInTrick;
+  window.compileDealSteps = exports.compileDealSteps;
+  window.inferPlayerCards = exports.inferPlayerCards;
+  window.calculatePlayerCards = exports.calculatePlayerCards;
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = {
-    determineTrump,
-    determineMaker,
-    determineIsAlone,
-    determineLeadSeat,
-    getLeftBowerSuit,
-    getCardValue,
-    getWinnerIndex,
-    getPlayerIndexInTrick,
-    compileDealSteps,
-  };
+  module.exports = exports;
 }
 `;
 

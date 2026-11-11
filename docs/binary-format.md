@@ -65,7 +65,7 @@ All converter entry points enforce the same safety checks regardless of whether 
 
 * **Schema validation after decode**: Binary decode validates the reconstructed `EgnFile` before returning it.
 * **Schema validation before encode**: Binary encode validates the input `EgnFile` before serializing it.
-* **Numeric-only annotation keys**: Annotation maps such as `callAnnotations` and `playAnnotations` only accept numeric keys.
+* **Numeric-only annotation keys**: Annotation maps such as `callAnnotations` and `playAnnotations` only accept numeric keys (e.g. `0`–`15` for calls, and reserved key `16` for the discard action).
 * **Binary size cap**: Binary inputs and outputs are limited to **8 MiB**.
 
 These checks make the converter fail fast on malformed, non-conformant, or oversized payloads instead of returning partially trusted data.

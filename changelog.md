@@ -4,6 +4,39 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.4] - 2026-11-11
+
+### Added & Improved
+- **Dealer Discard Action Annotation (`callAnnotations["16"]`)**:
+  - Formally specified and documented the reserved key **`"16"`** in `callAnnotations` to annotate the dealer's pickup and discard decision when ordered up in Round 1.
+  - Fully backward compatible with existing JSON schema validators (`^[0-9]+$`), Protobuf serialization (`int32` keys), and binary bitpacker encoding (`encodeInteger(16, 255)`).
+  - Guarantees zero collision across standard 4-player games and all 2–8 player variants (as call indices never exceed 15 in the EGN specification).
+  - Integrated discard annotation resolution into `compileDealSteps` in `src/engine/rules.ts` and the baseline replayer engine, surfacing discard commentary on the order-up step.
+  - Updated specification documentation in `README.md`, `docs/annotations.md`, `docs/replayer-logic.md`, and `docs/binary-format.md`.
+- **Player Cards Inference Engine (`inferPlayerCards`, `calculatePlayerCards` in `src/engine/rules.ts`)**:
+  - Dynamically calculates the initial dealt `playerCards` for each player (`[Seat 0, Seat 1, Seat 2, Seat 3]`) from a single `Deal` object, JSON string, or condensed Base64 bitpacked deal string.
+  - Enforces strict validation: only returns `initialState.playerCards` directly if all 4 seats are completely filled with 5 cards each. If any seat has fewer than 5 cards (or is omitted/empty), hands are inferred from the bidding calls, dealer pickup/discard, and trick play stream.
+  - Replays trick-by-trick gameplay to evaluate card strength, Left and Right Bowers, and trick winners to establish the lead seat for each subsequent trick.
+  - Restores dealer's dealt discard when the dealer was ordered up in round 1.
+  - Preserves loner sitting-out partner's hand from `playerCards` if specified, while inferring active players from trick play.
+  - Refactored `compileDealSteps` to leverage `inferPlayerCards`, eliminating redundant card reconstruction logic across the rules engine.
+- **Deal Player Cards CLI Utility (`src/cli-deal-cards.ts`, `egn-deal-cards`, `egn-player-cards`)**:
+  - Added new CLI tool `egn-deal-cards` (also aliased as `egn-player-cards`) to evaluate and output `playerCards` from any Deal JSON or full EGN file.
+  - Supports `--deal <index|all>` (target a specific deal or all deals), `--seat <0-3>` (extract specific seat cards), `--summary` (human-readable table overview), `--compact` (single-line JSON), `--output <file>`, and stdin piping.
+- **Web Workbench Deal Player Cards Studio & Standalone Tool (`src/workbench/`)**:
+  - Added a dedicated **Deal Player Cards** workspace tab in `src/workbench/index.html` with preset sample deals, drag-and-drop file upload, real-time 4-seat visual card chips with red/black suit styling, dealer/maker badges, and JSON clipboard export.
+  - Added a direct **"🃏 Deal Player Cards"** launcher in the Single Game EGN Studio toolbar.
+  - Added a standalone, zero-dependency browser utility `src/workbench/deal-cards.html` for direct deal inspection without running a server or build step.
+- **Workbench Bundling Resilience (`generate-workbench-bundle.js`, `package.json`)**:
+  - Added `esbuild` to `devDependencies` and enhanced `generate-workbench-bundle.js` with offline fallback to ensure builds and tests succeed seamlessly in sandboxed and offline environments.
+  - Updated browser distributions `src/workbench/bundle.js` and `src/baseline-replayer/rules-engine.js`.
+
+### Fixed
+- **Sample Replayer Script Compatibility (`generate-replayer-rules.js`, `src/baseline-replayer/rules-engine.js`, `src/engine/rules.ts`)**:
+  - Resolved `(0, exports.isPass) is not a function` error in `src/baseline-replayer/index.html`.
+  - Replaced top-level CommonJS import from `bitpacker` in `src/engine/rules.ts` with dynamic resolver `parseDealInput` so `rules-engine.js` remains zero-dependency and directly executable in a standard browser `<script>` tag without a bundler.
+  - Attached all engine exports (`isPass`, `isOrder`, `determineTrump`, `compileDealSteps`, `inferPlayerCards`, `calculatePlayerCards`) to `window` for universal browser global availability.
+
 ## [1.6.3] - 2026-10-20
 
 ### Added & Improved

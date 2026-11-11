@@ -31,9 +31,9 @@ By bridging digital apps, analysis tools, and video rendering pipelines under a 
 
 ## Latest Release
 
-- **Current npm package:** `1.6.3`
+- **Current npm package:** `1.6.4`
 - **Schema family:** `1.6` (EGN) / `1.2` (EMN)
-- **Highlights:** CSP-safe pre-compiled JSON schema validators (`ajv/dist/standalone`) eliminating dynamic `new Function(...)` / `eval` for strict webviews (Reddit Devvit, Chrome MV3), added `"sideEffects": false` and granular subpath exports (`./engine`, `./types`), and improved workbench bundling.
+- **Highlights:** Added `inferPlayerCards` / `calculatePlayerCards` engine API to dynamically calculate starting cards from bidding and trick play (requiring complete 4x5 cards before relying on `playerCards`), new `egn-deal-cards` / `egn-player-cards` CLI utility, and interactive Deal Player Cards studio in the Developer Workbench and standalone HTML utility.
 
 See [changelog.md](changelog.md) for full release details.
 
@@ -207,7 +207,12 @@ When implementing or parsing EGN, keep the following details in mind:
 
 2. **Trick Order and Lead Determination**: The `tricks` array records cards strictly in the chronological order they were dropped on the table. It does not explicitly state which player led each trick. Instead, the lead for the very first trick can be defaulted to the active player to the left of the dealer (except on loners when loner_lead is set to LEFT_OF_LONER). For all subsequent tricks, the lead is implicitly determined by calculating the winner of the prior trick using standard Euchre rules. This aligns with EGN's philosophy of deterministic minimalism.
 
-3. **Annotations**: Optional commentary infrastructure for bidding or trick play. Annotations are defined under `callAnnotations` (for bidding phases) and `playAnnotations` (for trick play phases) as a map from a decision/trick index to an array of strings (e.g., `{"3": ["Order Up on Jacks", "Maker went alone"]}`). Annotation strings may optionally begin with a **label tag** to classify the quality of a decision:
+3. **Annotations**: Optional commentary infrastructure for bidding or trick play. Annotations are defined under `callAnnotations` (for bidding phases) and `playAnnotations` (for trick play phases) as a map from a decision/trick index to an array of strings (e.g., `{"3": ["Order Up on Jacks", "Maker went alone"]}`).
+   * **Bidding Call Indexing**: Keys `0` through `7` (or `0` to `2N-1` in variants) correspond to the 0-based index in the `calls` array.
+   * **Discard Action (`"16"`)**: The dealer's discard decision when ordered up in Round 1 is annotated using the special reserved key **`"16"`** in `callAnnotations` (e.g., `{"16": ["[!]Pitched off-suit 9s, keeping the Ace-King protected"]}`). Key `16` is chosen because call indices in any standard or variant EGN deal will never exceed 15 (`calls.maxItems: 16`), ensuring zero collision across all player counts.
+   * **Trick Play Indexing**: Keys `0` through `19` correspond to the 0-based play index across all tricks.
+   
+   Annotation strings may optionally begin with a **label tag** to classify the quality of a decision:
 
    | Label  | Meaning                                    |
    |--------|--------------------------------------------|
@@ -584,6 +589,9 @@ const [team0Delta, team1Delta] = calculateDealScoreChange(deal, egnFile.metadata
 
 // 5. Compile chronological step-by-step table card states:
 const steps = compileDealSteps(deal, egnFile.metadata);
+
+// 6. Calculate initial starting player cards for all 4 seats (returns complete 4x5 hands directly, or infers from bidding/discard/tricks):
+const initialPlayerCards = inferPlayerCards(deal, egnFile.metadata?.ruleset);
 ```
 
 #### CLI Utility: `egn-engine`
@@ -602,6 +610,21 @@ npx egn-engine game.egn --check
 
 # Validate gameplay rules (reneges, duplicate cards, trick counts)
 npx egn-engine game.egn --validate-gameplay
+```
+
+#### CLI Utility: `egn-deal-cards`
+
+Calculate or infer initial `playerCards` for each player for a specific deal or full EGN game:
+
+```bash
+# Calculate player cards for deal 1
+npx egn-deal-cards game.egn --deal 1
+
+# Extract cards for Seat 2 only (compact JSON)
+npx egn-deal-cards game.egn --deal 1 --seat 2 --compact
+
+# Display human-readable seats overview
+npx egn-deal-cards game.egn --deal 1 --summary
 ```
 
 ### 5. Interactive Browser Tools (Zero Build Required)

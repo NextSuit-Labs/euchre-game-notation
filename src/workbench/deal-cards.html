@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Euchre Deal Player Cards Utility - NextSuit Labs</title>
+  <meta name="description"
+    content="Calculate and infer initial starting playerCards for each seat from a Euchre Deal object or EGN file using the Euchre game engine.">
+  <link rel="stylesheet" href="workbench.css">
+</head>
+
+<body>
+  <!-- Header Bar -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-logo">🃏</div>
+      <div>
+        <h1 class="brand-title">Euchre Deal Player Cards Utility</h1>
+        <p class="brand-subtitle">Engine Initial Hand Inference & Verification</p>
+      </div>
+    </div>
+
+    <div class="header-links">
+      <a href="index.html" class="btn-link" title="Open Full EGN & EMN Workbench">
+        <span>♠</span> Full Workbench
+      </a>
+      <a href="../baseline-replayer/index.html" class="btn-link" target="_blank" title="Launch Interactive Baseline Replayer">
+        <span>▶</span> Replayer
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="workbench-container">
+    <div class="workspace-grid">
+
+      <!-- Left Column: Deal Input -->
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Deal Definition & Input</h2>
+            <p class="panel-subtitle">Paste a single Deal JSON, an EGN game file, or a condensed Base64 deal string.</p>
+          </div>
+          <div class="sample-loader">
+            <label for="deal-sample-select" class="sample-label">Sample Deal:</label>
+            <select id="deal-sample-select" class="select-input">
+              <option value="">Load Sample Deal...</option>
+              <option value="inferred" selected>Inferred Cards (Omitted playerCards)</option>
+              <option value="explicit">Explicit Cards (Provided directly)</option>
+              <option value="loner">Loner Deal (Sit-Out Partner)</option>
+              <option value="orderedUp">Dealer Ordered Up & Discard</option>
+              <option value="condensed">Condensed Base64 Deal String</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="dropzone" id="deal-dropzone" tabindex="0" role="button" aria-label="Upload Deal or EGN file">
+          <span class="dropzone-icon">📂</span>
+          <span class="dropzone-text">Drop <code>.json</code> or <code>.egn</code> file here, or click to browse</span>
+          <input type="file" id="deal-file-input" accept=".egn,.json,.txt" style="display: none;">
+        </div>
+
+        <div id="deal-file-index-container" style="display: none; margin-bottom: 12px; align-items: center; gap: 8px;">
+          <label for="deal-file-index-select" class="sample-label" style="font-weight: 600;">EGN Deal Index:</label>
+          <select id="deal-file-index-select" class="select-input" style="flex: 1;"></select>
+        </div>
+
+        <div class="editor-container">
+          <textarea id="deal-input" class="code-textarea" placeholder="Paste Deal JSON or condensed Base64 deal string here..." spellcheck="false"></textarea>
+        </div>
+
+        <div class="toolbar-row" style="margin-top: 12px;">
+          <div class="tool-group">
+            <button class="btn btn-primary btn-sm" id="btn-deal-calc" type="button" title="Calculate player cards using the engine">
+              ⚡ Calculate Player Cards
+            </button>
+            <button class="btn btn-secondary btn-sm" id="btn-deal-format" type="button" title="Format input JSON">
+              🔄 Format JSON
+            </button>
+            <button class="btn btn-secondary btn-sm" id="btn-deal-clear" type="button" title="Clear input">
+              🧹 Clear
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Player Cards & Visual Analysis -->
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Initial Player Cards</h2>
+            <p class="panel-subtitle">Calculated starting hand for each seat [Seat 0..3].</p>
+          </div>
+          <div class="badge-group">
+            <span class="badge badge-neutral" id="deal-source-badge">Awaiting Input</span>
+          </div>
+        </div>
+
+        <!-- Metadata info banner -->
+        <div class="stats-row" style="margin-bottom: 16px;">
+          <div class="stat-card">
+            <span class="stat-label">Dealer Seat</span>
+            <span class="stat-value" id="deal-stat-dealer">-</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">UpCard</span>
+            <span class="stat-value" id="deal-stat-upcard">-</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Trump Suit</span>
+            <span class="stat-value" id="deal-stat-trump">-</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Calling Team</span>
+            <span class="stat-value" id="deal-stat-maker">-</span>
+          </div>
+        </div>
+
+        <!-- 4-Seat Card Grid Display -->
+        <div class="seat-grid" id="deal-seat-grid">
+          <div class="seat-card" id="seat-card-0">
+            <div class="seat-card-header">
+              <span class="seat-card-title">Seat 0 (North)</span>
+              <span class="badge badge-neutral" id="seat-badge-0">Waiting</span>
+            </div>
+            <div class="cards-row" id="seat-cards-0">
+              <span style="color: var(--text-muted); font-size: 0.8rem;">No cards calculated</span>
+            </div>
+          </div>
+          <div class="seat-card" id="seat-card-1">
+            <div class="seat-card-header">
+              <span class="seat-card-title">Seat 1 (East)</span>
+              <span class="badge badge-neutral" id="seat-badge-1">Waiting</span>
+            </div>
+            <div class="cards-row" id="seat-cards-1">
+              <span style="color: var(--text-muted); font-size: 0.8rem;">No cards calculated</span>
+            </div>
+          </div>
+          <div class="seat-card" id="seat-card-2">
+            <div class="seat-card-header">
+              <span class="seat-card-title">Seat 2 (South)</span>
+              <span class="badge badge-neutral" id="seat-badge-2">Waiting</span>
+            </div>
+            <div class="cards-row" id="seat-cards-2">
+              <span style="color: var(--text-muted); font-size: 0.8rem;">No cards calculated</span>
+            </div>
+          </div>
+          <div class="seat-card" id="seat-card-3">
+            <div class="seat-card-header">
+              <span class="seat-card-title">Seat 3 (West)</span>
+              <span class="badge badge-neutral" id="seat-badge-3">Waiting</span>
+            </div>
+            <div class="cards-row" id="seat-cards-3">
+              <span style="color: var(--text-muted); font-size: 0.8rem;">No cards calculated</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- JSON Output Area -->
+        <div class="output-area">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span class="panel-subtitle">Output: <code>playerCards</code> JSON Array</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label style="font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                <input type="checkbox" id="chk-deal-compact"> Compact
+              </label>
+              <button class="btn btn-sm btn-secondary" id="btn-copy-deal-output" type="button">Copy JSON</button>
+            </div>
+          </div>
+          <textarea id="deal-output" class="code-textarea" style="min-height: 140px; height: 140px;" placeholder="Resulting playerCards [Seat 0..3] will appear here..." readonly></textarea>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div>
+      <strong>NextSuit Labs</strong> &bull; Euchre Game Notation (EGN)
+    </div>
+    <div>
+      Zero-dependency browser engine &bull; <code>inferPlayerCards</code> &bull; Client-side execution
+    </div>
+  </footer>
+
+  <script src="bundle.js"></script>
+  <script>
+    (function () {
+      const E = window.EuchreNotation;
+      if (!E) {
+        console.error("EuchreNotation bundle not loaded.");
+        return;
+      }
+
+      const SAMPLES = {
+        inferred: {
+          dealNumber: 1,
+          initialState: { dealer: 0, upCard: "9s" },
+          phases: [
+            { type: "EUCHRE_BIDDING", phaseNumber: 0, calls: ["Pass", "Pass", "Pass", "Order"] },
+            {
+              type: "TRICK_PLAY",
+              phaseNumber: 1,
+              tricks: [
+                ["Jh", "9d", "Jd", "Ts"],
+                ["Ks", "Qd", "Kd", "Ah"],
+                ["Js", "Kc", "Ad", "Kh"],
+                ["Qc", "9h", "9s", "Ac"],
+                ["Tc", "Qh", "As", "Jc"]
+              ]
+            }
+          ]
+        },
+        explicit: {
+          dealNumber: 1,
+          initialState: {
+            dealer: 0,
+            upCard: "9s",
+            playerCards: [
+              ["Jh", "Tc", "Qc", "Js", "Ks"],
+              ["9d", "Qd", "Kc", "9h", "Qh"],
+              ["Jd", "Ad", "Kd", "As", "9s"],
+              ["Ts", "Jc", "Kh", "Ah", "Ac"]
+            ]
+          },
+          phases: [
+            { type: "EUCHRE_BIDDING", phaseNumber: 0, calls: ["Pass", "Pass", "Pass", "Order"] },
+            {
+              type: "TRICK_PLAY",
+              phaseNumber: 1,
+              tricks: [
+                ["Jh", "9d", "Jd", "Ts"],
+                ["Ks", "Qd", "Kd", "Ah"],
+                ["Js", "Kc", "Ad", "Kh"],
+                ["Qc", "9h", "9s", "Ac"],
+                ["Tc", "Qh", "As", "Jc"]
+              ]
+            }
+          ]
+        },
+        loner: {
+          dealNumber: 0,
+          initialState: { dealer: 0, upCard: "9h" },
+          phases: [
+            { type: "EUCHRE_BIDDING", phaseNumber: 0, calls: ["Order"], isAlone: true },
+            {
+              type: "TRICK_PLAY",
+              phaseNumber: 1,
+              tricks: [
+                ["9h", "Th", "Ah"],
+                ["Jc", "Qs", "Js"],
+                ["Qh", "As", "Kh"],
+                ["Ts", "Jh", "9d"],
+                ["9s", "Jd", "Tc"]
+              ]
+            }
+          ]
+        },
+        orderedUp: {
+          dealNumber: 1,
+          initialState: { dealer: 0, upCard: "9s" },
+          phases: [
+            { type: "EUCHRE_BIDDING", phaseNumber: 0, calls: ["Order"], discard: "9c" },
+            {
+              type: "TRICK_PLAY",
+              phaseNumber: 1,
+              tricks: [
+                ["Ah", "Kh", "Qh", "Th"],
+                ["As", "Ks", "Qs", "Js"],
+                ["Ad", "Kd", "Qd", "Jd"],
+                ["Ac", "Kc", "Qc", "Tc"],
+                ["9s", "Ts", "Td", "Jc"]
+              ]
+            }
+          ]
+        },
+        condensed: "AwAABwMAAAAHAAAACwAAABAAAAAXAAAAGgAAACEAAAAiAAAAKAAAAC0AAAAyAAAAAgEAAAAAAAAAAA=="
+      };
+
+      const dealInput = document.getElementById('deal-input');
+      const dealOutput = document.getElementById('deal-output');
+      const dealSampleSelect = document.getElementById('deal-sample-select');
+      const dealDropzone = document.getElementById('deal-dropzone');
+      const dealFileInput = document.getElementById('deal-file-input');
+      const dealFileIndexContainer = document.getElementById('deal-file-index-container');
+      const dealFileIndexSelect = document.getElementById('deal-file-index-select');
+      const dealSourceBadge = document.getElementById('deal-source-badge');
+      const dealStatDealer = document.getElementById('deal-stat-dealer');
+      const dealStatUpcard = document.getElementById('deal-stat-upcard');
+      const dealStatTrump = document.getElementById('deal-stat-trump');
+      const dealStatMaker = document.getElementById('deal-stat-maker');
+      const chkDealCompact = document.getElementById('chk-deal-compact');
+
+      function calculate() {
+        const raw = dealInput.value.trim();
+        if (!raw) {
+          dealSourceBadge.className = 'badge badge-neutral';
+          dealSourceBadge.textContent = 'Awaiting Input';
+          dealStatDealer.textContent = '-';
+          dealStatUpcard.textContent = '-';
+          dealStatTrump.textContent = '-';
+          dealStatMaker.textContent = '-';
+          for (let s = 0; s < 4; s++) {
+            document.getElementById('seat-badge-' + s).className = 'badge badge-neutral';
+            document.getElementById('seat-badge-' + s).textContent = 'Waiting';
+            document.getElementById('seat-cards-' + s).innerHTML = '<span style="color: var(--text-muted); font-size: 0.8rem;">No cards calculated</span>';
+          }
+          dealOutput.value = '';
+          return;
+        }
+
+        try {
+          let dealObj = null;
+          let ruleset = undefined;
+
+          if (!raw.startsWith('{') && !raw.startsWith('[')) {
+            dealObj = E.unpackDeal(raw, 0);
+            dealFileIndexContainer.style.display = 'none';
+          } else {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed.deals)) {
+              ruleset = parsed.metadata && parsed.metadata.ruleset;
+              if (parsed.deals.length > 1) {
+                dealFileIndexContainer.style.display = 'flex';
+                const curVal = dealFileIndexSelect.value;
+                dealFileIndexSelect.innerHTML = '';
+                for (let i = 0; i < parsed.deals.length; i++) {
+                  const opt = document.createElement('option');
+                  opt.value = i;
+                  opt.textContent = 'Deal ' + i;
+                  dealFileIndexSelect.appendChild(opt);
+                }
+                if (curVal && parseInt(curVal, 10) < parsed.deals.length) {
+                  dealFileIndexSelect.value = curVal;
+                }
+              } else {
+                dealFileIndexContainer.style.display = 'none';
+              }
+              const selIdx = parseInt(dealFileIndexSelect.value || '0', 10);
+              const candidate = parsed.deals[selIdx] || parsed.deals[0];
+              dealObj = typeof candidate === 'string' ? E.unpackDeal(candidate, selIdx) : candidate;
+            } else if (Array.isArray(parsed)) {
+              if (parsed.length > 1) {
+                dealFileIndexContainer.style.display = 'flex';
+                const curVal = dealFileIndexSelect.value;
+                dealFileIndexSelect.innerHTML = '';
+                for (let i = 0; i < parsed.length; i++) {
+                  const opt = document.createElement('option');
+                  opt.value = i;
+                  opt.textContent = 'Deal ' + i;
+                  dealFileIndexSelect.appendChild(opt);
+                }
+                if (curVal && parseInt(curVal, 10) < parsed.length) {
+                  dealFileIndexSelect.value = curVal;
+                }
+              } else {
+                dealFileIndexContainer.style.display = 'none';
+              }
+              const selIdx = parseInt(dealFileIndexSelect.value || '0', 10);
+              const candidate = parsed[selIdx] || parsed[0];
+              dealObj = typeof candidate === 'string' ? E.unpackDeal(candidate, selIdx) : candidate;
+            } else {
+              dealObj = parsed;
+              dealFileIndexContainer.style.display = 'none';
+            }
+          }
+
+          if (!dealObj || typeof dealObj !== 'object') {
+            throw new Error('Input is not a valid Deal structure.');
+          }
+
+          const rawHands = dealObj.initialState && dealObj.initialState.playerCards;
+          const hasComplete = Array.isArray(rawHands) &&
+            rawHands.length === 4 &&
+            rawHands.every(function (h) { return Array.isArray(h) && h.length === 5; });
+
+          const cards = E.inferPlayerCards(dealObj, ruleset);
+
+          if (hasComplete) {
+            dealSourceBadge.className = 'badge badge-success';
+            dealSourceBadge.textContent = '✓ Provided Directly (4x5 cards)';
+          } else {
+            dealSourceBadge.className = 'badge badge-info';
+            dealSourceBadge.textContent = '⚡ Inferred from Play';
+          }
+
+          const dealer = (dealObj.initialState && dealObj.initialState.dealer) !== undefined ? dealObj.initialState.dealer : 0;
+          dealStatDealer.textContent = 'Seat ' + dealer;
+          dealStatUpcard.textContent = (dealObj.initialState && dealObj.initialState.upCard) || 'None';
+
+          const trump = E.determineTrump(dealObj);
+          const suitSymbols = { s: '♠ Spades', h: '♥ Hearts', c: '♣ Clubs', d: '♦ Diamonds' };
+          dealStatTrump.textContent = trump ? (suitSymbols[trump.toLowerCase()] || trump.toUpperCase()) : 'None';
+
+          const maker = E.determineMaker(dealObj);
+          const isAlone = E.determineIsAlone(dealObj);
+          if (maker !== null) {
+            dealStatMaker.textContent = 'Seat ' + maker + ' (Team ' + (maker % 2) + ')' + (isAlone ? ' [Alone]' : '');
+          } else {
+            dealStatMaker.textContent = 'All Passed';
+          }
+
+          let sitOutSeat = null;
+          if (isAlone && maker !== null) {
+            sitOutSeat = (maker + 2) % 4;
+          }
+
+          for (let s = 0; s < 4; s++) {
+            const badge = document.getElementById('seat-badge-' + s);
+            const container = document.getElementById('seat-cards-' + s);
+
+            if (s === dealer) {
+              badge.className = 'badge badge-purple';
+              badge.textContent = 'Dealer';
+            } else if (s === maker) {
+              badge.className = 'badge badge-cyan';
+              badge.textContent = isAlone ? 'Maker (Alone)' : 'Maker';
+            } else if (s === sitOutSeat) {
+              badge.className = 'badge badge-neutral';
+              badge.textContent = 'Sitting Out';
+            } else {
+              badge.className = 'badge badge-neutral';
+              badge.textContent = 'Team ' + (s % 2);
+            }
+
+            const seatCards = cards[s] || [];
+            container.innerHTML = '';
+            if (seatCards.length === 0) {
+              container.innerHTML = '<span style="color: var(--text-muted); font-size: 0.8rem;">' + (s === sitOutSeat ? 'Sat out (loner call)' : 'No cards dealt') + '</span>';
+            } else {
+              seatCards.forEach(function (c) {
+                const chip = document.createElement('span');
+                const suit = c.length >= 2 ? c[1].toLowerCase() : '';
+                const isRed = suit === 'h' || suit === 'd';
+                chip.className = 'card-chip ' + (isRed ? 'suit-red' : 'suit-black');
+                const suitIcon = suit === 's' ? '♠' : suit === 'h' ? '♥' : suit === 'd' ? '♦' : suit === 'c' ? '♣' : suit;
+                chip.textContent = c[0] + suitIcon;
+                container.appendChild(chip);
+              });
+            }
+          }
+
+          dealOutput.value = chkDealCompact.checked ? JSON.stringify(cards) : JSON.stringify(cards, null, 2);
+        } catch (e) {
+          dealSourceBadge.className = 'badge badge-error';
+          dealSourceBadge.textContent = 'Evaluation Error';
+          dealOutput.value = 'Error calculating player cards: ' + e.message;
+        }
+      }
+
+      dealInput.addEventListener('input', calculate);
+      dealFileIndexSelect.addEventListener('change', calculate);
+      chkDealCompact.addEventListener('change', calculate);
+      document.getElementById('btn-deal-calc').addEventListener('click', calculate);
+
+      document.getElementById('btn-deal-format').addEventListener('click', function () {
+        try {
+          const raw = dealInput.value.trim();
+          if (raw.startsWith('{') || raw.startsWith('[')) {
+            dealInput.value = JSON.stringify(JSON.parse(raw), null, 2);
+          }
+        } catch (e) {
+          alert('Cannot format invalid JSON: ' + e.message);
+        }
+      });
+
+      document.getElementById('btn-deal-clear').addEventListener('click', function () {
+        dealInput.value = '';
+        calculate();
+      });
+
+      document.getElementById('btn-copy-deal-output').addEventListener('click', function (e) {
+        navigator.clipboard.writeText(dealOutput.value).then(function () {
+          const originalText = e.target.innerHTML;
+          e.target.innerHTML = '✓ Copied!';
+          setTimeout(function () { e.target.innerHTML = originalText; }, 1800);
+        });
+      });
+
+      dealSampleSelect.addEventListener('change', function () {
+        const key = dealSampleSelect.value;
+        if (SAMPLES[key]) {
+          const sample = SAMPLES[key];
+          dealInput.value = typeof sample === 'string' ? sample : JSON.stringify(sample, null, 2);
+          calculate();
+        }
+      });
+
+      dealDropzone.addEventListener('click', function () { dealFileInput.click(); });
+      dealFileInput.addEventListener('change', function (e) {
+        if (!e.target.files || e.target.files.length === 0) return;
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function (evt) {
+          dealInput.value = evt.target.result;
+          calculate();
+        };
+        reader.readAsText(file);
+      });
+
+      dealDropzone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        dealDropzone.classList.add('dragover');
+      });
+      dealDropzone.addEventListener('dragleave', function () {
+        dealDropzone.classList.remove('dragover');
+      });
+      dealDropzone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dealDropzone.classList.remove('dragover');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          const file = e.dataTransfer.files[0];
+          const reader = new FileReader();
+          reader.onload = function (evt) {
+            dealInput.value = evt.target.result;
+            calculate();
+          };
+          reader.readAsText(file);
+        }
+      });
+
+      dealInput.value = JSON.stringify(SAMPLES.inferred, null, 2);
+      calculate();
+    })();
+  </script>
+</body>
+
+</html>
+

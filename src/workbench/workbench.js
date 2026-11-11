@@ -78,6 +78,22 @@
   const extractorGameSelect = document.getElementById('extractor-game-select');
   const extractorOutput = document.getElementById('extractor-output');
 
+  // Deal Player Cards Workspace Elements
+  const dealInput = document.getElementById('deal-input');
+  const dealOutput = document.getElementById('deal-output');
+  const dealSampleSelect = document.getElementById('deal-sample-select');
+  const dealDropzone = document.getElementById('deal-dropzone');
+  const dealFileInput = document.getElementById('deal-file-input');
+  const dealFileIndexContainer = document.getElementById('deal-file-index-container');
+  const dealFileIndexSelect = document.getElementById('deal-file-index-select');
+  const dealSourceBadge = document.getElementById('deal-source-badge');
+  const dealStatDealer = document.getElementById('deal-stat-dealer');
+  const dealStatUpcard = document.getElementById('deal-stat-upcard');
+  const dealStatTrump = document.getElementById('deal-stat-trump');
+  const dealStatMaker = document.getElementById('deal-stat-maker');
+  const chkDealCompact = document.getElementById('chk-deal-compact');
+  let currentLoadedEgn = null;
+
   // Samples Data
   const SAMPLES = {
     egn: {
@@ -289,6 +305,117 @@
           }
         ]
       }
+    },
+    deal: {
+      inferred: {
+        dealNumber: 1,
+        initialState: {
+          dealer: 0,
+          upCard: "9s"
+        },
+        phases: [
+          {
+            type: "EUCHRE_BIDDING",
+            phaseNumber: 0,
+            calls: ["Pass", "Pass", "Pass", "Order"]
+          },
+          {
+            type: "TRICK_PLAY",
+            phaseNumber: 1,
+            tricks: [
+              ["Jh", "9d", "Jd", "Ts"],
+              ["Ks", "Qd", "Kd", "Ah"],
+              ["Js", "Kc", "Ad", "Kh"],
+              ["Qc", "9h", "9s", "Ac"],
+              ["Tc", "Qh", "As", "Jc"]
+            ]
+          }
+        ]
+      },
+      explicit: {
+        dealNumber: 1,
+        initialState: {
+          dealer: 0,
+          upCard: "9s",
+          playerCards: [
+            ["Jh", "Tc", "Qc", "Js", "Ks"],
+            ["9d", "Qd", "Kc", "9h", "Qh"],
+            ["Jd", "Ad", "Kd", "As", "9s"],
+            ["Ts", "Jc", "Kh", "Ah", "Ac"]
+          ]
+        },
+        phases: [
+          {
+            type: "EUCHRE_BIDDING",
+            phaseNumber: 0,
+            calls: ["Pass", "Pass", "Pass", "Order"]
+          },
+          {
+            type: "TRICK_PLAY",
+            phaseNumber: 1,
+            tricks: [
+              ["Jh", "9d", "Jd", "Ts"],
+              ["Ks", "Qd", "Kd", "Ah"],
+              ["Js", "Kc", "Ad", "Kh"],
+              ["Qc", "9h", "9s", "Ac"],
+              ["Tc", "Qh", "As", "Jc"]
+            ]
+          }
+        ]
+      },
+      loner: {
+        dealNumber: 0,
+        initialState: {
+          dealer: 0,
+          upCard: "9h"
+        },
+        phases: [
+          {
+            type: "EUCHRE_BIDDING",
+            phaseNumber: 0,
+            calls: ["Order"],
+            isAlone: true
+          },
+          {
+            type: "TRICK_PLAY",
+            phaseNumber: 1,
+            tricks: [
+              ["9h", "Th", "Ah"],
+              ["Jc", "Qs", "Js"],
+              ["Qh", "As", "Kh"],
+              ["Ts", "Jh", "9d"],
+              ["9s", "Jd", "Tc"]
+            ]
+          }
+        ]
+      },
+      orderedUp: {
+        dealNumber: 1,
+        initialState: {
+          dealer: 0,
+          upCard: "9s"
+        },
+        phases: [
+          {
+            type: "EUCHRE_BIDDING",
+            phaseNumber: 0,
+            calls: ["Order"],
+            discard: "9c"
+          },
+          {
+            type: "TRICK_PLAY",
+            phaseNumber: 1,
+            tricks: [
+              ["Ah", "Kh", "Qh", "Th"],
+              ["As", "Ks", "Qs", "Js"],
+              ["Ad", "Kd", "Qd", "Jd"],
+              ["Ac", "Kc", "Qc", "Tc"],
+              ["9s", "Ts", "Td", "Jc"]
+            ]
+          }
+        ]
+      },
+      condensed: "AwAABwMAAAAHAAAACwAAABAAAAAXAAAAGgAAACEAAAAiAAAAKAAAAC0AAAAyAAAAAgEAAAAAAAAAAA=="
     }
   };
 
@@ -1005,6 +1132,241 @@
     copyToClipboard(extractorOutput.value, e.target);
   });
 
+  // ==========================================================================
+  // DEAL PLAYER CARDS WORKSPACE OPERATIONS
+  // ==========================================================================
+
+  function updateDealIndexSelect(count) {
+    if (count > 1) {
+      dealFileIndexContainer.style.display = 'flex';
+      const prevVal = dealFileIndexSelect.value;
+      dealFileIndexSelect.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `Deal ${i}`;
+        dealFileIndexSelect.appendChild(opt);
+      }
+      if (prevVal && parseInt(prevVal, 10) < count) {
+        dealFileIndexSelect.value = prevVal;
+      }
+    } else {
+      dealFileIndexContainer.style.display = 'none';
+    }
+  }
+
+  function calculateDealCardsWorkspace() {
+    const raw = dealInput.value.trim();
+    if (!raw) {
+      dealSourceBadge.className = 'badge badge-neutral';
+      dealSourceBadge.textContent = 'Awaiting Input';
+      dealStatDealer.textContent = '-';
+      dealStatUpcard.textContent = '-';
+      dealStatTrump.textContent = '-';
+      dealStatMaker.textContent = '-';
+      for (let s = 0; s < 4; s++) {
+        const b = document.getElementById(`seat-badge-${s}`);
+        const c = document.getElementById(`seat-cards-${s}`);
+        if (b) {
+          b.className = 'badge badge-neutral';
+          b.textContent = 'Waiting';
+        }
+        if (c) {
+          c.innerHTML = '<span style="color: var(--text-muted); font-size: 0.8rem;">No cards calculated</span>';
+        }
+      }
+      dealOutput.value = '';
+      return;
+    }
+
+    try {
+      let dealObj = null;
+      let ruleset = undefined;
+
+      if (!raw.startsWith('{') && !raw.startsWith('[')) {
+        // Condensed Base64 deal string
+        dealObj = E.unpackDeal(raw, 0);
+        dealFileIndexContainer.style.display = 'none';
+      } else {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed.deals)) {
+          currentLoadedEgn = parsed;
+          ruleset = parsed.metadata?.ruleset;
+          updateDealIndexSelect(parsed.deals.length);
+          const selIdx = parseInt(dealFileIndexSelect.value || '0', 10);
+          const candidate = parsed.deals[selIdx] || parsed.deals[0];
+          dealObj = typeof candidate === 'string' ? E.unpackDeal(candidate, selIdx) : candidate;
+        } else if (Array.isArray(parsed)) {
+          updateDealIndexSelect(parsed.length);
+          const selIdx = parseInt(dealFileIndexSelect.value || '0', 10);
+          const candidate = parsed[selIdx] || parsed[0];
+          dealObj = typeof candidate === 'string' ? E.unpackDeal(candidate, selIdx) : candidate;
+        } else {
+          dealObj = parsed;
+          dealFileIndexContainer.style.display = 'none';
+        }
+      }
+
+      if (!dealObj || typeof dealObj !== 'object') {
+        throw new Error('Input is not a valid Deal structure.');
+      }
+
+      const rawHands = dealObj.initialState?.playerCards;
+      const hasComplete = Array.isArray(rawHands) &&
+        rawHands.length === 4 &&
+        rawHands.every(h => Array.isArray(h) && h.length === 5);
+
+      // Run engine calculation
+      const cards = E.inferPlayerCards(dealObj, ruleset);
+
+      // Update Source Badge
+      if (hasComplete) {
+        dealSourceBadge.className = 'badge badge-success';
+        dealSourceBadge.textContent = '✓ Provided Directly (4x5 cards)';
+      } else {
+        dealSourceBadge.className = 'badge badge-info';
+        dealSourceBadge.textContent = '⚡ Inferred from Play';
+      }
+
+      // Update Stats
+      const dealer = dealObj.initialState?.dealer ?? 0;
+      dealStatDealer.textContent = `Seat ${dealer}`;
+      dealStatUpcard.textContent = dealObj.initialState?.upCard || 'None';
+
+      const trump = E.determineTrump(dealObj);
+      const suitSymbols = { s: '♠ Spades', h: '♥ Hearts', c: '♣ Clubs', d: '♦ Diamonds' };
+      dealStatTrump.textContent = trump ? (suitSymbols[trump.toLowerCase()] || trump.toUpperCase()) : 'None';
+
+      const maker = E.determineMaker(dealObj);
+      const isAlone = E.determineIsAlone(dealObj);
+      if (maker !== null) {
+        dealStatMaker.textContent = `Seat ${maker} (Team ${maker % 2})${isAlone ? ' [Alone]' : ''}`;
+      } else {
+        dealStatMaker.textContent = 'All Passed';
+      }
+
+      let sitOutSeat = null;
+      if (isAlone && maker !== null) {
+        sitOutSeat = (maker + 2) % 4;
+      }
+
+      // Render cards for Seats 0..3
+      for (let s = 0; s < 4; s++) {
+        const badge = document.getElementById(`seat-badge-${s}`);
+        const container = document.getElementById(`seat-cards-${s}`);
+        if (!badge || !container) continue;
+
+        if (s === dealer) {
+          badge.className = 'badge badge-purple';
+          badge.textContent = 'Dealer';
+        } else if (s === maker) {
+          badge.className = 'badge badge-cyan';
+          badge.textContent = isAlone ? 'Maker (Alone)' : 'Maker';
+        } else if (s === sitOutSeat) {
+          badge.className = 'badge badge-neutral';
+          badge.textContent = 'Sitting Out';
+        } else {
+          badge.className = 'badge badge-neutral';
+          badge.textContent = `Team ${s % 2}`;
+        }
+
+        const seatCards = cards[s] || [];
+        container.innerHTML = '';
+        if (seatCards.length === 0) {
+          container.innerHTML = `<span style="color: var(--text-muted); font-size: 0.8rem;">${s === sitOutSeat ? 'Sat out (loner call)' : 'No cards dealt'}</span>`;
+        } else {
+          seatCards.forEach(c => {
+            const chip = document.createElement('span');
+            const suit = c.length >= 2 ? c[1].toLowerCase() : '';
+            const isRed = suit === 'h' || suit === 'd';
+            chip.className = `card-chip ${isRed ? 'suit-red' : 'suit-black'}`;
+            const suitIcon = suit === 's' ? '♠' : suit === 'h' ? '♥' : suit === 'd' ? '♦' : suit === 'c' ? '♣' : suit;
+            chip.textContent = `${c[0]}${suitIcon}`;
+            container.appendChild(chip);
+          });
+        }
+      }
+
+      dealOutput.value = chkDealCompact.checked ? JSON.stringify(cards) : JSON.stringify(cards, null, 2);
+    } catch (e) {
+      dealSourceBadge.className = 'badge badge-error';
+      dealSourceBadge.textContent = 'Evaluation Error';
+      dealOutput.value = 'Error calculating player cards: ' + e.message;
+    }
+  }
+
+  // Deal Input Events
+  dealInput.addEventListener('input', () => {
+    calculateDealCardsWorkspace();
+  });
+
+  dealFileIndexSelect.addEventListener('change', () => {
+    calculateDealCardsWorkspace();
+  });
+
+  chkDealCompact.addEventListener('change', () => {
+    calculateDealCardsWorkspace();
+  });
+
+  document.getElementById('btn-deal-calc').addEventListener('click', () => {
+    calculateDealCardsWorkspace();
+  });
+
+  document.getElementById('btn-deal-format').addEventListener('click', () => {
+    try {
+      const raw = dealInput.value.trim();
+      if (raw.startsWith('{') || raw.startsWith('[')) {
+        dealInput.value = JSON.stringify(JSON.parse(raw), null, 2);
+      }
+    } catch (e) {
+      alert('Cannot format invalid JSON: ' + e.message);
+    }
+  });
+
+  document.getElementById('btn-deal-clear').addEventListener('click', () => {
+    dealInput.value = '';
+    calculateDealCardsWorkspace();
+  });
+
+  document.getElementById('btn-copy-deal-output').addEventListener('click', (e) => {
+    copyToClipboard(dealOutput.value, e.target);
+  });
+
+  // Deal Sample Selector
+  dealSampleSelect.addEventListener('change', () => {
+    const key = dealSampleSelect.value;
+    if (SAMPLES.deal && SAMPLES.deal[key]) {
+      const sample = SAMPLES.deal[key];
+      dealInput.value = typeof sample === 'string' ? sample : JSON.stringify(sample, null, 2);
+      calculateDealCardsWorkspace();
+    }
+  });
+
+  // Deal Dropzone & File Upload
+  setupDropzone(dealDropzone, dealFileInput, (content) => {
+    dealInput.value = typeof content === 'string' ? content : JSON.stringify(content, null, 2);
+    calculateDealCardsWorkspace();
+  });
+
+  // Bridge from EGN Studio to Deal Player Cards tab
+  document.getElementById('btn-egn-deal-cards').addEventListener('click', () => {
+    try {
+      const parsed = parseEgnInput();
+      if (!Array.isArray(parsed.deals) || parsed.deals.length === 0) {
+        alert('Active EGN has no deals to evaluate.');
+        return;
+      }
+      dealInput.value = JSON.stringify(parsed, null, 2);
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabPanes.forEach(p => p.classList.remove('active'));
+      document.getElementById('nav-tab-deal').classList.add('active');
+      document.getElementById('tab-deal').classList.add('active');
+      calculateDealCardsWorkspace();
+    } catch (e) {
+      alert('Failed to load deal from EGN: ' + e.message);
+    }
+  });
+
   // Initial Workspace Population with Sample
   egnInput.value = JSON.stringify(SAMPLES.egn.standard, null, 2);
   validateEgnWorkspace();
@@ -1013,5 +1375,8 @@
   validateEmnWorkspace();
 
   updateExtractorGameOptions();
+
+  dealInput.value = JSON.stringify(SAMPLES.deal.inferred, null, 2);
+  calculateDealCardsWorkspace();
 
 })();

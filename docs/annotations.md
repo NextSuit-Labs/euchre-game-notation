@@ -2,17 +2,31 @@
 
 EGN provides optional commentary infrastructure for annotating bidding decisions and card plays. Annotations are stored on each phase as a map from a decision or trick index (as a string key) to an array of annotation strings.
 
-* `callAnnotations` — applies to `EUCHRE_BIDDING` phases; the key is the 0-based index into the `calls` array.
+* `callAnnotations` — applies to `EUCHRE_BIDDING` phases; the key is the 0-based index into the `calls` array. In addition, the reserved key **`"16"`** is used to annotate the dealer's **discard action** when ordered up in Round 1.
 * `playAnnotations` — applies to `TRICK_PLAY` phases; the key is the 0-based index into each play across all tricks.
 
 ```json
 "callAnnotations": {
-  "3": ["[!]Strong order by Dealer"]
+  "3": ["[!]Strong order by Dealer"],
+  "16": ["[!]Kept the offsuit Ace, correctly pitched the 9s"]
 },
 "playAnnotations": {
   "2": ["[?]Mistake here by Seat 2."]
 }
 ```
+
+### Annotating the Discard Action (`"16"`)
+
+When the dealer is ordered up in Round 1, the dealer takes the turned-up card into hand and discards one card to the kitty. Because this discard is an active gameplay decision that is not recorded as a call in the `calls` array, it is annotated using the reserved index **`"16"`** in `callAnnotations`:
+
+```json
+"callAnnotations": {
+  "3": ["[!]Dealer ordered up the Right Bower alone"],
+  "16": ["[!]Discarded 9h, holding onto offsuit Ace"]
+}
+```
+
+> **Why `"16"`?** The EGN specification supports bidding rounds for up to 8 players (`calls.maxItems: 16`), meaning call indices strictly occupy `0` through `15`. Index `16` is guaranteed never to collide with any bidding call across all standard and variant games, while maintaining full compatibility with numeric schema validators and bitpacked binary formats.
 
 ---
 
