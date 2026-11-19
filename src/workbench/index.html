@@ -58,7 +58,7 @@
 
     <!-- Header Actions -->
     <div class="header-links">
-      <span class="badge-version" id="header-version-badge">v1.6.4</span>
+      <span class="badge-version" id="header-version-badge">v1.6.5</span>
       <a href="../baseline-replayer/index.html" class="btn-link" target="_blank" id="header-link-replayer"
         title="Launch Interactive Baseline Replayer">
         <span>▶</span> Replayer
@@ -369,6 +369,7 @@
                 <option value="ROUND_ROBIN">ROUND_ROBIN</option>
                 <option value="TARGET_SCORE">TARGET_SCORE</option>
                 <option value="FIXED_GAMES">FIXED_GAMES</option>
+                <option value="DUPLICATE">DUPLICATE</option>
                 <option value="SINGLE_GAME">SINGLE_GAME</option>
               </select>
             </div>
@@ -472,7 +473,8 @@
           <div class="panel-header">
             <div>
               <h2 class="panel-title">Deal Definition & Input</h2>
-              <p class="panel-subtitle">Paste a single Deal JSON, an EGN game file, or a condensed Base64 deal string.</p>
+              <p class="panel-subtitle">Paste a single Deal JSON, an EGN game file, or a condensed Base64 deal string.
+              </p>
             </div>
             <div class="sample-loader">
               <label for="deal-sample-select" class="sample-label">Sample Deal:</label>
@@ -489,22 +491,26 @@
 
           <div class="dropzone" id="deal-dropzone" tabindex="0" role="button" aria-label="Upload Deal or EGN file">
             <span class="dropzone-icon">📂</span>
-            <span class="dropzone-text">Drop <code>.json</code> or <code>.egn</code> file here, or click to browse</span>
+            <span class="dropzone-text">Drop <code>.json</code> or <code>.egn</code> file here, or click to
+              browse</span>
             <input type="file" id="deal-file-input" accept=".egn,.json,.txt" style="display: none;">
           </div>
 
-          <div id="deal-file-index-container" style="display: none; margin-bottom: 12px; align-items: center; gap: 8px;">
+          <div id="deal-file-index-container"
+            style="display: none; margin-bottom: 12px; align-items: center; gap: 8px;">
             <label for="deal-file-index-select" class="sample-label" style="font-weight: 600;">EGN Deal Index:</label>
             <select id="deal-file-index-select" class="select-input" style="flex: 1;"></select>
           </div>
 
           <div class="editor-container">
-            <textarea id="deal-input" class="code-textarea" placeholder="Paste Deal JSON or condensed Base64 deal string here..." spellcheck="false"></textarea>
+            <textarea id="deal-input" class="code-textarea"
+              placeholder="Paste Deal JSON or condensed Base64 deal string here..." spellcheck="false"></textarea>
           </div>
 
           <div class="toolbar-row" style="margin-top: 12px;">
             <div class="tool-group">
-              <button class="btn btn-primary btn-sm" id="btn-deal-calc" type="button" title="Calculate player cards using the engine">
+              <button class="btn btn-primary btn-sm" id="btn-deal-calc" type="button"
+                title="Calculate player cards using the engine">
                 ⚡ Calculate Player Cards
               </button>
               <button class="btn btn-secondary btn-sm" id="btn-deal-format" type="button" title="Format input JSON">
@@ -594,13 +600,15 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
               <span class="panel-subtitle">Output: <code>playerCards</code> JSON Array</span>
               <div style="display: flex; align-items: center; gap: 8px;">
-                <label style="font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                <label
+                  style="font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; cursor: pointer;">
                   <input type="checkbox" id="chk-deal-compact"> Compact
                 </label>
                 <button class="btn btn-sm btn-secondary" id="btn-copy-deal-output" type="button">Copy JSON</button>
               </div>
             </div>
-            <textarea id="deal-output" class="code-textarea" style="min-height: 140px; height: 140px;" placeholder="Resulting playerCards [Seat 0..3] will appear here..." readonly></textarea>
+            <textarea id="deal-output" class="code-textarea" style="min-height: 140px; height: 140px;"
+              placeholder="Resulting playerCards [Seat 0..3] will appear here..." readonly></textarea>
           </div>
         </div>
 

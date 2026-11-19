@@ -26,7 +26,8 @@ export type MatchType =
   | "ELIMINATION"
   | "SWISS"
   | "TIMED"
-  | "SINGLE_GAME";
+  | "SINGLE_GAME"
+  | "DUPLICATE";
 
 export interface MatchFormat {
   type: MatchType;

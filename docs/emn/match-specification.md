@@ -150,6 +150,7 @@ Every game in `games` contains a `playersOverride` array of **exactly 4 player I
 | `SWISS` | Swiss-system tournament match pairing | Round number |
 | `TIMED` | Time-bound match session | Duration limit in minutes |
 | `SINGLE_GAME` | Standalone single game match | Unused |
+| `DUPLICATE` | Duplicate tournament/match; identical boards/deals compared across teams or tables | Number of hands (deals) |
 | `CUSTOM` | Arbitrary or non-standard ruleset | Custom metric |
 
 ---

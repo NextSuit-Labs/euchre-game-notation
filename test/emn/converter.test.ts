@@ -262,4 +262,24 @@ describe("EMN Binary Converter (.emnb)", () => {
       color: "#0000FF",
     });
   });
+
+  it("should preserve DUPLICATE match format and target hands across .emnb roundtrip", () => {
+    const emnDuplicate: EmnFile = {
+      ...validEmnMock,
+      metadata: {
+        ...validEmnMock.metadata,
+        matchFormat: {
+          type: "DUPLICATE",
+          target: 16,
+        },
+      },
+    };
+
+    const binBytes = convertEmnFileToBinData(emnDuplicate);
+    const decoded = convertBinDataToEmnFile(binBytes);
+
+    expect(decoded.metadata.matchFormat).toBeDefined();
+    expect(decoded.metadata.matchFormat?.type).toBe("DUPLICATE");
+    expect(decoded.metadata.matchFormat?.target).toBe(16);
+  });
 });

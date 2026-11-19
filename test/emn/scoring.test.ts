@@ -260,4 +260,57 @@ describe("EMN Match Scoring Engine", () => {
     const validation = validateEmn(updated);
     expect(validation.isValid).toBe(true);
   });
+
+  it("calculates scores and completion for DUPLICATE format based on number of hands", () => {
+    const duplicateMatch: EmnFile = {
+      fileType: "Euchre Match Notation",
+      version: "1.1",
+      metadata: {
+        title: "Duplicate Tournament Match 1",
+        players: [
+          { id: "p-01", name: "Alice" },
+          { id: "p-02", name: "Bob" },
+          { id: "p-03", name: "Charlie" },
+          { id: "p-04", name: "David" },
+        ],
+        teams: [
+          { id: "team-ns", name: "A & C", playerIds: ["p-01", "p-03"] },
+          { id: "team-ew", name: "B & D", playerIds: ["p-02", "p-04"] },
+        ],
+        matchFormat: {
+          type: "DUPLICATE",
+          target: 8, // 8 hands / deals
+        },
+      },
+      games: [
+        {
+          gameIndex: 0,
+          playersOverride: ["p-01", "p-02", "p-03", "p-04"],
+          gameData: {
+            fileType: "Euchre Game Notation",
+            version: "1.6",
+            metadata: {
+              players: ["Alice", "Bob", "Charlie", "David"],
+              initialScore: [0, 0],
+              finalScore: [12, 9],
+            },
+            deals: new Array(8).fill("mockDealString"),
+          },
+        },
+      ],
+    };
+
+    const res = calculateEmnScores(duplicateMatch);
+    expect(res.status).toBe("COMPLETED");
+    expect(res.scores["p-01"]).toBe(12);
+    expect(res.scores["p-03"]).toBe(12);
+    expect(res.scores["p-02"]).toBe(9);
+    expect(res.scores["p-04"]).toBe(9);
+    expect(res.teamScores?.["team-ns"]).toBe(12);
+    expect(res.teamScores?.["team-ew"]).toBe(9);
+    expect(res.winner).toEqual(["p-01", "p-03"]);
+
+    const validation = validateEmn(duplicateMatch);
+    expect(validation.isValid).toBe(true);
+  });
 });

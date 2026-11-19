@@ -109,6 +109,7 @@ export function calculateEmnScores(input: EmnFile | string): EmnScoreResult {
     const ruleset = gameData?.metadata?.ruleset;
     const isNumDeals = Boolean(
       formatType === "PROGRESSIVE" ||
+      formatType === "DUPLICATE" ||
       (ruleset && typeof ruleset.num_deals === "number" && ruleset.num_deals > 0)
     );
 
@@ -191,6 +192,14 @@ export function calculateEmnScores(input: EmnFile | string): EmnScoreResult {
     } else if (formatType === "TARGET_SCORE") {
       const targetReached = winners.some((w) => scores[w] >= target);
       status = targetReached ? "COMPLETED" : "IN_PROGRESS";
+    } else if (formatType === "DUPLICATE") {
+      // In DUPLICATE format, target represents the number of hands (deals)
+      const dealsCount = games.reduce((sum, g) => sum + (g.gameData?.deals?.length || 0), 0);
+      if (dealsCount > 0) {
+        const completedDeals =
+          games.every((g) => (g.gameData?.deals?.length || 0) >= target) || dealsCount >= target;
+        status = completedDeals ? "COMPLETED" : "IN_PROGRESS";
+      }
     }
   }
 

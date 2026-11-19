@@ -4,6 +4,14 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.5] - 2026-11-19
+### Added & Improved
+- **Duplicate Euchre Match Format Support (`matchFormat.type = "DUPLICATE"`)**:
+  - Added `"DUPLICATE"` as a first-class supported match format type across EMN JSON schemas, Protobuf definitions (`schemas/emn/emn.proto`), and TypeScript types.
+  - Formally specified the `target` field for `DUPLICATE` matches to denote the predetermined number of hands (deals) played.
+  - Updated the EMN scoring engine (`calculateEmnScores` in `src/emn/scoring.ts`) to accumulate cumulative deal points and evaluate match completion based on the target number of hands.
+  - Added `DUPLICATE` format selection to the Workbench EMN Combiner UI and updated documentation in `docs/emn/match-specification.md`.
+
 ## [1.6.4] - 2026-11-11
 
 ### Added & Improved

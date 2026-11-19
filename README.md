@@ -31,9 +31,9 @@ By bridging digital apps, analysis tools, and video rendering pipelines under a 
 
 ## Latest Release
 
-- **Current npm package:** `1.6.4`
+- **Current npm package:** `1.6.5`
 - **Schema family:** `1.6` (EGN) / `1.2` (EMN)
-- **Highlights:** Added `inferPlayerCards` / `calculatePlayerCards` engine API to dynamically calculate starting cards from bidding and trick play (requiring complete 4x5 cards before relying on `playerCards`), new `egn-deal-cards` / `egn-player-cards` CLI utility, and interactive Deal Player Cards studio in the Developer Workbench and standalone HTML utility.
+- **Highlights:** Added `DUPLICATE` match format support in EMN schemas, Protobuf, scoring engine, and Workbench with target hands (deals) parameter; dealer discard action annotation (`callAnnotations["16"]`); `inferPlayerCards` / `calculatePlayerCards` engine API; and new `egn-deal-cards` CLI.
 
 See [changelog.md](changelog.md) for full release details.
 

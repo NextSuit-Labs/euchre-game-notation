@@ -130,7 +130,8 @@
                 "ELIMINATION",
                 "SWISS",
                 "TIMED",
-                "SINGLE_GAME"
+                "SINGLE_GAME",
+                "DUPLICATE"
               ]
             },
             "target": {

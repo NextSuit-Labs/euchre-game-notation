@@ -16,6 +16,7 @@ message MatchFormat {
     SWISS = 7;
     TIMED = 8;
     SINGLE_GAME = 9;
+    DUPLICATE = 10;
   }
   MatchType type = 1;
   optional int32 target = 2;

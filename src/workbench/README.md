@@ -76,7 +76,7 @@ No build step or Node.js server is required to run the workbench. You can open i
 ### 3. Cross-Format Suite: Combiner & Extractor
 * **EGN to EMN Match Combiner**:
   * Combines multiple individual EGN games into a unified EMN match file (`combineEgnToEmn`).
-  * Configurable match formats: `BEST_OF_N`, `PROGRESSIVE`, `ROUND_ROBIN`, `TARGET_SCORE`, `FIXED_GAMES`, and `SINGLE_GAME`.
+  * Configurable match formats: `BEST_OF_N`, `PROGRESSIVE`, `ROUND_ROBIN`, `TARGET_SCORE`, `FIXED_GAMES`, `DUPLICATE`, and `SINGLE_GAME`.
   * Automatically unifies players into a master registry and calculates match results and winners if sub-games contain final scores.
 * **EMN to EGN Game Extractor**:
   * Extracts individual sub-EGN games or all games from an EMN match file (`extractEgnFromEmn`, `extractAllEgnsFromEmn`).
