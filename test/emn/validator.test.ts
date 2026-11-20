@@ -489,11 +489,19 @@ describe("EMN Combine Utility", () => {
         target: 16,
         parameters: { unit: "INDIVIDUAL", scoring: "TOTAL_POINTS" },
       });
+      expect(combined.version).toBe("1.3");
       expect(combined.metadata.matchFormat).toEqual({
         type: "DUPLICATE",
         target: 16,
         parameters: { unit: "INDIVIDUAL", scoring: "TOTAL_POINTS" },
       });
+    });
+
+    it("validates EMN v1.3 files while maintaining 1.1 and 1.2 compatibility", () => {
+      expect(validateEmn({ ...validEmnMock, version: "1.1" }).isValid).toBe(true);
+      expect(validateEmn({ ...validEmnMock, version: "1.2" }).isValid).toBe(true);
+      expect(validateEmn({ ...validEmnMock, version: "1.3" }).isValid).toBe(true);
+      expect(validateEmn({ ...validEmnMock, version: "1.4" }).isValid).toBe(false);
     });
   });
 });

@@ -13883,16 +13883,16 @@ var EuchreNotation = (() => {
   });
 
   // src/emn/version.ts
-  var EMN_SCHEMA_VERSION = "1.2";
-  var SUPPORTED_EMN_SCHEMA_VERSION_RE = /^1\.[12](?:\.\d+)?$/;
+  var EMN_SCHEMA_VERSION = "1.3";
+  var SUPPORTED_EMN_SCHEMA_VERSION_RE = /^1\.[123](?:\.\d+)?$/;
   function isSupportedEmnSchemaVersion(version) {
     return SUPPORTED_EMN_SCHEMA_VERSION_RE.test(version);
   }
 
   // src/generated/emn-validators.ts
   var validateEmn = validate102;
-  var schema112 = { "$schema": "http://json-schema.org/draft-07/schema#", "title": "Euchre Match Notation (EMN)", "description": "JSON Schema for validating Euchre Match Notation (.emn) files.", "type": "object", "required": ["fileType", "version", "metadata", "games"], "additionalProperties": false, "properties": { "fileType": { "type": "string", "const": "Euchre Match Notation" }, "version": { "type": "string", "pattern": "^1\\.[12](?:\\.\\d+)?$" }, "metadata": { "type": "object", "required": ["players"], "additionalProperties": false, "properties": { "matchId": { "type": "string", "maxLength": 64 }, "title": { "type": "string", "maxLength": 128 }, "description": { "type": "string", "maxLength": 1024 }, "date": { "type": "string", "maxLength": 64, "anyOf": [{ "format": "date-time" }, { "format": "date" }, { "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}([T ]\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?)?$" }] }, "teams": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "object", "required": ["id", "name"], "additionalProperties": false, "properties": { "id": { "type": "string", "maxLength": 64 }, "name": { "type": "string", "maxLength": 64 }, "playerIds": { "type": "array", "items": { "type": "string", "maxLength": 64 } }, "color": { "type": "string", "maxLength": 32 } } } }, "players": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "allOf": [{ "$ref": "../egn-schema-v1.json#/definitions/player" }, { "type": "object", "required": ["id"], "properties": { "id": { "type": "string", "maxLength": 64 } } }] } }, "matchFormat": { "type": "object", "required": ["type"], "additionalProperties": false, "properties": { "type": { "type": "string", "enum": ["BEST_OF_N", "PROGRESSIVE", "ROUND_ROBIN", "CUSTOM", "FIXED_GAMES", "TARGET_SCORE", "ELIMINATION", "SWISS", "TIMED", "SINGLE_GAME", "DUPLICATE"] }, "target": { "type": "integer", "minimum": 1 }, "parameters": { "type": "object", "description": "Optional format-specific match parameters (e.g., scoring unit, scoring method, movement, or tiebreaker rules).", "additionalProperties": { "type": "string", "maxLength": 64 } } } }, "result": { "type": "object", "additionalProperties": false, "properties": { "status": { "type": "string", "enum": ["COMPLETED", "IN_PROGRESS", "FORFEIT", "DRAW"] }, "winner": { "type": "array", "items": { "type": "string" }, "description": "Winning player ID(s) or team key" }, "scores": { "type": "object", "additionalProperties": { "type": "number" }, "description": "Map of player ID or team key to final score metric" } } } } }, "games": { "type": "array", "items": { "type": "object", "required": ["gameIndex", "playersOverride", "gameData"], "additionalProperties": false, "properties": { "gameIndex": { "type": "integer", "minimum": 0 }, "playersOverride": { "type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": { "type": "string" }, "description": "Array of 4 player IDs mapped to [Seat 0: North, Seat 1: East, Seat 2: South, Seat 3: West]" }, "gameData": { "$ref": "../egn-schema-v1.json" } } } } } };
-  var pattern02 = new RegExp("^1\\.[12](?:\\.\\d+)?$", "u");
+  var schema112 = { "$schema": "http://json-schema.org/draft-07/schema#", "title": "Euchre Match Notation (EMN)", "description": "JSON Schema for validating Euchre Match Notation (.emn) files.", "type": "object", "required": ["fileType", "version", "metadata", "games"], "additionalProperties": false, "properties": { "fileType": { "type": "string", "const": "Euchre Match Notation" }, "version": { "type": "string", "pattern": "^1\\.[123](?:\\.\\d+)?$" }, "metadata": { "type": "object", "required": ["players"], "additionalProperties": false, "properties": { "matchId": { "type": "string", "maxLength": 64 }, "title": { "type": "string", "maxLength": 128 }, "description": { "type": "string", "maxLength": 1024 }, "date": { "type": "string", "maxLength": 64, "anyOf": [{ "format": "date-time" }, { "format": "date" }, { "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}([T ]\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?)?$" }] }, "teams": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "object", "required": ["id", "name"], "additionalProperties": false, "properties": { "id": { "type": "string", "maxLength": 64 }, "name": { "type": "string", "maxLength": 64 }, "playerIds": { "type": "array", "items": { "type": "string", "maxLength": 64 } }, "color": { "type": "string", "maxLength": 32 } } } }, "players": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "allOf": [{ "$ref": "../egn-schema-v1.json#/definitions/player" }, { "type": "object", "required": ["id"], "properties": { "id": { "type": "string", "maxLength": 64 } } }] } }, "matchFormat": { "type": "object", "required": ["type"], "additionalProperties": false, "properties": { "type": { "type": "string", "enum": ["BEST_OF_N", "PROGRESSIVE", "ROUND_ROBIN", "CUSTOM", "FIXED_GAMES", "TARGET_SCORE", "ELIMINATION", "SWISS", "TIMED", "SINGLE_GAME", "DUPLICATE"] }, "target": { "type": "integer", "minimum": 1 }, "parameters": { "type": "object", "description": "Optional format-specific match parameters (e.g., scoring unit, scoring method, movement, or tiebreaker rules).", "additionalProperties": { "type": "string", "maxLength": 64 } } } }, "result": { "type": "object", "additionalProperties": false, "properties": { "status": { "type": "string", "enum": ["COMPLETED", "IN_PROGRESS", "FORFEIT", "DRAW"] }, "winner": { "type": "array", "items": { "type": "string" }, "description": "Winning player ID(s) or team key" }, "scores": { "type": "object", "additionalProperties": { "type": "number" }, "description": "Map of player ID or team key to final score metric" } } } } }, "games": { "type": "array", "items": { "type": "object", "required": ["gameIndex", "playersOverride", "gameData"], "additionalProperties": false, "properties": { "gameIndex": { "type": "integer", "minimum": 0 }, "playersOverride": { "type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": { "type": "string" }, "description": "Array of 4 player IDs mapped to [Seat 0: North, Seat 1: East, Seat 2: South, Seat 3: West]" }, "gameData": { "$ref": "../egn-schema-v1.json" } } } } } };
+  var pattern02 = new RegExp("^1\\.[123](?:\\.\\d+)?$", "u");
   var pattern12 = new RegExp("^$|^\\d{4}-\\d{2}-\\d{2}([T ]\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?)?$", "u");
   var func22 = require_ucs2length().default;
   var func0 = require_equal().default;
@@ -16201,7 +16201,7 @@ var EuchreNotation = (() => {
                 if (errors === _errs4) {
                   if (typeof data1 === "string") {
                     if (!pattern02.test(data1)) {
-                      validate102.errors = [{ instancePath: instancePath + "/version", schemaPath: "#/properties/version/pattern", keyword: "pattern", params: { pattern: "^1\\.[12](?:\\.\\d+)?$" }, message: 'must match pattern "^1\\.[12](?:\\.\\d+)?$"' }];
+                      validate102.errors = [{ instancePath: instancePath + "/version", schemaPath: "#/properties/version/pattern", keyword: "pattern", params: { pattern: "^1\\.[123](?:\\.\\d+)?$" }, message: 'must match pattern "^1\\.[123](?:\\.\\d+)?$"' }];
                       return false;
                     }
                   } else {
@@ -17165,7 +17165,7 @@ var EuchreNotation = (() => {
     if (emnData.version && !isSupportedEmnSchemaVersion(emnData.version)) {
       customErrors.push({
         instancePath: "/version",
-        message: `Unsupported EMN version '${emnData.version}'. Supported versions are '1.1' and '1.2'.`
+        message: `Unsupported EMN version '${emnData.version}'. Supported versions are '1.1', '1.2', and '1.3'.`
       });
     }
     const masterPlayerIds = /* @__PURE__ */ new Set();
@@ -17689,7 +17689,7 @@ var EuchreNotation = (() => {
     if (games.length > 0) {
       const candidateEmn = {
         fileType: "Euchre Match Notation",
-        version: "1.1",
+        version: EMN_SCHEMA_VERSION,
         metadata: {
           players: masterPlayers,
           matchFormat: {
@@ -17711,7 +17711,7 @@ var EuchreNotation = (() => {
     }
     const emnFile = {
       fileType: "Euchre Match Notation",
-      version: "1.1",
+      version: EMN_SCHEMA_VERSION,
       metadata: {
         title: options.title || "Combined Euchre Match",
         description: options.description,

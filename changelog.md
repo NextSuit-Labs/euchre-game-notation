@@ -6,11 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.6.6] - 2026-11-20
 ### Added & Improved
+- **EMN Schema Version `1.3`**:
+  - Bumped canonical EMN schema version to `1.3` (`EMN_SCHEMA_VERSION = "1.3"`, supporting `1.1`, `1.2`, and `1.3`) to reflect the additive `DUPLICATE` match format and `matchFormat.parameters` schema changes while retaining full backward compatibility.
+  - Updated `combineEgnToEmn` to emit `EMN_SCHEMA_VERSION` (`"1.3"`).
 - **Extensible Match Format Parameters (`matchFormat.parameters`)**:
   - Added an optional `parameters` string map (`Record<string, string>`, max 64 chars per value) to `metadata.matchFormat` in `schemas/emn/emn-schema-v1.json`, `schemas/emn/emn.proto` (`map<string, string> parameters = 3`), and `src/emn/types.ts`.
   - Updated EMN Protobuf binary encoding/decoding (`src/emn/converter.ts`) to roundtrip `matchFormat.parameters` cleanly while omitting empty maps for full backward compatibility.
   - Updated `combineEgnToEmn` (`src/emn/combiner.ts`) to accept optional `parameters` in match options.
-  - Documented `matchFormat.parameters` conventions (e.g., `unit`, `scoring`, `movement`, `tiebreaker`) in `docs/emn/match-specification.md`.
+  - Documented `matchFormat.parameters` rationale, key conventions, and examples in `docs/emn/match-specification.md` and `docs/emn/match-parameters.md`.
 
 ## [1.6.5] - 2026-11-19
 ### Added & Improved

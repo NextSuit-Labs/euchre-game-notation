@@ -18,6 +18,7 @@ import { EgnFile, Player, PlayerObject } from "../types";
 import { EmnFile, MatchPlayer, MatchType, MatchResult } from "./types";
 import { validateEmn } from "./validator";
 import { calculateEmnScores } from "./scoring";
+import { EMN_SCHEMA_VERSION } from "./version";
 
 function getPlayerKey(p: Player): { name: string; key: string; playerObj: PlayerObject } {
   if (typeof p === "string") {
@@ -100,7 +101,7 @@ export function combineEgnToEmn(
   if (games.length > 0) {
     const candidateEmn: EmnFile = {
       fileType: "Euchre Match Notation",
-      version: "1.1",
+      version: EMN_SCHEMA_VERSION,
       metadata: {
         players: masterPlayers,
         matchFormat: {
@@ -125,7 +126,7 @@ export function combineEgnToEmn(
 
   const emnFile: EmnFile = {
     fileType: "Euchre Match Notation",
-    version: "1.1",
+    version: EMN_SCHEMA_VERSION,
     metadata: {
       title: options.title || "Combined Euchre Match",
       description: options.description,

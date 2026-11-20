@@ -1,6 +1,6 @@
 # EMN Match Format Parameters (`matchFormat.parameters`)
 
-**Applies to:** Euchre Match Notation (EMN) v1.2+ (package `v1.6.6+`)  
+**Applies to:** Euchre Match Notation (EMN) v1.3+ (package `v1.6.6+`)  
 **Schema Field:** `metadata.matchFormat.parameters` (`Record<string, string>`, max 64 characters per value)
 
 This document explains the rationale behind `matchFormat.parameters` and provides recommended key conventions and concrete examples across all EMN match types.
