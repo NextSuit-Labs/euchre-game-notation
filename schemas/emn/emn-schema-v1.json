@@ -137,6 +137,14 @@
             "target": {
               "type": "integer",
               "minimum": 1
+            },
+            "parameters": {
+              "type": "object",
+              "description": "Optional format-specific match parameters (e.g., scoring unit, scoring method, movement, or tiebreaker rules).",
+              "additionalProperties": {
+                "type": "string",
+                "maxLength": 64
+              }
             }
           }
         },

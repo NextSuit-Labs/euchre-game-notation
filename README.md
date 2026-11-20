@@ -31,9 +31,9 @@ By bridging digital apps, analysis tools, and video rendering pipelines under a 
 
 ## Latest Release
 
-- **Current npm package:** `1.6.5`
+- **Current npm package:** `1.6.6`
 - **Schema family:** `1.6` (EGN) / `1.2` (EMN)
-- **Highlights:** Added `DUPLICATE` match format support in EMN schemas, Protobuf, scoring engine, and Workbench with target hands (deals) parameter; dealer discard action annotation (`callAnnotations["16"]`); `inferPlayerCards` / `calculatePlayerCards` engine API; and new `egn-deal-cards` CLI.
+- **Highlights:** Added optional `matchFormat.parameters` key-value map across EMN JSON schema, Protobuf, TypeScript types, and binary converter for extensible match-level rulesets (e.g., `DUPLICATE` scoring units and methods); `DUPLICATE` match format support
 
 See [changelog.md](changelog.md) for full release details.
 

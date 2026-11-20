@@ -32,6 +32,7 @@ export type MatchType =
 export interface MatchFormat {
   type: MatchType;
   target?: number;
+  parameters?: Record<string, string>;
 }
 
 export type MatchStatus = "COMPLETED" | "IN_PROGRESS" | "FORFEIT" | "DRAW";

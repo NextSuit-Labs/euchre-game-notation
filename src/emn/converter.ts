@@ -101,6 +101,7 @@ export function emnToBinary(emnFile: EmnFile, options?: EmnBinaryOptions): Uint8
         ? {
           type: protoFormatType,
           target: emnFile.metadata.matchFormat.target,
+          parameters: emnFile.metadata.matchFormat.parameters || {},
         }
         : undefined,
       result: emnFile.metadata.result
@@ -200,6 +201,10 @@ export function binaryToEmn(data: Uint8Array, options?: { unpackGames?: boolean 
         ? {
           type: (formatTypeStr || "BEST_OF_N") as any,
           target: decodedObject.metadata.match_format.target,
+          ...(decodedObject.metadata.match_format.parameters &&
+          Object.keys(decodedObject.metadata.match_format.parameters).length > 0
+            ? { parameters: decodedObject.metadata.match_format.parameters }
+            : {}),
         }
         : undefined,
       result: decodedObject.metadata?.result

@@ -8951,7 +8951,7 @@ var EuchreNotation = (() => {
 
   // src/version.ts
   var SCHEMA_VERSION = "1.6";
-  var PACKAGE_VERSION = "1.6.5";
+  var PACKAGE_VERSION = "1.6.6";
   var VERSION = SCHEMA_VERSION;
   var SUPPORTED_SCHEMA_VERSION_RE = /^1\.[23456](?:\.\d+)?$/;
   function isSupportedSchemaVersion(version) {
@@ -12677,7 +12677,7 @@ var EuchreNotation = (() => {
   var COMMON_PROTO_SCHEMA = 'syntax = "proto3";\n\npackage egn;\n\nmessage Ruleset {\n  optional bool std = 1;\n  optional int32 min_rank = 2;\n  optional int32 winning_score = 3;\n  optional bool canadian = 4;\n\n  enum LonerLead {\n    LEFT_OF_DEALER = 0;\n    LEFT_OF_LONER = 1;\n  }\n  optional LonerLead loner_lead = 5;\n\n  optional bool farmers = 6;\n  optional bool partners_best = 7;\n  optional bool go_under = 8;\n  optional bool joker = 9;\n  optional bool allow_no_trump = 10;\n  optional bool fast_break = 11;\n  optional bool four_trick_tokens = 12;\n  optional int32 loner_march_score = 13;\n  optional int32 loner_euchred_score = 14;\n  optional bool defend_alone = 15;\n  optional int32 num_players = 16;\n  optional int32 num_deals = 17;\n}\n\nmessage Metadata {\n  optional string game_id = 1;\n  optional string title = 2;\n  optional string description = 3;\n  repeated Player players = 4;\n  repeated int32 initial_score = 5;\n  repeated int32 final_score = 8;\n  optional string date = 6; // ISO 8601 formatted date-time string\n  Ruleset ruleset = 7;\n  repeated string team_names = 9;\n}\n\nmessage Player {\n  oneof player {\n    string name = 1;\n    PlayerWithId player_with_id = 2;\n  }\n}\n\nmessage PlayerWithId {\n  string name = 1;\n  repeated Id ids = 2;\n}\n\nmessage MatchPlayer {\n  string id = 1;\n  string name = 2;\n  repeated Id player_ids = 3;\n}\n\nmessage Id {\n  string id = 1;\n  string source = 2;\n}\n';
   var CONDENSED_PROTO_SCHEMA = 'syntax = "proto3";\n\npackage egn;\n\nimport "egn-common.proto";\n\nmessage EgnFile {\n  string file_type = 1; // Constant: "Euchre Game Notation"\n  string version = 2;\n  Metadata metadata = 3;\n  repeated string deals = 4; // Array of Base64/Base64URL encoded condensed representation of the deals\n}\n';
   var EXPANDED_PROTO_SCHEMA = 'syntax = "proto3";\n\npackage egn;\n\nimport "egn-common.proto";\n\nmessage CardList {\n  repeated string cards = 1;\n}\n\nmessage AnnotationList {\n  repeated string texts = 1;\n}\n\nmessage InitialState {\n  optional int32 dealer = 1;\n  optional string up_card = 2;\n  repeated CardList playerCards = 4;\n}\n\nmessage BiddingPhase {\n  optional int32 phase_number = 1;\n  repeated string calls = 2;\n  optional bool is_alone = 3;\n  optional int32 alone_defender = 4; // Seat index defending alone against loner, or -1 if none\n  optional string discard = 5;\n\n  message CardExchange {\n    optional int32 sender = 1;\n    optional int32 receiver = 2;\n    repeated string cards = 3;\n  }\n  repeated CardExchange cardExchanges = 6;\n\n  map<int32, AnnotationList> callAnnotations = 7;\n}\n\nmessage TrickPlayPhase {\n  optional int32 phase_number = 1;\n\n  message Trick {\n    repeated string cards = 1;\n  }\n  repeated Trick tricks = 3;\n\n  map<int32, AnnotationList> playAnnotations = 4;\n}\n\nmessage Phase {\n  oneof phase {\n    BiddingPhase bidding = 1;\n    TrickPlayPhase play = 2;\n  }\n}\n\nmessage AlternativeLine {\n  optional int32 branch_index = 1;\n  repeated Phase phases = 2;\n}\n\nmessage Deal {\n  optional int32 deal_number = 1;\n  InitialState initial_state = 2;\n  repeated Phase phases = 3;\n  repeated AlternativeLine alternative_lines = 4;\n}\n\nmessage EgnFile {\n  optional string file_type = 1; // Constant: "Euchre Game Notation"\n  optional string version = 2;\n  Metadata metadata = 3;\n  repeated Deal deals = 4; // Expanded array of deals\n}\n';
-  var EMN_PROTO_SCHEMA = 'syntax = "proto3";\n\npackage egn;\n\nimport "egn-common.proto";\n\nmessage MatchFormat {\n  enum MatchType {\n    BEST_OF_N = 0;\n    PROGRESSIVE = 1;\n    ROUND_ROBIN = 2;\n    CUSTOM = 3;\n    FIXED_GAMES = 4;\n    TARGET_SCORE = 5;\n    ELIMINATION = 6;\n    SWISS = 7;\n    TIMED = 8;\n    SINGLE_GAME = 9;\n    DUPLICATE = 10;\n  }\n  MatchType type = 1;\n  optional int32 target = 2;\n}\n\nmessage MatchResult {\n  enum Status {\n    COMPLETED = 0;\n    IN_PROGRESS = 1;\n    FORFEIT = 2;\n    DRAW = 3;\n  }\n  Status status = 1;\n  repeated string winner = 2; // Winning player ID(s) or team key\n  map<string, double> scores = 3; // Player ID / team key -> score metric\n}\n\nmessage MatchTeam {\n  string id = 1;\n  string name = 2;\n  repeated string player_ids = 3;\n  optional string color = 4;\n}\n\nmessage MatchMetadata {\n  optional string match_id = 1;\n  optional string title = 2;\n  optional string description = 3;\n  repeated MatchPlayer players = 4;\n  optional string date = 5;\n  MatchFormat match_format = 6;\n  MatchResult result = 7;\n  repeated MatchTeam teams = 8;\n}\n\nmessage GameEntry {\n  int32 game_index = 1;\n  repeated string players_override = 2; // Exactly 4 player ID references mapping to seats (0: North, 1: East, 2: South, 3: West)\n  oneof game_data {\n    string egn_json = 3;          // Stringified JSON EGN\n    bytes egn_protobuf_bytes = 4; // Serialized Protobuf EGN\n  }\n}\n\nmessage MatchFile {\n  string file_type = 1; // "Euchre Match Notation"\n  string version = 2;\n  MatchMetadata metadata = 3;\n  repeated GameEntry games = 4;\n}\n';
+  var EMN_PROTO_SCHEMA = 'syntax = "proto3";\n\npackage egn;\n\nimport "egn-common.proto";\n\nmessage MatchFormat {\n  enum MatchType {\n    BEST_OF_N = 0;\n    PROGRESSIVE = 1;\n    ROUND_ROBIN = 2;\n    CUSTOM = 3;\n    FIXED_GAMES = 4;\n    TARGET_SCORE = 5;\n    ELIMINATION = 6;\n    SWISS = 7;\n    TIMED = 8;\n    SINGLE_GAME = 9;\n    DUPLICATE = 10;\n  }\n  MatchType type = 1;\n  optional int32 target = 2;\n  map<string, string> parameters = 3;\n}\n\nmessage MatchResult {\n  enum Status {\n    COMPLETED = 0;\n    IN_PROGRESS = 1;\n    FORFEIT = 2;\n    DRAW = 3;\n  }\n  Status status = 1;\n  repeated string winner = 2; // Winning player ID(s) or team key\n  map<string, double> scores = 3; // Player ID / team key -> score metric\n}\n\nmessage MatchTeam {\n  string id = 1;\n  string name = 2;\n  repeated string player_ids = 3;\n  optional string color = 4;\n}\n\nmessage MatchMetadata {\n  optional string match_id = 1;\n  optional string title = 2;\n  optional string description = 3;\n  repeated MatchPlayer players = 4;\n  optional string date = 5;\n  MatchFormat match_format = 6;\n  MatchResult result = 7;\n  repeated MatchTeam teams = 8;\n}\n\nmessage GameEntry {\n  int32 game_index = 1;\n  repeated string players_override = 2; // Exactly 4 player ID references mapping to seats (0: North, 1: East, 2: South, 3: West)\n  oneof game_data {\n    string egn_json = 3;          // Stringified JSON EGN\n    bytes egn_protobuf_bytes = 4; // Serialized Protobuf EGN\n  }\n}\n\nmessage MatchFile {\n  string file_type = 1; // "Euchre Match Notation"\n  string version = 2;\n  MatchMetadata metadata = 3;\n  repeated GameEntry games = 4;\n}\n';
 
   // src/converter.ts
   var MAGIC_BYTE_EXPANDED = 0;
@@ -13891,7 +13891,7 @@ var EuchreNotation = (() => {
 
   // src/generated/emn-validators.ts
   var validateEmn = validate102;
-  var schema112 = { "$schema": "http://json-schema.org/draft-07/schema#", "title": "Euchre Match Notation (EMN)", "description": "JSON Schema for validating Euchre Match Notation (.emn) files.", "type": "object", "required": ["fileType", "version", "metadata", "games"], "additionalProperties": false, "properties": { "fileType": { "type": "string", "const": "Euchre Match Notation" }, "version": { "type": "string", "pattern": "^1\\.[12](?:\\.\\d+)?$" }, "metadata": { "type": "object", "required": ["players"], "additionalProperties": false, "properties": { "matchId": { "type": "string", "maxLength": 64 }, "title": { "type": "string", "maxLength": 128 }, "description": { "type": "string", "maxLength": 1024 }, "date": { "type": "string", "maxLength": 64, "anyOf": [{ "format": "date-time" }, { "format": "date" }, { "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}([T ]\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?)?$" }] }, "teams": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "object", "required": ["id", "name"], "additionalProperties": false, "properties": { "id": { "type": "string", "maxLength": 64 }, "name": { "type": "string", "maxLength": 64 }, "playerIds": { "type": "array", "items": { "type": "string", "maxLength": 64 } }, "color": { "type": "string", "maxLength": 32 } } } }, "players": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "allOf": [{ "$ref": "../egn-schema-v1.json#/definitions/player" }, { "type": "object", "required": ["id"], "properties": { "id": { "type": "string", "maxLength": 64 } } }] } }, "matchFormat": { "type": "object", "required": ["type"], "additionalProperties": false, "properties": { "type": { "type": "string", "enum": ["BEST_OF_N", "PROGRESSIVE", "ROUND_ROBIN", "CUSTOM", "FIXED_GAMES", "TARGET_SCORE", "ELIMINATION", "SWISS", "TIMED", "SINGLE_GAME", "DUPLICATE"] }, "target": { "type": "integer", "minimum": 1 } } }, "result": { "type": "object", "additionalProperties": false, "properties": { "status": { "type": "string", "enum": ["COMPLETED", "IN_PROGRESS", "FORFEIT", "DRAW"] }, "winner": { "type": "array", "items": { "type": "string" }, "description": "Winning player ID(s) or team key" }, "scores": { "type": "object", "additionalProperties": { "type": "number" }, "description": "Map of player ID or team key to final score metric" } } } } }, "games": { "type": "array", "items": { "type": "object", "required": ["gameIndex", "playersOverride", "gameData"], "additionalProperties": false, "properties": { "gameIndex": { "type": "integer", "minimum": 0 }, "playersOverride": { "type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": { "type": "string" }, "description": "Array of 4 player IDs mapped to [Seat 0: North, Seat 1: East, Seat 2: South, Seat 3: West]" }, "gameData": { "$ref": "../egn-schema-v1.json" } } } } } };
+  var schema112 = { "$schema": "http://json-schema.org/draft-07/schema#", "title": "Euchre Match Notation (EMN)", "description": "JSON Schema for validating Euchre Match Notation (.emn) files.", "type": "object", "required": ["fileType", "version", "metadata", "games"], "additionalProperties": false, "properties": { "fileType": { "type": "string", "const": "Euchre Match Notation" }, "version": { "type": "string", "pattern": "^1\\.[12](?:\\.\\d+)?$" }, "metadata": { "type": "object", "required": ["players"], "additionalProperties": false, "properties": { "matchId": { "type": "string", "maxLength": 64 }, "title": { "type": "string", "maxLength": 128 }, "description": { "type": "string", "maxLength": 1024 }, "date": { "type": "string", "maxLength": 64, "anyOf": [{ "format": "date-time" }, { "format": "date" }, { "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}([T ]\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?)?$" }] }, "teams": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "object", "required": ["id", "name"], "additionalProperties": false, "properties": { "id": { "type": "string", "maxLength": 64 }, "name": { "type": "string", "maxLength": 64 }, "playerIds": { "type": "array", "items": { "type": "string", "maxLength": 64 } }, "color": { "type": "string", "maxLength": 32 } } } }, "players": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "allOf": [{ "$ref": "../egn-schema-v1.json#/definitions/player" }, { "type": "object", "required": ["id"], "properties": { "id": { "type": "string", "maxLength": 64 } } }] } }, "matchFormat": { "type": "object", "required": ["type"], "additionalProperties": false, "properties": { "type": { "type": "string", "enum": ["BEST_OF_N", "PROGRESSIVE", "ROUND_ROBIN", "CUSTOM", "FIXED_GAMES", "TARGET_SCORE", "ELIMINATION", "SWISS", "TIMED", "SINGLE_GAME", "DUPLICATE"] }, "target": { "type": "integer", "minimum": 1 }, "parameters": { "type": "object", "description": "Optional format-specific match parameters (e.g., scoring unit, scoring method, movement, or tiebreaker rules).", "additionalProperties": { "type": "string", "maxLength": 64 } } } }, "result": { "type": "object", "additionalProperties": false, "properties": { "status": { "type": "string", "enum": ["COMPLETED", "IN_PROGRESS", "FORFEIT", "DRAW"] }, "winner": { "type": "array", "items": { "type": "string" }, "description": "Winning player ID(s) or team key" }, "scores": { "type": "object", "additionalProperties": { "type": "number" }, "description": "Map of player ID or team key to final score metric" } } } } }, "games": { "type": "array", "items": { "type": "object", "required": ["gameIndex", "playersOverride", "gameData"], "additionalProperties": false, "properties": { "gameIndex": { "type": "integer", "minimum": 0 }, "playersOverride": { "type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": { "type": "string" }, "description": "Array of 4 player IDs mapped to [Seat 0: North, Seat 1: East, Seat 2: South, Seat 3: West]" }, "gameData": { "$ref": "../egn-schema-v1.json" } } } } } };
   var pattern02 = new RegExp("^1\\.[12](?:\\.\\d+)?$", "u");
   var pattern12 = new RegExp("^$|^\\d{4}-\\d{2}-\\d{2}([T ]\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?)?$", "u");
   var func22 = require_ucs2length().default;
@@ -16794,7 +16794,7 @@ var EuchreNotation = (() => {
                                             } else {
                                               const _errs62 = errors;
                                               for (const key5 in data23) {
-                                                if (!(key5 === "type" || key5 === "target")) {
+                                                if (!(key5 === "type" || key5 === "target" || key5 === "parameters")) {
                                                   validate102.errors = [{ instancePath: instancePath + "/metadata/matchFormat", schemaPath: "#/properties/metadata/properties/matchFormat/additionalProperties", keyword: "additionalProperties", params: { additionalProperty: key5 }, message: "must NOT have additional properties" }];
                                                   return false;
                                                   break;
@@ -16836,6 +16836,41 @@ var EuchreNotation = (() => {
                                                   } else {
                                                     var valid15 = true;
                                                   }
+                                                  if (valid15) {
+                                                    if (data23.parameters !== void 0) {
+                                                      let data26 = data23.parameters;
+                                                      const _errs67 = errors;
+                                                      if (errors === _errs67) {
+                                                        if (data26 && typeof data26 == "object" && !Array.isArray(data26)) {
+                                                          for (const key6 in data26) {
+                                                            let data27 = data26[key6];
+                                                            const _errs70 = errors;
+                                                            if (errors === _errs70) {
+                                                              if (typeof data27 === "string") {
+                                                                if (func22(data27) > 64) {
+                                                                  validate102.errors = [{ instancePath: instancePath + "/metadata/matchFormat/parameters/" + key6.replace(/~/g, "~0").replace(/\//g, "~1"), schemaPath: "#/properties/metadata/properties/matchFormat/properties/parameters/additionalProperties/maxLength", keyword: "maxLength", params: { limit: 64 }, message: "must NOT have more than 64 characters" }];
+                                                                  return false;
+                                                                }
+                                                              } else {
+                                                                validate102.errors = [{ instancePath: instancePath + "/metadata/matchFormat/parameters/" + key6.replace(/~/g, "~0").replace(/\//g, "~1"), schemaPath: "#/properties/metadata/properties/matchFormat/properties/parameters/additionalProperties/type", keyword: "type", params: { type: "string" }, message: "must be string" }];
+                                                                return false;
+                                                              }
+                                                            }
+                                                            var valid16 = _errs70 === errors;
+                                                            if (!valid16) {
+                                                              break;
+                                                            }
+                                                          }
+                                                        } else {
+                                                          validate102.errors = [{ instancePath: instancePath + "/metadata/matchFormat/parameters", schemaPath: "#/properties/metadata/properties/matchFormat/properties/parameters/type", keyword: "type", params: { type: "object" }, message: "must be object" }];
+                                                          return false;
+                                                        }
+                                                      }
+                                                      var valid15 = _errs67 === errors;
+                                                    } else {
+                                                      var valid15 = true;
+                                                    }
+                                                  }
                                                 }
                                               }
                                             }
@@ -16850,50 +16885,50 @@ var EuchreNotation = (() => {
                                       }
                                       if (valid1) {
                                         if (data2.result !== void 0) {
-                                          let data26 = data2.result;
-                                          const _errs67 = errors;
-                                          if (errors === _errs67) {
-                                            if (data26 && typeof data26 == "object" && !Array.isArray(data26)) {
-                                              const _errs69 = errors;
-                                              for (const key6 in data26) {
-                                                if (!(key6 === "status" || key6 === "winner" || key6 === "scores")) {
-                                                  validate102.errors = [{ instancePath: instancePath + "/metadata/result", schemaPath: "#/properties/metadata/properties/result/additionalProperties", keyword: "additionalProperties", params: { additionalProperty: key6 }, message: "must NOT have additional properties" }];
+                                          let data28 = data2.result;
+                                          const _errs72 = errors;
+                                          if (errors === _errs72) {
+                                            if (data28 && typeof data28 == "object" && !Array.isArray(data28)) {
+                                              const _errs74 = errors;
+                                              for (const key7 in data28) {
+                                                if (!(key7 === "status" || key7 === "winner" || key7 === "scores")) {
+                                                  validate102.errors = [{ instancePath: instancePath + "/metadata/result", schemaPath: "#/properties/metadata/properties/result/additionalProperties", keyword: "additionalProperties", params: { additionalProperty: key7 }, message: "must NOT have additional properties" }];
                                                   return false;
                                                   break;
                                                 }
                                               }
-                                              if (_errs69 === errors) {
-                                                if (data26.status !== void 0) {
-                                                  let data27 = data26.status;
-                                                  const _errs70 = errors;
-                                                  if (typeof data27 !== "string") {
+                                              if (_errs74 === errors) {
+                                                if (data28.status !== void 0) {
+                                                  let data29 = data28.status;
+                                                  const _errs75 = errors;
+                                                  if (typeof data29 !== "string") {
                                                     validate102.errors = [{ instancePath: instancePath + "/metadata/result/status", schemaPath: "#/properties/metadata/properties/result/properties/status/type", keyword: "type", params: { type: "string" }, message: "must be string" }];
                                                     return false;
                                                   }
-                                                  if (!(data27 === "COMPLETED" || data27 === "IN_PROGRESS" || data27 === "FORFEIT" || data27 === "DRAW")) {
+                                                  if (!(data29 === "COMPLETED" || data29 === "IN_PROGRESS" || data29 === "FORFEIT" || data29 === "DRAW")) {
                                                     validate102.errors = [{ instancePath: instancePath + "/metadata/result/status", schemaPath: "#/properties/metadata/properties/result/properties/status/enum", keyword: "enum", params: { allowedValues: schema112.properties.metadata.properties.result.properties.status.enum }, message: "must be equal to one of the allowed values" }];
                                                     return false;
                                                   }
-                                                  var valid16 = _errs70 === errors;
+                                                  var valid17 = _errs75 === errors;
                                                 } else {
-                                                  var valid16 = true;
+                                                  var valid17 = true;
                                                 }
-                                                if (valid16) {
-                                                  if (data26.winner !== void 0) {
-                                                    let data28 = data26.winner;
-                                                    const _errs72 = errors;
-                                                    if (errors === _errs72) {
-                                                      if (Array.isArray(data28)) {
-                                                        var valid17 = true;
-                                                        const len4 = data28.length;
+                                                if (valid17) {
+                                                  if (data28.winner !== void 0) {
+                                                    let data30 = data28.winner;
+                                                    const _errs77 = errors;
+                                                    if (errors === _errs77) {
+                                                      if (Array.isArray(data30)) {
+                                                        var valid18 = true;
+                                                        const len4 = data30.length;
                                                         for (let i6 = 0; i6 < len4; i6++) {
-                                                          const _errs74 = errors;
-                                                          if (typeof data28[i6] !== "string") {
+                                                          const _errs79 = errors;
+                                                          if (typeof data30[i6] !== "string") {
                                                             validate102.errors = [{ instancePath: instancePath + "/metadata/result/winner/" + i6, schemaPath: "#/properties/metadata/properties/result/properties/winner/items/type", keyword: "type", params: { type: "string" }, message: "must be string" }];
                                                             return false;
                                                           }
-                                                          var valid17 = _errs74 === errors;
-                                                          if (!valid17) {
+                                                          var valid18 = _errs79 === errors;
+                                                          if (!valid18) {
                                                             break;
                                                           }
                                                         }
@@ -16902,25 +16937,25 @@ var EuchreNotation = (() => {
                                                         return false;
                                                       }
                                                     }
-                                                    var valid16 = _errs72 === errors;
+                                                    var valid17 = _errs77 === errors;
                                                   } else {
-                                                    var valid16 = true;
+                                                    var valid17 = true;
                                                   }
-                                                  if (valid16) {
-                                                    if (data26.scores !== void 0) {
-                                                      let data30 = data26.scores;
-                                                      const _errs76 = errors;
-                                                      if (errors === _errs76) {
-                                                        if (data30 && typeof data30 == "object" && !Array.isArray(data30)) {
-                                                          for (const key7 in data30) {
-                                                            let data31 = data30[key7];
-                                                            const _errs79 = errors;
-                                                            if (!(typeof data31 == "number" && isFinite(data31))) {
-                                                              validate102.errors = [{ instancePath: instancePath + "/metadata/result/scores/" + key7.replace(/~/g, "~0").replace(/\//g, "~1"), schemaPath: "#/properties/metadata/properties/result/properties/scores/additionalProperties/type", keyword: "type", params: { type: "number" }, message: "must be number" }];
+                                                  if (valid17) {
+                                                    if (data28.scores !== void 0) {
+                                                      let data32 = data28.scores;
+                                                      const _errs81 = errors;
+                                                      if (errors === _errs81) {
+                                                        if (data32 && typeof data32 == "object" && !Array.isArray(data32)) {
+                                                          for (const key8 in data32) {
+                                                            let data33 = data32[key8];
+                                                            const _errs84 = errors;
+                                                            if (!(typeof data33 == "number" && isFinite(data33))) {
+                                                              validate102.errors = [{ instancePath: instancePath + "/metadata/result/scores/" + key8.replace(/~/g, "~0").replace(/\//g, "~1"), schemaPath: "#/properties/metadata/properties/result/properties/scores/additionalProperties/type", keyword: "type", params: { type: "number" }, message: "must be number" }];
                                                               return false;
                                                             }
-                                                            var valid18 = _errs79 === errors;
-                                                            if (!valid18) {
+                                                            var valid19 = _errs84 === errors;
+                                                            if (!valid19) {
                                                               break;
                                                             }
                                                           }
@@ -16929,9 +16964,9 @@ var EuchreNotation = (() => {
                                                           return false;
                                                         }
                                                       }
-                                                      var valid16 = _errs76 === errors;
+                                                      var valid17 = _errs81 === errors;
                                                     } else {
-                                                      var valid16 = true;
+                                                      var valid17 = true;
                                                     }
                                                   }
                                                 }
@@ -16941,7 +16976,7 @@ var EuchreNotation = (() => {
                                               return false;
                                             }
                                           }
-                                          var valid1 = _errs67 === errors;
+                                          var valid1 = _errs72 === errors;
                                         } else {
                                           var valid1 = true;
                                         }
@@ -16965,84 +17000,84 @@ var EuchreNotation = (() => {
                 }
                 if (valid0) {
                   if (data.games !== void 0) {
-                    let data32 = data.games;
-                    const _errs81 = errors;
-                    if (errors === _errs81) {
-                      if (Array.isArray(data32)) {
-                        var valid19 = true;
-                        const len5 = data32.length;
+                    let data34 = data.games;
+                    const _errs86 = errors;
+                    if (errors === _errs86) {
+                      if (Array.isArray(data34)) {
+                        var valid20 = true;
+                        const len5 = data34.length;
                         for (let i7 = 0; i7 < len5; i7++) {
-                          let data33 = data32[i7];
-                          const _errs83 = errors;
-                          if (errors === _errs83) {
-                            if (data33 && typeof data33 == "object" && !Array.isArray(data33)) {
+                          let data35 = data34[i7];
+                          const _errs88 = errors;
+                          if (errors === _errs88) {
+                            if (data35 && typeof data35 == "object" && !Array.isArray(data35)) {
                               let missing7;
-                              if (data33.gameIndex === void 0 && (missing7 = "gameIndex") || data33.playersOverride === void 0 && (missing7 = "playersOverride") || data33.gameData === void 0 && (missing7 = "gameData")) {
+                              if (data35.gameIndex === void 0 && (missing7 = "gameIndex") || data35.playersOverride === void 0 && (missing7 = "playersOverride") || data35.gameData === void 0 && (missing7 = "gameData")) {
                                 validate102.errors = [{ instancePath: instancePath + "/games/" + i7, schemaPath: "#/properties/games/items/required", keyword: "required", params: { missingProperty: missing7 }, message: "must have required property '" + missing7 + "'" }];
                                 return false;
                               } else {
-                                const _errs85 = errors;
-                                for (const key8 in data33) {
-                                  if (!(key8 === "gameIndex" || key8 === "playersOverride" || key8 === "gameData")) {
-                                    validate102.errors = [{ instancePath: instancePath + "/games/" + i7, schemaPath: "#/properties/games/items/additionalProperties", keyword: "additionalProperties", params: { additionalProperty: key8 }, message: "must NOT have additional properties" }];
+                                const _errs90 = errors;
+                                for (const key9 in data35) {
+                                  if (!(key9 === "gameIndex" || key9 === "playersOverride" || key9 === "gameData")) {
+                                    validate102.errors = [{ instancePath: instancePath + "/games/" + i7, schemaPath: "#/properties/games/items/additionalProperties", keyword: "additionalProperties", params: { additionalProperty: key9 }, message: "must NOT have additional properties" }];
                                     return false;
                                     break;
                                   }
                                 }
-                                if (_errs85 === errors) {
-                                  if (data33.gameIndex !== void 0) {
-                                    let data34 = data33.gameIndex;
-                                    const _errs86 = errors;
-                                    if (!(typeof data34 == "number" && (!(data34 % 1) && !isNaN(data34)) && isFinite(data34))) {
+                                if (_errs90 === errors) {
+                                  if (data35.gameIndex !== void 0) {
+                                    let data36 = data35.gameIndex;
+                                    const _errs91 = errors;
+                                    if (!(typeof data36 == "number" && (!(data36 % 1) && !isNaN(data36)) && isFinite(data36))) {
                                       validate102.errors = [{ instancePath: instancePath + "/games/" + i7 + "/gameIndex", schemaPath: "#/properties/games/items/properties/gameIndex/type", keyword: "type", params: { type: "integer" }, message: "must be integer" }];
                                       return false;
                                     }
-                                    if (errors === _errs86) {
-                                      if (typeof data34 == "number" && isFinite(data34)) {
-                                        if (data34 < 0 || isNaN(data34)) {
+                                    if (errors === _errs91) {
+                                      if (typeof data36 == "number" && isFinite(data36)) {
+                                        if (data36 < 0 || isNaN(data36)) {
                                           validate102.errors = [{ instancePath: instancePath + "/games/" + i7 + "/gameIndex", schemaPath: "#/properties/games/items/properties/gameIndex/minimum", keyword: "minimum", params: { comparison: ">=", limit: 0 }, message: "must be >= 0" }];
                                           return false;
                                         }
                                       }
                                     }
-                                    var valid20 = _errs86 === errors;
+                                    var valid21 = _errs91 === errors;
                                   } else {
-                                    var valid20 = true;
+                                    var valid21 = true;
                                   }
-                                  if (valid20) {
-                                    if (data33.playersOverride !== void 0) {
-                                      let data35 = data33.playersOverride;
-                                      const _errs88 = errors;
-                                      if (errors === _errs88) {
-                                        if (Array.isArray(data35)) {
-                                          if (data35.length > 4) {
+                                  if (valid21) {
+                                    if (data35.playersOverride !== void 0) {
+                                      let data37 = data35.playersOverride;
+                                      const _errs93 = errors;
+                                      if (errors === _errs93) {
+                                        if (Array.isArray(data37)) {
+                                          if (data37.length > 4) {
                                             validate102.errors = [{ instancePath: instancePath + "/games/" + i7 + "/playersOverride", schemaPath: "#/properties/games/items/properties/playersOverride/maxItems", keyword: "maxItems", params: { limit: 4 }, message: "must NOT have more than 4 items" }];
                                             return false;
                                           } else {
-                                            if (data35.length < 4) {
+                                            if (data37.length < 4) {
                                               validate102.errors = [{ instancePath: instancePath + "/games/" + i7 + "/playersOverride", schemaPath: "#/properties/games/items/properties/playersOverride/minItems", keyword: "minItems", params: { limit: 4 }, message: "must NOT have fewer than 4 items" }];
                                               return false;
                                             } else {
-                                              var valid21 = true;
-                                              const len6 = data35.length;
+                                              var valid22 = true;
+                                              const len6 = data37.length;
                                               for (let i8 = 0; i8 < len6; i8++) {
-                                                const _errs90 = errors;
-                                                if (typeof data35[i8] !== "string") {
+                                                const _errs95 = errors;
+                                                if (typeof data37[i8] !== "string") {
                                                   validate102.errors = [{ instancePath: instancePath + "/games/" + i7 + "/playersOverride/" + i8, schemaPath: "#/properties/games/items/properties/playersOverride/items/type", keyword: "type", params: { type: "string" }, message: "must be string" }];
                                                   return false;
                                                 }
-                                                var valid21 = _errs90 === errors;
-                                                if (!valid21) {
+                                                var valid22 = _errs95 === errors;
+                                                if (!valid22) {
                                                   break;
                                                 }
                                               }
-                                              if (valid21) {
-                                                let i9 = data35.length;
+                                              if (valid22) {
+                                                let i9 = data37.length;
                                                 let j2;
                                                 if (i9 > 1) {
                                                   const indices0 = {};
                                                   for (; i9--; ) {
-                                                    let item0 = data35[i9];
+                                                    let item0 = data37[i9];
                                                     if (typeof item0 !== "string") {
                                                       continue;
                                                     }
@@ -17063,20 +17098,20 @@ var EuchreNotation = (() => {
                                           return false;
                                         }
                                       }
-                                      var valid20 = _errs88 === errors;
+                                      var valid21 = _errs93 === errors;
                                     } else {
-                                      var valid20 = true;
+                                      var valid21 = true;
                                     }
-                                    if (valid20) {
-                                      if (data33.gameData !== void 0) {
-                                        const _errs92 = errors;
-                                        if (!validate112(data33.gameData, { instancePath: instancePath + "/games/" + i7 + "/gameData", parentData: data33, parentDataProperty: "gameData", rootData })) {
+                                    if (valid21) {
+                                      if (data35.gameData !== void 0) {
+                                        const _errs97 = errors;
+                                        if (!validate112(data35.gameData, { instancePath: instancePath + "/games/" + i7 + "/gameData", parentData: data35, parentDataProperty: "gameData", rootData })) {
                                           vErrors = vErrors === null ? validate112.errors : vErrors.concat(validate112.errors);
                                           errors = vErrors.length;
                                         }
-                                        var valid20 = _errs92 === errors;
+                                        var valid21 = _errs97 === errors;
                                       } else {
-                                        var valid20 = true;
+                                        var valid21 = true;
                                       }
                                     }
                                   }
@@ -17087,8 +17122,8 @@ var EuchreNotation = (() => {
                               return false;
                             }
                           }
-                          var valid19 = _errs83 === errors;
-                          if (!valid19) {
+                          var valid20 = _errs88 === errors;
+                          if (!valid20) {
                             break;
                           }
                         }
@@ -17097,7 +17132,7 @@ var EuchreNotation = (() => {
                         return false;
                       }
                     }
-                    var valid0 = _errs81 === errors;
+                    var valid0 = _errs86 === errors;
                   } else {
                     var valid0 = true;
                   }
@@ -17275,7 +17310,8 @@ var EuchreNotation = (() => {
         })),
         match_format: emnFile.metadata.matchFormat ? {
           type: protoFormatType,
-          target: emnFile.metadata.matchFormat.target
+          target: emnFile.metadata.matchFormat.target,
+          parameters: emnFile.metadata.matchFormat.parameters || {}
         } : void 0,
         result: emnFile.metadata.result ? {
           status: protoStatus,
@@ -17350,7 +17386,8 @@ var EuchreNotation = (() => {
         })),
         matchFormat: decodedObject.metadata?.match_format ? {
           type: formatTypeStr || "BEST_OF_N",
-          target: decodedObject.metadata.match_format.target
+          target: decodedObject.metadata.match_format.target,
+          ...decodedObject.metadata.match_format.parameters && Object.keys(decodedObject.metadata.match_format.parameters).length > 0 ? { parameters: decodedObject.metadata.match_format.parameters } : {}
         } : void 0,
         result: decodedObject.metadata?.result ? {
           status: statusStr,
@@ -17657,7 +17694,8 @@ var EuchreNotation = (() => {
           players: masterPlayers,
           matchFormat: {
             type: options.format || "BEST_OF_N",
-            target: options.target
+            target: options.target,
+            ...options.parameters && Object.keys(options.parameters).length > 0 ? { parameters: options.parameters } : {}
           }
         },
         games
@@ -17681,7 +17719,8 @@ var EuchreNotation = (() => {
         players: masterPlayers,
         matchFormat: {
           type: options.format || "BEST_OF_N",
-          target: options.target
+          target: options.target,
+          ...options.parameters && Object.keys(options.parameters).length > 0 ? { parameters: options.parameters } : {}
         },
         result: computedResult
       },

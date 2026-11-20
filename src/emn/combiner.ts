@@ -40,6 +40,7 @@ export function combineEgnToEmn(
   options: {
     format?: MatchType;
     target?: number;
+    parameters?: Record<string, string>;
     title?: string;
     description?: string;
   } = {}
@@ -105,6 +106,9 @@ export function combineEgnToEmn(
         matchFormat: {
           type: options.format || "BEST_OF_N",
           target: options.target,
+          ...(options.parameters && Object.keys(options.parameters).length > 0
+            ? { parameters: options.parameters }
+            : {}),
         },
       },
       games,
@@ -130,6 +134,9 @@ export function combineEgnToEmn(
       matchFormat: {
         type: options.format || "BEST_OF_N",
         target: options.target,
+        ...(options.parameters && Object.keys(options.parameters).length > 0
+          ? { parameters: options.parameters }
+          : {}),
       },
       result: computedResult,
     },

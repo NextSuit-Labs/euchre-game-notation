@@ -4,6 +4,14 @@ All notable changes to the Euchre Game Notation (EGN) specification and utility 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.6] - 2026-11-20
+### Added & Improved
+- **Extensible Match Format Parameters (`matchFormat.parameters`)**:
+  - Added an optional `parameters` string map (`Record<string, string>`, max 64 chars per value) to `metadata.matchFormat` in `schemas/emn/emn-schema-v1.json`, `schemas/emn/emn.proto` (`map<string, string> parameters = 3`), and `src/emn/types.ts`.
+  - Updated EMN Protobuf binary encoding/decoding (`src/emn/converter.ts`) to roundtrip `matchFormat.parameters` cleanly while omitting empty maps for full backward compatibility.
+  - Updated `combineEgnToEmn` (`src/emn/combiner.ts`) to accept optional `parameters` in match options.
+  - Documented `matchFormat.parameters` conventions (e.g., `unit`, `scoring`, `movement`, `tiebreaker`) in `docs/emn/match-specification.md`.
+
 ## [1.6.5] - 2026-11-19
 ### Added & Improved
 - **Duplicate Euchre Match Format Support (`matchFormat.type = "DUPLICATE"`)**:

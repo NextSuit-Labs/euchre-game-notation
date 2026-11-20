@@ -399,5 +399,101 @@ describe("EMN Combine Utility", () => {
         global.Function = originalFunction;
       }
     });
+
+    it("validates matchFormat.parameters with string key-value pairs", () => {
+      const emnWithParams: EmnFile = {
+        ...validEmnMock,
+        metadata: {
+          ...validEmnMock.metadata,
+          matchFormat: {
+            type: "DUPLICATE",
+            target: 16,
+            parameters: {
+              unit: "TEAM",
+              scoring: "BOARD_A_MATCH",
+            },
+          },
+        },
+      };
+      const res = validateEmn(emnWithParams);
+      expect(res.isValid).toBe(true);
+      expect(isEmnFile(emnWithParams)).toBe(true);
+    });
+
+    it("fails validation when matchFormat.parameters contains non-string or overlong values", () => {
+      const emnWithBadType: any = {
+        ...validEmnMock,
+        metadata: {
+          ...validEmnMock.metadata,
+          matchFormat: {
+            type: "DUPLICATE",
+            target: 16,
+            parameters: {
+              unit: 123,
+            },
+          },
+        },
+      };
+      expect(validateEmn(emnWithBadType).isValid).toBe(false);
+
+      const emnWithLongVal: EmnFile = {
+        ...validEmnMock,
+        metadata: {
+          ...validEmnMock.metadata,
+          matchFormat: {
+            type: "DUPLICATE",
+            target: 16,
+            parameters: {
+              unit: "A".repeat(65),
+            },
+          },
+        },
+      };
+      expect(validateEmn(emnWithLongVal).isValid).toBe(false);
+    });
+
+    it("roundtrips matchFormat.parameters through EMN binary conversion", () => {
+      const emnWithParams: EmnFile = {
+        ...validEmnMock,
+        metadata: {
+          ...validEmnMock.metadata,
+          matchFormat: {
+            type: "DUPLICATE",
+            target: 24,
+            parameters: {
+              unit: "PARTNERSHIP",
+              scoring: "MATCHPOINTS",
+            },
+          },
+        },
+      };
+      const binary = emnToBinary(emnWithParams);
+      const decoded = binaryToEmn(binary);
+      expect(decoded.metadata.matchFormat).toEqual({
+        type: "DUPLICATE",
+        target: 24,
+        parameters: {
+          unit: "PARTNERSHIP",
+          scoring: "MATCHPOINTS",
+        },
+      });
+
+      // Without parameters, decoded matchFormat should not inject an empty parameters object
+      const decodedWithoutParams = binaryToEmn(emnToBinary(validEmnMock));
+      expect(decodedWithoutParams.metadata.matchFormat?.parameters).toBeUndefined();
+    });
+
+    it("preserves matchFormat.parameters in combineEgnToEmn", () => {
+      const combined = combineEgnToEmn([mockSubEgn], {
+        format: "DUPLICATE",
+        target: 16,
+        parameters: { unit: "INDIVIDUAL", scoring: "TOTAL_POINTS" },
+      });
+      expect(combined.metadata.matchFormat).toEqual({
+        type: "DUPLICATE",
+        target: 16,
+        parameters: { unit: "INDIVIDUAL", scoring: "TOTAL_POINTS" },
+      });
+    });
   });
 });

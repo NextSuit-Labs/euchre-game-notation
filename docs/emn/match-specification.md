@@ -153,6 +153,29 @@ Every game in `games` contains a `playersOverride` array of **exactly 4 player I
 | `DUPLICATE` | Duplicate tournament/match; identical boards/deals compared across teams or tables | Number of hands (deals) |
 | `CUSTOM` | Arbitrary or non-standard ruleset | Custom metric |
 
+### Format Parameters (`matchFormat.parameters`)
+
+`matchFormat.parameters` is an optional key-value map of strings (`Record<string, string>`, max 64 characters per value) for specifying match-level ruleset options without bloating the core schema. It serves as the match-level counterpart to EGN's game-level `metadata.ruleset`.
+
+Common conventions include:
+- `unit`: `"INDIVIDUAL"`, `"PARTNERSHIP"`, or `"TEAM"` (contestant scoring unit for `DUPLICATE`, `PROGRESSIVE`, `SWISS`, etc.).
+- `scoring`: `"MATCHPOINTS"`, `"BOARD_A_MATCH"`, `"TOTAL_POINTS"`, or `"IMPS"` (scoring method for `DUPLICATE` matches).
+- `movement` / `tiebreaker`: Tournament-specific rotation or tiebreaker rules (e.g., `"MITCHELL"`, `"HOWELL"`, `"BUCHHOLZ"`).
+
+Example (`DUPLICATE` team match scored by Board-a-Match):
+```json
+"matchFormat": {
+  "type": "DUPLICATE",
+  "target": 16,
+  "parameters": {
+    "unit": "TEAM",
+    "scoring": "BOARD_A_MATCH"
+  }
+}
+```
+
+For the full design rationale, recommended parameter keys, and examples across all match types, see [Match Format Parameters](match-parameters.md).
+
 ---
 
 ## 📊 Generic Results (`metadata.result`)

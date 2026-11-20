@@ -20,6 +20,7 @@ message MatchFormat {
   }
   MatchType type = 1;
   optional int32 target = 2;
+  map<string, string> parameters = 3;
 }
 
 message MatchResult {
